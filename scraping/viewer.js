@@ -1,7 +1,8 @@
 // ─── Source state ─────────────────────────────────────────────────────────────
-let avitoData = [];
-let jumiaData = [];
-let activeSource = 'all'; // 'all' | 'avito' | 'jumia'
+let avitoData  = [];
+let jumiaData  = [];
+let amazonData = [];
+let activeSource = 'all'; // 'all' | 'avito' | 'jumia' | 'amazon'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function escHtml(str) {
@@ -10,22 +11,64 @@ function escHtml(str) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Unified price getter: avito uses .price, jumia uses .price_offre
+// Unified price getter
 function getPrice(item) {
-  if (item._src === 'jumia') return item.price_offre || '';
-  return item.price || '';
+  if (item._src === 'avito')  return item.price || '';
+  return item.price_offre || '';   // jumia & amazon
 }
 
 function parsePrice(str = '') {
-  const n = parseFloat(str.replace(/\s/g, '').replace(/Dhs?|DH|MAD/gi, '').replace(',', '.'));
+  const n = parseFloat(
+    str.replace(/\s/g, '')
+       .replace(/Dhs?|DH|MAD|€/gi, '')
+       .replace(',', '.')
+  );
   return isNaN(n) ? null : n;
 }
 
-// Category badge for Avito (from link) vs Jumia (from .category field)
+// Get first offre regardless of array vs object shape (Amazon = array, Jumia = object)
+function getFirstOffer(item) {
+  if (!item.offre) return null;
+  if (Array.isArray(item.offre)) return item.offre[0] || null;
+  return item.offre;
+}
+
+// Star rating from numeric string "4.3" → ★★★★☆
+function starsHtml(rating) {
+  const n = parseFloat(rating);
+  if (isNaN(n)) return '';
+  const full  = Math.floor(n);
+  const half  = (n - full) >= 0.3 ? 1 : 0;
+  const empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty) + ` <small>${n}</small>`;
+}
+
+// Category badge
 function getCategory(item) {
+  // Amazon — use .category field directly
+  if (item._src === 'amazon') {
+    const cat = item.category || 'Autres';
+    const amazonMap = {
+      'Smartphones':            { label: '📱 ' + cat, cls: 'cat-telephones' },
+      'Informatique':           { label: '💻 ' + cat, cls: 'cat-info' },
+      'Tablettes':              { label: '📱 ' + cat, cls: 'cat-telephones' },
+      'TV & Home Cinéma':       { label: '📺 ' + cat, cls: 'cat-elec' },
+      'Audio':                  { label: '🔊 ' + cat, cls: 'cat-elec' },
+      'Jeux vidéo':             { label: '🎮 ' + cat, cls: 'cat-jeux' },
+      'Mode':                   { label: '👗 ' + cat, cls: 'cat-mode' },
+      'Maison':                 { label: '🛋️ ' + cat, cls: 'cat-maison' },
+      'Beauté':                 { label: '💄 ' + cat, cls: 'cat-beaute' },
+      'Sport':                  { label: '⚽ ' + cat, cls: 'cat-sport' },
+      'Jouets':                 { label: '🧸 ' + cat, cls: 'cat-jeux' },
+      'Cuisine':                { label: '🍳 ' + cat, cls: 'cat-maison' },
+    };
+    return amazonMap[cat] || { label: '📦 ' + cat, cls: 'cat-autres' };
+  }
+
+  // Jumia — category field
   if (item._src === 'jumia') {
     const cat = item.category || 'Autres';
-    const map = {
+    const jumiaMap = {
       'Téléphones & Tablettes': { label: '📱 ' + cat, cls: 'cat-telephones' },
       'Informatique':           { label: '💻 ' + cat, cls: 'cat-info' },
       'Électronique':           { label: '🔌 ' + cat, cls: 'cat-elec' },
@@ -38,15 +81,16 @@ function getCategory(item) {
       'Maison & Cuisine':       { label: '🛋️ ' + cat, cls: 'cat-maison' },
       'Accessoires':            { label: '⌚ ' + cat, cls: 'cat-autres' },
     };
-    return map[cat] || { label: '📦 ' + cat, cls: 'cat-autres' };
+    return jumiaMap[cat] || { label: '📦 ' + cat, cls: 'cat-autres' };
   }
-  // Avito: detect from link
+
+  // Avito — detect from link
   const link = item.link || '';
-  if (/appartements|maisons|villas|immobilier|riads/.test(link)) return { label: '🏠 Immobilier', cls: 'cat-immobilier' };
-  if (/voitures/.test(link))                                      return { label: '🚗 Voitures',   cls: 'cat-voitures' };
-  if (/smartphone|téléphone|telephone|iphone|samsung/.test(link)) return { label: '📱 Téléphones', cls: 'cat-telephones' };
-  if (/motos|velos|scooter/.test(link))                           return { label: '🏍️ Motos',     cls: 'cat-motos' };
-  if (item.category) return { label: '📦 ' + item.category,      cls: 'cat-autres' };
+  if (/appartements|maisons|villas|immobilier|riads/.test(link)) return { label: '🏠 Immobilier',  cls: 'cat-immobilier' };
+  if (/voitures/.test(link))                                      return { label: '🚗 Voitures',    cls: 'cat-voitures'   };
+  if (/smartphone|t.l.phone|iphone|samsung/.test(link))          return { label: '📱 Téléphones',  cls: 'cat-telephones' };
+  if (/motos|velos|scooter/.test(link))                          return { label: '🏍️ Motos',      cls: 'cat-motos'      };
+  if (item.category) return { label: '📦 ' + item.category, cls: 'cat-autres' };
   return { label: '📦 Autres', cls: 'cat-autres' };
 }
 
@@ -60,31 +104,42 @@ function renderCards(data) {
   empty.style.display = 'none';
 
   data.forEach((item, i) => {
-    const cat     = getCategory(item);
-    const price   = getPrice(item);
-    const noPrc   = !price || price === 'Prix non indiqué';
-    const isJumia = item._src === 'jumia';
-
-    // Offer badge (Jumia only)
-    let offerBadge = '';
-    if (isJumia && item.offre) {
-      offerBadge = `<span class="offer-badge">${escHtml(item.offre.valeur_offre)}</span>`;
-    }
+    const cat      = getCategory(item);
+    const price    = getPrice(item);
+    const noPrc    = !price || price === 'Prix non indiqué';
+    const src      = item._src;
+    const isAvito  = src === 'avito';
+    const offer    = getFirstOffer(item);
 
     // Source badge
-    const srcBadge = isJumia
-      ? `<span class="source-badge jumia-badge">Jumia</span>`
-      : `<span class="source-badge avito-badge">Avito</span>`;
+    const srcBadge = {
+      avito:  `<span class="source-badge avito-badge">Avito</span>`,
+      jumia:  `<span class="source-badge jumia-badge">Jumia</span>`,
+      amazon: `<span class="source-badge amazon-badge">Amazon</span>`,
+    }[src] || '';
 
-    // Prices row — Jumia shows both original & offer
+    // Offer badge — show valeur_offre (% or label)
+    let offerBadge = '';
+    if (offer && offer.valeur_offre) {
+      offerBadge = `<span class="offer-badge">${escHtml(offer.valeur_offre)}</span>`;
+    }
+
+    // Prices — show original (struck) + current
     let priceHtml = '';
-    if (isJumia) {
-      const orig = item.price_initial;
-      if (orig) priceHtml += `<span class="card-price-old">${escHtml(orig)}</span>`;
+    if (!isAvito) {
+      if (item.price_initial) {
+        priceHtml += `<span class="card-price-old">${escHtml(item.price_initial)}</span>`;
+      }
       priceHtml += `<span class="card-price ${noPrc ? 'no-price' : ''}">${escHtml(price || 'Prix non indiqué')}</span>`;
     } else {
       priceHtml = `<span class="card-price ${noPrc ? 'no-price' : ''}">${escHtml(price || 'Prix non indiqué')}</span>`;
     }
+
+    // Rating stars (Amazon + Jumia have it)
+    const ratingRow = item.rating ? `
+      <div class="card-meta-row rating-row">
+        <span class="stars">${starsHtml(item.rating)}</span>
+      </div>` : '';
 
     const card = document.createElement('article');
     card.className = 'card';
@@ -97,6 +152,7 @@ function renderCards(data) {
       <p class="card-title" title="${escHtml(item.title || '')}">${escHtml(item.title || '—')}</p>
       <div class="card-prices">${priceHtml}</div>
       <div class="card-meta">
+        ${ratingRow}
         ${item.seller ? `
         <div class="card-meta-row">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,7 +169,7 @@ function renderCards(data) {
           </svg>
           <span>${escHtml(item.location)}</span>
         </div>` : ''}
-        ${(isJumia && item.date) ? `
+        ${item.date ? `
         <div class="card-meta-row">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
@@ -139,20 +195,19 @@ async function loadJSON(file) {
   }
 }
 
-// ─── Merged dataset (current view) ────────────────────────────────────────────
+// ─── Merged dataset ────────────────────────────────────────────────────────────
 function getMerged() {
-  if (activeSource === 'avito') return avitoData;
-  if (activeSource === 'jumia') return jumiaData;
-  return [...avitoData, ...jumiaData];
+  if (activeSource === 'avito')  return avitoData;
+  if (activeSource === 'jumia')  return jumiaData;
+  if (activeSource === 'amazon') return amazonData;
+  return [...avitoData, ...jumiaData, ...amazonData];
 }
 
-// ─── Category filter options populate ─────────────────────────────────────────
+// ─── Category filter populate ─────────────────────────────────────────────────
 function populateCategories(data) {
-  const sel = document.getElementById('categoryFilter');
+  const sel  = document.getElementById('categoryFilter');
   const prev = sel.value;
-  // clear except first option
   while (sel.options.length > 1) sel.remove(1);
-
   const cats = new Set(data.map(d => getCategory(d).label));
   cats.forEach(c => {
     const opt = document.createElement('option');
@@ -164,12 +219,13 @@ function populateCategories(data) {
 
 // ─── Stats bar ────────────────────────────────────────────────────────────────
 function updateStats() {
-  const el = document.getElementById('sourceStats');
-  el.textContent = `Avito: ${avitoData.length.toLocaleString()} · Jumia: ${jumiaData.length.toLocaleString()}`;
+  document.getElementById('sourceStats').textContent =
+    `Avito: ${avitoData.length.toLocaleString()} · Jumia: ${jumiaData.length.toLocaleString()} · Amazon: ${amazonData.length.toLocaleString()}`;
 }
 
 function updateCount(n) {
-  document.getElementById('listingCount').textContent = `${n.toLocaleString()} annonce${n !== 1 ? 's' : ''}`;
+  document.getElementById('listingCount').textContent =
+    `${n.toLocaleString()} annonce${n !== 1 ? 's' : ''}`;
 }
 
 // ─── Filtering & sorting ──────────────────────────────────────────────────────
@@ -180,19 +236,15 @@ function applyFilters() {
   const sortVal  = document.getElementById('sortSelect').value;
 
   let result = getMerged().filter(item => {
-    // Search
     const text = `${item.title || ''} ${item.seller || ''} ${item.location || ''} ${item.category || ''}`.toLowerCase();
     if (search && !text.includes(search)) return false;
-
-    // Category
     if (catVal && getCategory(item).label !== catVal) return false;
 
-    // Price filter
-    const price = getPrice(item);
+    const price   = getPrice(item);
     const noPrice = !price || price === 'Prix non indiqué';
     if (priceVal === 'stated'   && noPrice)  return false;
     if (priceVal === 'unstated' && !noPrice) return false;
-    if (priceVal === 'offer'    && !item.offre) return false;
+    if (priceVal === 'offer'    && !getFirstOffer(item)) return false;
 
     return true;
   });
@@ -204,6 +256,8 @@ function applyFilters() {
     result.sort((a, b) => (parsePrice(getPrice(b)) ?? -1) - (parsePrice(getPrice(a)) ?? -1));
   } else if (sortVal === 'title-asc') {
     result.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'fr'));
+  } else if (sortVal === 'rating-desc') {
+    result.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
   }
 
   updateCount(result.length);
@@ -213,34 +267,37 @@ function applyFilters() {
 // ─── Source switcher ──────────────────────────────────────────────────────────
 function switchSource(src) {
   activeSource = src;
-  document.querySelectorAll('.src-btn').forEach(b => b.classList.toggle('active', b.dataset.src === src));
+  document.querySelectorAll('.src-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.src === src)
+  );
   populateCategories(getMerged());
-  // reset filters
   document.getElementById('categoryFilter').value = '';
   applyFilters();
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
-  // Show load state
-  document.getElementById('grid').innerHTML = `
-    <div class="loader"><div class="spinner"></div><p>Chargement des deux sources…</p></div>`;
+  document.getElementById('grid').innerHTML =
+    `<div class="loader"><div class="spinner"></div><p>Chargement des trois sources…</p></div>`;
 
-  const [avRaw, juRaw] = await Promise.all([
-    loadJSON('avito_data.json'),
+  const [avRaw, juRaw, amRaw] = await Promise.all([
+    loadJSON('avito/avito_data.json'),
     loadJSON('jumia_data.json'),
-    loadJSON('avito_data_old.json')
+    loadJSON('amazon_data.json'),
   ]);
 
-  // Tag each item with its source
-  avitoData = avRaw.map(d => ({ ...d, _src: 'avito' }));
-  jumiaData = juRaw.map(d => ({ ...d, _src: 'jumia' }));
+  avitoData  = avRaw.map(d => ({ ...d, _src: 'avito'  }));
+  jumiaData  = juRaw.map(d => ({ ...d, _src: 'jumia'  }));
+  amazonData = amRaw.map(d => ({ ...d, _src: 'amazon' }));
 
-  if (!avitoData.length && !jumiaData.length) {
+  if (!avitoData.length && !jumiaData.length && !amazonData.length) {
     document.getElementById('grid').innerHTML = `
       <div class="loader" style="color:#fc8181">
         <p>⚠️ Aucun fichier JSON chargé.</p>
-        <p style="font-size:.8rem;margin-top:8px">Vérifiez que avito_data.json et/ou jumia_data.json sont présents et utilisez un serveur local (ex: python -m http.server 5500).</p>
+        <p style="font-size:.8rem;margin-top:8px">
+          Vérifiez que avito/avito_data.json, jumia_data.json et amazon_data.json
+          sont présents et utilisez un serveur local (python -m http.server 5500).
+        </p>
       </div>`;
     return;
   }
@@ -249,16 +306,14 @@ async function init() {
   populateCategories(getMerged());
   applyFilters();
 
-  // Bind controls
   document.getElementById('searchInput').addEventListener('input', applyFilters);
   document.getElementById('categoryFilter').addEventListener('change', applyFilters);
   document.getElementById('priceFilter').addEventListener('change', applyFilters);
   document.getElementById('sortSelect').addEventListener('change', applyFilters);
 
-  // Source switcher buttons
-  document.querySelectorAll('.src-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchSource(btn.dataset.src));
-  });
+  document.querySelectorAll('.src-btn').forEach(btn =>
+    btn.addEventListener('click', () => switchSource(btn.dataset.src))
+  );
 }
 
 init();

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MarocDeals – Avito & Jumia</title>
-  <meta name="description" content="Visualisez les annonces scrappées d'Avito et Jumia Maroc : immobilier, voitures, téléphones et plus." />
+  <title>MarocDeals – Avito, Jumia & Amazon</title>
+  <meta name="description" content="Visualisez les annonces scrappées d'Avito, Jumia et Amazon : immobilier, voitures, téléphones, électronique et plus." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -38,6 +38,10 @@
           <img src="https://www.jumia.ma/favicon.ico" class="favicon" onerror="this.style.display='none'" alt="" />
           Jumia
         </button>
+        <button class="src-btn" data-src="amazon" id="srcAmazon">
+          <img src="https://www.amazon.fr/favicon.ico" class="favicon" onerror="this.style.display='none'" alt="" />
+          Amazon
+        </button>
       </div>
       <div class="source-stats" id="sourceStats"></div>
     </div>
@@ -67,6 +71,7 @@
           <option value="price-asc">Prix ↑</option>
           <option value="price-desc">Prix ↓</option>
           <option value="title-asc">Titre A→Z</option>
+          <option value="rating-desc">Note ↓</option>
         </select>
       </div>
     </div>
@@ -90,7 +95,7 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <p>Données extraites de <a href="https://www.avito.ma" target="_blank" rel="noopener">avito.ma</a> &amp; <a href="https://www.jumia.ma" target="_blank" rel="noopener">jumia.ma</a> · PFA EMSI S8</p>
+    <p>Données extraites de <a href="https://www.avito.ma" target="_blank" rel="noopener">avito.ma</a>, <a href="https://www.jumia.ma" target="_blank" rel="noopener">jumia.ma</a> &amp; <a href="https://www.amazon.fr" target="_blank" rel="noopener">amazon.fr</a> · PFA EMSI S8</p>
   </footer>
 
   <script src="viewer.js"></script>
