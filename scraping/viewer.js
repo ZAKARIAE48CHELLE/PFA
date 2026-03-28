@@ -229,6 +229,7 @@ async function init() {
   const [avRaw, juRaw] = await Promise.all([
     loadJSON('avito_data.json'),
     loadJSON('jumia_data.json'),
+    loadJSON('avito_data_old.json')
   ]);
 
   // Tag each item with its source
