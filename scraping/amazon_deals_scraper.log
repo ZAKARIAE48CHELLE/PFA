@@ -1,0 +1,1020 @@
+13:03:15  🚀 Amazon.fr Deals Page Scraper
+13:03:15     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+13:03:15     Target   : 5,000 unique deals
+13:03:15     Output   : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+13:03:15     Log      : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+13:03:15     Pages    : 50 × 60 items/page
+
+13:03:17  🌐 Browser ready — going directly to deals page…
+13:03:19  
+  [Page 1] startIndex=0  total: 0/5,000
+13:04:50    ❌ Page timeout
+13:04:50      → 0 cards (skip)
+13:04:50  
+  [Page 2] startIndex=60  total: 0/5,000
+13:06:20    ❌ Page timeout
+13:06:20      → 0 cards (skip)
+13:06:20  
+  [Page 3] startIndex=120  total: 0/5,000
+13:06:31    🔴 Blocked (streak=1) — rotating context in 90s…
+13:08:06      🔄 Retry 1/2…
+13:09:36    ❌ Page timeout
+13:09:36      → 0 cards (skip)
+13:09:36  
+  [Page 4] startIndex=180  total: 0/5,000
+13:11:06    ❌ Page timeout
+13:11:06      → 0 cards (skip)
+13:11:06  
+  [Page 5] startIndex=240  total: 0/5,000
+13:11:17    🔴 Blocked (streak=1) — rotating context in 90s…
+13:12:13  
+⚠️  Interrupted — data already saved incrementally.
+13:15:25  🚀 Amazon.fr Deals Page Scraper
+13:15:25     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+13:15:25     Target   : 5,000 unique deals
+13:15:25     Output   : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+13:15:25     Log      : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+13:15:25     Pages    : 50 × 60 items/page
+
+13:15:27  🌐 Browser ready — going directly to deals page…
+13:15:31  
+  [Page 1] startIndex=0  total: 0/5,000
+13:15:46    🍪 Cookie banner dismissed
+13:15:53    🔴 Blocked (streak=1) — rotating context in 90s…
+13:17:27      🔄 Retry 1/2…
+13:17:36    🔴 Blocked (streak=2) — rotating context in 120s…
+13:19:40      🔄 Retry 2/2…
+13:20:02    🔴 Blocked (streak=3) — rotating context in 150s…
+13:22:36      → 0 cards (skip)
+13:22:36  
+  [Page 2] startIndex=60  total: 0/5,000
+13:22:45    🔴 Blocked (streak=4) — rotating context in 180s…
+13:25:49      🔄 Retry 1/2…
+13:26:02    🔴 Blocked (streak=5) — rotating context in 210s…
+13:29:36      🔄 Retry 2/2…
+13:29:44    🔴 Blocked (streak=6) — rotating context in 240s…
+13:33:48      → 0 cards (skip)
+13:33:48  
+  [Page 3] startIndex=120  total: 0/5,000
+13:34:08    🔴 Blocked (streak=7) — rotating context in 270s…
+13:36:37  🚀 Amazon.fr Deals Page Scraper
+13:36:37     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+13:36:37     Target   : 5,000 unique deals
+13:36:37     Output   : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+13:36:37     Log      : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+13:36:37     Pages    : 50 × 60 items/page
+
+13:36:38    🏠 Session warmup (homepage)…
+13:37:04  🌐 Browser ready — session warmed up.
+13:37:08  
+  [Page 1] startIndex=0  total: 0/5,000
+13:37:08      🚗 Navigating to index 0…
+13:37:25    🔴 Blocked (streak=1) — rotating context in 90s…
+13:38:42      🔄 Retry 1/2…
+13:38:55    🔴 Blocked (streak=8) — rotating context in 300s…
+13:39:03    🏠 Session warmup (homepage)…
+13:39:29      🔄 Retry 1/2…
+13:39:29      🚗 Navigating to index 0…
+13:39:46    🔴 Blocked (streak=2) — rotating context in 120s…
+13:41:49    🏠 Session warmup (homepage)…
+13:42:14      🔄 Retry 2/2…
+13:42:14      🚗 Navigating to index 0…
+13:43:44    ❌ Page timeout
+13:43:44      → 0 cards (skip)
+13:43:44  
+  [Page 2] startIndex=60  total: 0/5,000
+13:43:44      🚗 Navigating to index 60…
+13:43:58      🔄 Retry 2/2…
+13:44:58    ❌ Page timeout
+13:44:58      → 0 cards (skip)
+13:44:58  
+  [Page 4] startIndex=180  total: 0/5,000
+13:45:14    ❌ Page timeout
+13:45:14      → 0 cards (skip)
+13:45:14  
+  [Page 3] startIndex=120  total: 0/5,000
+13:45:14      🚗 Navigating to index 120…
+13:45:16    🔴 Blocked (streak=1) — rotating context in 90s…
+13:46:44    ❌ Page timeout
+13:46:44      → 0 cards (skip)
+13:46:44  
+  [Page 4] startIndex=180  total: 0/5,000
+13:46:44      🚗 Navigating to index 180…
+13:46:51      🔄 Retry 1/2…
+13:47:01    🔴 Blocked (streak=2) — rotating context in 120s…
+13:48:14    ❌ Page timeout
+13:48:14      → 0 cards (skip)
+13:48:14  
+  [Page 5] startIndex=240  total: 0/5,000
+13:48:14      🚗 Navigating to index 240…
+13:48:51    🔴 Blocked (streak=1) — rotating context in 90s…
+13:49:07      🔄 Retry 2/2…
+13:50:01    🔴 Blocked (streak=3) — rotating context in 150s…
+13:50:27    🏠 Session warmup (homepage)…
+13:51:12      🔄 Retry 1/2…
+13:51:12      🚗 Navigating to index 240…
+13:52:36      → 0 cards (skip)
+13:52:36  
+  [Page 5] startIndex=240  total: 0/5,000
+13:53:02    🔴 Blocked (streak=4) — rotating context in 180s…
+13:54:17  
+⚠️  Interrupted — data already saved incrementally.
+14:02:27  🚀 Amazon.fr Deals Page Scraper
+14:02:27     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:02:27     Target   : 5,000 unique deals
+14:02:27     Output   : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:02:27     Log      : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+14:02:27     Pages    : 50 × 60 items/page
+
+14:02:28    🏠 Session warmup (homepage)…
+14:02:40    🍪 Cookie banner dismissed
+14:02:41  🌐 Browser ready — session warmed up.
+14:02:45  
+  [Page 1] startIndex=0  total: 0/5,000
+14:02:45      🚗 Navigating to index 0…
+14:03:19    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:03:19      → 0 cards (skip)
+14:03:19  
+  [Page 2] startIndex=60  total: 0/5,000
+14:03:19      🚗 Navigating to index 60…
+14:03:52      🃏 Selector matched: "div[data-testid='product-card']" → 5 cards
+14:03:52      → 0 cards (skip)
+14:03:52  
+  [Page 3] startIndex=120  total: 0/5,000
+14:03:52      🚗 Navigating to index 120…
+14:04:27  
+⚠️  Interrupted — data already saved incrementally.
+14:09:03  🚀 Amazon.fr Deals Page Scraper
+14:09:03     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:09:03     Target   : 5,000 unique deals
+14:09:03     Output   : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:09:03     Log      : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+14:09:03     Pages    : 50 × 60 items/page
+
+14:09:04    🏠 Session warmup (homepage)…
+14:09:10    🍪 Cookie banner dismissed
+14:09:12  🌐 Browser ready — session warmed up.
+14:09:15  
+  [Page 1] startIndex=0  total: 0/5,000
+14:09:15      🚗 Navigating to index 0…
+14:09:49    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:09:49      → 0 cards (skip)
+14:09:49  
+  [Page 2] startIndex=60  total: 0/5,000
+14:09:49      🚗 Navigating to index 60…
+14:10:22    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:10:22      → 0 cards (skip)
+14:10:22  
+  [Page 3] startIndex=120  total: 0/5,000
+14:10:22      🚗 Navigating to index 120…
+14:10:58    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:10:58      → 0 cards (skip)
+14:10:58  
+  [Page 4] startIndex=180  total: 0/5,000
+14:10:58      🚗 Navigating to index 180…
+14:11:31    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:11:31      → 0 cards (skip)
+14:11:31  
+  [Page 5] startIndex=240  total: 0/5,000
+14:11:31      🚗 Navigating to index 240…
+14:12:05  
+⚠️  Interrupted — data already saved incrementally.
+14:13:23  🚀 Amazon.fr Deals Page Scraper
+14:13:23     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:13:23     Target   : 5,000 unique deals
+14:13:23     Output   : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:13:23     Log      : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+14:13:23     Pages    : 50 × 60 items/page
+
+14:13:24    🏠 Session warmup (homepage)…
+14:13:43  🌐 Browser ready — session warmed up.
+14:13:46  
+  [Page 1] startIndex=0  total: 0/5,000
+14:13:46      🚗 Navigating to index 0…
+14:14:08  🚀 Amazon.fr Deals Page Scraper
+14:14:08     Base URL : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:14:08     Target   : 5,000 unique deals
+14:14:08     Output   : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:14:08     Log      : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+14:14:08     Pages    : 50 × 60 items/page
+
+14:14:09    🏠 Session warmup (homepage)…
+14:14:10    🍪 Cookie banner dismissed
+14:14:11  
+⚠️  Interrupted — data already saved incrementally.
+14:14:11  Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+14:14:19    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:14:19      → 0 cards (skip)
+14:14:19  
+  [Page 2] startIndex=60  total: 0/5,000
+14:14:19      🚗 Navigating to index 60…
+14:14:59    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:14:59      → 0 cards (skip)
+14:14:59  
+  [Page 3] startIndex=120  total: 0/5,000
+14:14:59      🚗 Navigating to index 120…
+14:15:36    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:15:36      → 0 cards (skip)
+14:15:36  
+  [Page 4] startIndex=180  total: 0/5,000
+14:15:36      🚗 Navigating to index 180…
+14:16:11      🃏 Selector matched: "div[class*='ProductCard-module__card']" → 35 cards
+14:16:11      → 35 cards  +35 new  | total: 35/5,000  ETA: 6:37:24
+14:16:17  
+  [Page 5] startIndex=240  total: 35/5,000
+14:16:17      🚗 Navigating to index 240…
+14:16:51    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:16:51      → 0 cards (skip)
+14:16:51  
+  [Page 6] startIndex=300  total: 35/5,000
+14:16:51      🚗 Navigating to index 300…
+14:17:29    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:17:29      → 0 cards (skip)
+14:17:29  
+  [Page 7] startIndex=360  total: 35/5,000
+14:17:29      🚗 Navigating to index 360…
+14:17:48  
+⚠️  Interrupted — data already saved incrementally.
+14:17:49  Task was destroyed but it is pending!
+task: <Task pending name='Task-102' coro=<Page.click() done, defined at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_page.py:840> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[SyncBase._sync.<locals>.<lambda>() at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_sync_base.py:111, ProtocolCallback.__init__.<locals>.cb() at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_connection.py:230]>
+14:18:22  🚀 Amazon.fr Deals Page Scraper (v2-fixed)
+14:18:22     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:18:22     Target : 5,000 unique deals
+14:18:22     Output : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:18:22     Log    : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+14:18:24    🏠 Warm-up: loading Amazon.fr homepage…
+14:18:43    ⚠ Warm-up issue: Page.wait_for_selector: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator("#twotabsearchtextbox, #nav-search-bar-form") to be visible
+ — continuing anyway
+14:18:43  🌐 Browser ready — session warmed up.
+14:18:46  
+  [Page 1] startIndex=0  total: 0/5,000
+14:18:57    🍪 Cookie banner dismissed
+14:19:23    ⏳ No deal selectors after wait — trying a scroll…
+14:19:35    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:19:35      → 0 cards (skip)
+14:19:35  
+  [Page 2] startIndex=60  total: 0/5,000
+14:20:20    ⏳ No deal selectors after wait — trying a scroll…
+14:20:31    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:20:31      → 0 cards (skip)
+14:20:31  
+  [Page 3] startIndex=120  total: 0/5,000
+14:21:16    ⏳ No deal selectors after wait — trying a scroll…
+14:21:27    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:21:27      → 0 cards (skip)
+14:21:27  
+  [Page 4] startIndex=180  total: 0/5,000
+14:22:13    ⏳ No deal selectors after wait — trying a scroll…
+14:22:25    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:22:25      → 0 cards (skip)
+14:22:25  
+  [Page 5] startIndex=240  total: 0/5,000
+14:23:09    ⏳ No deal selectors after wait — trying a scroll…
+14:23:21    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:23:21      → 0 cards (skip)
+14:23:21  
+  [Page 6] startIndex=300  total: 0/5,000
+14:24:05    ⏳ No deal selectors after wait — trying a scroll…
+14:24:17    ⚠ No deal cards found. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:24:17      → 0 cards (skip)
+14:24:17  
+  [Page 7] startIndex=360  total: 0/5,000
+14:24:56  
+⚠️  Interrupted — data already saved.
+14:24:56  Task was destroyed but it is pending!
+task: <Task pending name='Task-108' coro=<Page.wait_for_selector() done, defined at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_page.py:412> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[SyncBase._sync.<locals>.<lambda>() at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_sync_base.py:111, ProtocolCallback.__init__.<locals>.cb() at C:\Users\zziko\AppData\Roaming\Python\Python313\site-packages\playwright\_impl\_connection.py:230]>
+14:28:19  🚀 Amazon.fr Deals Scraper — one-shot fix
+14:28:19     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:28:19     Target : 5,000 unique deals
+14:28:19     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:28:19     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+14:28:21    🏠 Warm-up: loading Amazon.fr…
+14:28:57    ✅ Warm-up done
+14:28:57  🌐 Session ready — starting scrape
+
+14:29:01    [Page 1] startIndex=0  total: 0/5,000
+14:29:01      🚗 index=0 → _gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:29:16    🍪 Cookie banner dismissed
+14:29:38    ⏳ No card selector matched — scrolling to trigger lazy load…
+14:29:54    ❌ Still no cards — dumping HTML length for debug
+14:29:54       HTML length: 1,524,758 bytes
+14:30:03    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search opt + / Basket shift + opt + C Home shift + opt + H Orders shift + opt + O Show/Hide shortcuts shift + opt + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:30:03      → 0 cards (skip)
+14:30:03    [Page 2] startIndex=60  total: 0/5,000
+14:30:03      🚗 index=60 → gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=60
+14:30:49    ⏳ No card selector matched — scrolling to trigger lazy load…
+14:31:05    ❌ Still no cards — dumping HTML length for debug
+14:31:05       HTML length: 1,497,608 bytes
+14:31:13    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search opt + / Basket shift + opt + C Home shift + opt + H Orders shift + opt + O Show/Hide shortcuts shift + opt + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:31:13      → 0 cards (skip)
+14:31:13    [Page 3] startIndex=120  total: 0/5,000
+14:31:13      🚗 index=120 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=120
+14:31:57    ⏳ No card selector matched — scrolling to trigger lazy load…
+14:32:13    ❌ Still no cards — dumping HTML length for debug
+14:32:13       HTML length: 1,412,020 bytes
+14:32:21    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search opt + / Basket shift + opt + C Home shift + opt + H Orders shift + opt + O Show/Hide shortcuts shift + opt + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:32:21      → 0 cards (skip)
+14:32:21    [Page 4] startIndex=180  total: 0/5,000
+14:32:21      🚗 index=180 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=180
+14:33:13  
+⚠️  Interrupted — data already saved.
+14:33:13  Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+14:58:15  🚀 Amazon.fr Deals Scraper — one-shot fix
+14:58:15     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:58:15     Target : 5,000 unique deals
+14:58:15     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+14:58:15     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+14:58:16    🏠 Warm-up: loading Amazon.fr…
+14:58:55    ✅ Warm-up done
+14:58:55  🌐 Session ready — starting scrape
+
+14:58:58    [Page 1] startIndex=0  total: 0/5,000
+14:58:58      🚗 index=0 → _gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+14:59:12    🍪 Cookie banner dismissed
+14:59:33    ⏳ No card selector matched — scrolling to trigger lazy load…
+14:59:49    ❌ Still no cards — dumping HTML length for debug
+14:59:49       HTML length: 1,554,875 bytes
+14:59:58    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+14:59:58      → 0 cards (skip)
+14:59:58    [Page 2] startIndex=60  total: 0/5,000
+14:59:58      🚗 index=60 → gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=60
+15:00:46    ⏳ No card selector matched — scrolling to trigger lazy load…
+15:01:02    ❌ Still no cards — dumping HTML length for debug
+15:01:02       HTML length: 1,475,435 bytes
+15:01:09    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+15:01:09      → 0 cards (skip)
+15:01:09    [Page 3] startIndex=120  total: 0/5,000
+15:01:09      🚗 index=120 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=120
+15:01:53    ⏳ No card selector matched — scrolling to trigger lazy load…
+15:02:09    ❌ Still no cards — dumping HTML length for debug
+15:02:09       HTML length: 1,434,705 bytes
+15:02:18    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+15:02:18      → 0 cards (skip)
+15:02:18    [Page 4] startIndex=180  total: 0/5,000
+15:02:18      🚗 index=180 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=180
+15:03:07    ⏳ No card selector matched — scrolling to trigger lazy load…
+15:03:23    ❌ Still no cards — dumping HTML length for debug
+15:03:23       HTML length: 1,471,389 bytes
+15:03:31    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+15:03:31      → 0 cards (skip)
+15:03:31    [Page 5] startIndex=240  total: 0/5,000
+15:03:31      🚗 index=240 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=240
+15:04:19    ⏳ No card selector matched — scrolling to trigger lazy load…
+15:04:35    ❌ Still no cards — dumping HTML length for debug
+15:04:35       HTML length: 1,469,881 bytes
+15:04:43    ⚠ No cards. Snippet: "Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to se"
+15:04:43      → 0 cards (skip)
+15:04:43    [Page 6] startIndex=300  total: 0/5,000
+15:04:43      🚗 index=300 → b&promotionsSearchPageSize=60&promotionsSearchStartIndex=300
+15:04:52  
+⚠️  Interrupted — data already saved.
+15:24:32  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:24:32     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:24:32     Target : 5,000 unique deals
+15:24:32     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:24:32     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:24:34  🌐 Browser ready — going directly to deals pages
+
+15:24:36    [Page 1] startIndex=0  total=0/5,000
+15:24:36      🚗 startIndex=0
+15:25:02    🔴 Block detected: 'enable javascript'
+15:25:02    🔴 Blocked (streak=1) — rotating in 90s…
+15:26:35      🔄 Retry 1/2…
+15:26:35      🚗 startIndex=0
+15:26:57    🔴 Block detected: 'enable javascript'
+15:26:57    🔴 Blocked (streak=2) — rotating in 120s…
+15:28:31  
+⚠️  Interrupted — data already saved incrementally.
+15:29:11  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:29:11     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:29:11     Target : 5,000 unique deals
+15:29:11     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:29:11     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:29:12  🌐 Browser ready — going directly to deals pages
+
+15:29:15    [Page 1] startIndex=0  total=0/5,000
+15:29:15      🚗 startIndex=0
+15:29:16  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:29:16     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:29:16     Target : 5,000 unique deals
+15:29:16     Output : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:29:16     Log    : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:29:17  🌐 Browser ready — going directly to deals pages
+
+15:29:21    [Page 1] startIndex=0  total=0/5,000
+15:29:21      🚗 startIndex=0
+15:30:05    🍪 Cookie banner dismissed
+15:30:11    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:30:11      → 0 cards (skip)
+15:30:11    [Page 2] startIndex=60  total=0/5,000
+15:30:11      🚗 startIndex=60
+15:30:18    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:30:18      → 0 cards (skip)
+15:30:18    [Page 2] startIndex=60  total=0/5,000
+15:30:18      🚗 startIndex=60
+15:30:34    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:30:34      → 0 cards (skip)
+15:30:34    [Page 3] startIndex=120  total=0/5,000
+15:30:34      🚗 startIndex=120
+15:30:44    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:30:44      → 0 cards (skip)
+15:30:44    [Page 3] startIndex=120  total=0/5,000
+15:30:44      🚗 startIndex=120
+15:30:58    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:30:58      → 0 cards (skip)
+15:30:58    [Page 4] startIndex=180  total=0/5,000
+15:30:58      🚗 startIndex=180
+15:31:14    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:31:14      → 0 cards (skip)
+15:31:14    [Page 4] startIndex=180  total=0/5,000
+15:31:14      🚗 startIndex=180
+15:31:21    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:31:21      → 0 cards (skip)
+15:31:21    [Page 5] startIndex=240  total=0/5,000
+15:31:21      🚗 startIndex=240
+15:31:37    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:31:37      → 0 cards (skip)
+15:31:37    [Page 5] startIndex=240  total=0/5,000
+15:31:37      🚗 startIndex=240
+15:31:45    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:31:45      → 0 cards (skip)
+15:31:45    [Page 6] startIndex=300  total=0/5,000
+15:31:45      🚗 startIndex=300
+15:32:01    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:01      → 0 cards (skip)
+15:32:01    [Page 6] startIndex=300  total=0/5,000
+15:32:01      🚗 startIndex=300
+15:32:07    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:07      → 0 cards (skip)
+15:32:07    [Page 7] startIndex=360  total=0/5,000
+15:32:07      🚗 startIndex=360
+15:32:27    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:27      → 0 cards (skip)
+15:32:27    [Page 7] startIndex=360  total=0/5,000
+15:32:27      🚗 startIndex=360
+15:32:32    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:32      → 0 cards (skip)
+15:32:32    [Page 8] startIndex=420  total=0/5,000
+15:32:32      🚗 startIndex=420
+15:32:50    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:50      → 0 cards (skip)
+15:32:50    [Page 8] startIndex=420  total=0/5,000
+15:32:50      🚗 startIndex=420
+15:32:56    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:32:56      → 0 cards (skip)
+15:32:56    [Page 9] startIndex=480  total=0/5,000
+15:32:56      🚗 startIndex=480
+15:33:13    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:33:13      → 0 cards (skip)
+15:33:13    [Page 9] startIndex=480  total=0/5,000
+15:33:13      🚗 startIndex=480
+15:33:19    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:33:19      → 0 cards (skip)
+15:33:19    [Page 10] startIndex=540  total=0/5,000
+15:33:19      🚗 startIndex=540
+15:33:35    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:33:35      → 0 cards (skip)
+15:33:35    [Page 10] startIndex=540  total=0/5,000
+15:33:35      🚗 startIndex=540
+15:33:36  
+⚠️  Interrupted — data already saved incrementally.
+15:33:36  Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+15:33:41    ⚠ No cards found. Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:33:41      → 0 cards (skip)
+15:33:41    [Page 11] startIndex=600  total=0/5,000
+15:33:41      🚗 startIndex=600
+15:33:57  
+⚠️  Interrupted — data already saved incrementally.
+15:33:57  Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+15:41:44  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:41:44     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:41:44     Target : 5,000 unique deals
+15:41:44     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:41:44     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:41:45  🌐 Browser ready — going directly to deals pages
+
+15:41:46  
+⚠️  Interrupted — data already saved incrementally.
+15:41:56  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:41:56     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:41:56     Target : 5,000 unique deals
+15:41:56     Output : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:41:56     Log    : D:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:41:58  🌐 Browser ready — going directly to deals pages
+
+15:42:02    [Page 1] startIndex=0  total=0/5,000
+15:42:02      🚗 startIndex=0
+15:42:34    🔴 Blocked (streak=1) — rotating in 90s…
+15:44:07      🔄 Retry 1/2…
+15:44:07      🚗 startIndex=0
+15:44:15    🔴 Blocked (streak=2) — rotating in 120s…
+15:46:19      🔄 Retry 2/2…
+15:46:19      🚗 startIndex=0
+15:47:06    🔴 Blocked (streak=3) — rotating in 150s…
+15:48:27  
+⚠️  Interrupted — data already saved incrementally.
+15:48:31  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:48:31     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:48:31     Target : 5,000 unique deals
+15:48:31     Output : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:48:31     Log    : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:48:32  🌐 Browser ready — going directly to deals pages
+
+15:48:35    [Page 1] startIndex=0  total=0/5,000
+15:48:35      🚗 startIndex=0
+15:48:43    🔴 Blocked (streak=1) — rotating in 90s…
+15:50:19      🔄 Retry 1/2…
+15:50:19      🚗 startIndex=0
+15:50:22    🔴 Blocked (streak=2) — rotating in 120s…
+15:52:25      🔄 Retry 2/2…
+15:52:25      🚗 startIndex=0
+15:52:34    🔴 Blocked (streak=3) — rotating in 150s…
+15:54:35  
+⚠️  Interrupted — data already saved incrementally.
+15:54:50  🚀 Amazon.fr Deals Scraper — v3 (DOM-debugged)
+15:54:50     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+15:54:50     Target : 5,000 unique deals
+15:54:50     Output : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+15:54:50     Log    : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+15:54:52  🌐 Browser ready — going directly to deals pages
+
+15:54:55    [Page 1] startIndex=0  total=0/5,000
+15:54:55      🚗 startIndex=0
+15:55:41    🍪 Cookie banner dismissed
+15:55:48    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 3, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:55:48      🔄 0 cards initially — starting deep-scroll retry…
+15:55:57    🃏 Found 30 cards
+15:55:57      → 29 cards  +29 new  | total=29/5,000  ETA=3:10:35
+15:56:08    [Page 2] startIndex=60  total=29/5,000
+15:56:08      🚗 startIndex=60
+15:56:25    🃏 Found 5 cards
+15:56:25      → 5 cards  +5 new  | total=34/5,000  ETA=3:52:05
+15:56:33    [Page 3] startIndex=120  total=34/5,000
+15:56:33      🚗 startIndex=120
+15:56:49    🃏 Found 5 cards
+15:56:49      → 5 cards  +5 new  | total=39/5,000  ETA=4:11:54
+15:56:56    [Page 4] startIndex=180  total=39/5,000
+15:56:56      🚗 startIndex=180
+15:57:13    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 43} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:57:13      🔄 0 cards initially — starting deep-scroll retry…
+15:57:21    🃏 Found 30 cards
+15:57:21      → 29 cards  +0 new  | total=39/5,000  ETA=5:20:50
+15:57:29    [Page 5] startIndex=240  total=39/5,000
+15:57:29      🚗 startIndex=240
+15:57:45    🃏 Found 5 cards
+15:57:45      → 5 cards  +5 new  | total=44/5,000  ETA=5:28:42
+15:57:56    [Page 6] startIndex=300  total=44/5,000
+15:57:56      🚗 startIndex=300
+15:58:12    🃏 Found 5 cards
+15:58:12      → 5 cards  +5 new  | total=49/5,000  ETA=5:40:01
+15:58:23    [Page 7] startIndex=360  total=49/5,000
+15:58:23      🚗 startIndex=360
+15:58:44    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:58:44      🔄 0 cards initially — starting deep-scroll retry…
+15:58:52    🃏 Found 35 cards
+15:58:52      → 35 cards  +25 new  | total=74/5,000  ETA=4:28:32
+15:59:04    [Page 8] startIndex=420  total=74/5,000
+15:59:04      🚗 startIndex=420
+15:59:20    🃏 Found 2 cards
+15:59:20      → 2 cards  +2 new  | total=76/5,000  ETA=4:51:52
+15:59:29    [Page 9] startIndex=480  total=76/5,000
+15:59:29      🚗 startIndex=480
+15:59:45    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+15:59:45      🔄 0 cards initially — starting deep-scroll retry…
+15:59:53    🃏 Found 18 cards
+15:59:53      → 18 cards  +16 new  | total=92/5,000  ETA=4:29:41
+16:00:04    [Page 10] startIndex=540  total=92/5,000
+16:00:04      🚗 startIndex=540
+16:00:19    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:00:19      🔄 0 cards initially — starting deep-scroll retry…
+16:00:27    🃏 Found 15 cards
+16:00:27      → 15 cards  +0 new  | total=92/5,000  ETA=4:59:41
+16:00:35    [Page 11] startIndex=600  total=92/5,000
+16:00:35      🚗 startIndex=600
+16:00:50    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:00:50      🔄 0 cards initially — starting deep-scroll retry…
+16:00:59    🃏 Found 15 cards
+16:00:59      → 15 cards  +0 new  | total=92/5,000  ETA=5:27:37
+16:01:10    [Page 12] startIndex=660  total=92/5,000
+16:01:10      🚗 startIndex=660
+16:01:25    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:01:25      🔄 0 cards initially — starting deep-scroll retry…
+16:01:34    🃏 Found 15 cards
+16:01:34      → 15 cards  +0 new  | total=92/5,000  ETA=5:58:43
+16:01:45    [Page 13] startIndex=720  total=92/5,000
+16:01:45      🚗 startIndex=720
+16:02:01    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:02:01      🔄 0 cards initially — starting deep-scroll retry…
+16:02:09    🃏 Found 15 cards
+16:02:09      → 15 cards  +0 new  | total=92/5,000  ETA=6:30:22
+16:02:20    [Page 14] startIndex=780  total=92/5,000
+16:02:20      🚗 startIndex=780
+16:02:36    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:02:36      🔄 0 cards initially — starting deep-scroll retry…
+16:02:45    🃏 Found 15 cards
+16:02:45      → 15 cards  +0 new  | total=92/5,000  ETA=7:01:52
+16:02:54    [Page 15] startIndex=840  total=92/5,000
+16:02:54      🚗 startIndex=840
+16:03:10    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:03:10      🔄 0 cards initially — starting deep-scroll retry…
+16:03:18    🃏 Found 15 cards
+16:03:18      → 15 cards  +0 new  | total=92/5,000  ETA=7:31:42
+16:03:27    [Page 16] startIndex=900  total=92/5,000
+16:03:27      🚗 startIndex=900
+16:03:42    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:03:42      🔄 0 cards initially — starting deep-scroll retry…
+16:03:50    🃏 Found 15 cards
+16:03:50      → 15 cards  +0 new  | total=92/5,000  ETA=8:00:07
+16:03:57    [Page 17] startIndex=960  total=92/5,000
+16:03:57      🚗 startIndex=960
+16:04:12    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:04:12      🔄 0 cards initially — starting deep-scroll retry…
+16:04:20    🃏 Found 15 cards
+16:04:20      → 15 cards  +0 new  | total=92/5,000  ETA=8:26:48
+16:04:30    [Page 18] startIndex=1020  total=92/5,000
+16:04:30      🚗 startIndex=1020
+16:04:45    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:04:45      🔄 0 cards initially — starting deep-scroll retry…
+16:04:53    🃏 Found 15 cards
+16:04:53      → 15 cards  +0 new  | total=92/5,000  ETA=8:55:48
+16:05:01    [Page 19] startIndex=1080  total=92/5,000
+16:05:01      🚗 startIndex=1080
+16:05:18    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:05:18      🔄 0 cards initially — starting deep-scroll retry…
+16:05:26    🃏 Found 15 cards
+16:05:26      → 15 cards  +0 new  | total=92/5,000  ETA=9:25:37
+16:05:37    [Page 20] startIndex=1140  total=92/5,000
+16:05:37      🚗 startIndex=1140
+16:05:54    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:05:54      🔄 0 cards initially — starting deep-scroll retry…
+16:06:02    🃏 Found 15 cards
+16:06:02      → 15 cards  +0 new  | total=92/5,000  ETA=9:57:29
+16:06:09    [Page 21] startIndex=1200  total=92/5,000
+16:06:09      🚗 startIndex=1200
+16:06:25    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:06:25      🔄 0 cards initially — starting deep-scroll retry…
+16:06:33    🃏 Found 15 cards
+16:06:33      → 15 cards  +0 new  | total=92/5,000  ETA=10:24:47
+16:06:45    [Page 22] startIndex=1260  total=92/5,000
+16:06:45      🚗 startIndex=1260
+16:07:02    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:07:02      🔄 0 cards initially — starting deep-scroll retry…
+16:07:10    🃏 Found 15 cards
+16:07:10      → 15 cards  +0 new  | total=92/5,000  ETA=10:58:04
+16:07:21    [Page 23] startIndex=1320  total=92/5,000
+16:07:21      🚗 startIndex=1320
+16:07:37    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:07:37      🔄 0 cards initially — starting deep-scroll retry…
+16:07:45    🃏 Found 15 cards
+16:07:45      → 15 cards  +0 new  | total=92/5,000  ETA=11:29:23
+16:07:56    [Page 24] startIndex=1380  total=92/5,000
+16:07:56      🚗 startIndex=1380
+16:08:11    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:08:11      🔄 0 cards initially — starting deep-scroll retry…
+16:08:19    🃏 Found 15 cards
+16:08:19      → 15 cards  +0 new  | total=92/5,000  ETA=11:59:33
+16:08:31    [Page 25] startIndex=1440  total=92/5,000
+16:08:31      🚗 startIndex=1440
+16:08:46    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 132, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:08:46      🔄 0 cards initially — starting deep-scroll retry…
+16:08:54    🃏 Found 15 cards
+16:08:54      → 15 cards  +0 new  | total=92/5,000  ETA=12:30:04
+16:08:54    🔄 Scheduled context rotation…
+16:09:05    [Page 26] startIndex=1500  total=92/5,000
+16:09:05      🚗 startIndex=1500
+16:09:09    🍪 Cookie banner dismissed
+16:09:15    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 133, 'images': 3, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:09:15      🔄 0 cards initially — starting deep-scroll retry…
+16:09:23    🃏 Found 15 cards
+16:09:23      → 15 cards  +0 new  | total=92/5,000  ETA=12:56:07
+16:09:35    [Page 27] startIndex=1560  total=92/5,000
+16:09:35      🚗 startIndex=1560
+16:09:49    ⚠ No cards. Census: {'divs': 539, 'asins': 0, 'links': 133, 'images': 2, 'buttons': 42} Snippet: 'Amazon | Deals Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use '
+16:09:49      🔄 0 cards initially — starting deep-scroll retry…
+16:09:57  
+⚠️  Interrupted — data already saved incrementally.
+16:15:40  🚀 Amazon.fr Deals Scraper — v4 (scroll-based)
+16:15:40     URL    : https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb
+16:15:40     Target : 5,000 unique deals
+16:15:40     Output : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+16:15:40     Log    : d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_scraper.log
+
+16:15:40  ♻️  Resume — 92 products, 92 known ASINs
+16:15:41  🌐 Browser ready
+
+16:15:41  ━━━ Session 1/20 ━━━  total=92/5,000  ETA=—
+16:15:41    🌐 Loading deals page…
+16:15:49    🍪 Cookie banner dismissed
+16:15:52    📦 Initial cards: 1 new
+16:16:00      scroll=   3  + 4 new  session_total=5
+16:16:06      scroll=   5  +22 new  session_total=27
+16:16:16      scroll=   8  +15 new  session_total=42
+16:16:24      scroll=  11  +20 new  session_total=62
+16:16:34      scroll=  14  +15 new  session_total=77
+16:16:40      scroll=  16  +14 new  session_total=91
+16:16:49      scroll=  19  +20 new  session_total=111
+16:16:57      scroll=  22  +20 new  session_total=131
+16:17:09      scroll=  26  +19 new  session_total=150
+16:17:15      scroll=  28  +15 new  session_total=165
+16:17:23      scroll=  31  +20 new  session_total=185
+16:17:31      scroll=  34  + 4 new  session_total=189
+16:17:44      ↕  Empty streak=5 — trying big jump…
+16:18:05      ↕  Empty streak=10 — trying big jump…
+16:18:24      ↕  Empty streak=15 — trying big jump…
+16:18:37    ✅ Session done (empty streak=18) — 189 new cards, 52 scrolls
+16:18:37    💾 Saved 281 total  ETA=1:13:40
+16:18:37    😴 Inter-session pause 26s…
+
+16:19:02  ━━━ Session 2/20 ━━━  total=281/5,000  ETA=1:24:25
+16:19:03    🌐 Loading deals page…
+16:19:14    🍪 Cookie banner dismissed
+16:19:18    📦 Initial cards: 0 new
+16:19:30      ↕  Empty streak=5 — trying big jump…
+16:19:50      ↕  Empty streak=10 — trying big jump…
+16:20:12      ↕  Empty streak=15 — trying big jump…
+16:20:25    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:20:25    ⚠ Session 2 returned 0 cards — pausing 60s then retrying…
+16:21:25  ━━━ Session 3/20 ━━━  total=281/5,000  ETA=2:23:35
+16:21:25    🌐 Loading deals page…
+16:21:44    📦 Initial cards: 0 new
+16:21:59      ↕  Empty streak=5 — trying big jump…
+16:22:22      ↕  Empty streak=10 — trying big jump…
+16:22:41      ↕  Empty streak=15 — trying big jump…
+16:22:56    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:22:56    ⚠ Session 3 returned 0 cards — pausing 60s then retrying…
+16:23:56  ━━━ Session 4/20 ━━━  total=281/5,000  ETA=3:26:35
+16:23:56    🌐 Loading deals page…
+16:24:16    📦 Initial cards: 0 new
+16:24:30      ↕  Empty streak=5 — trying big jump…
+16:24:52      ↕  Empty streak=10 — trying big jump…
+16:25:12      ↕  Empty streak=15 — trying big jump…
+16:25:20      scroll=  16  +22 new  session_total=22
+16:25:23      scroll=  17  +26 new  session_total=48
+16:25:27      scroll=  18  +16 new  session_total=64
+16:25:29      scroll=  19  +25 new  session_total=89
+16:25:32      scroll=  20  + 4 new  session_total=93
+16:25:36      scroll=  21  + 6 new  session_total=99
+16:25:50      ↕  Empty streak=5 — trying big jump…
+16:26:08      ↕  Empty streak=10 — trying big jump…
+16:26:29      ↕  Empty streak=15 — trying big jump…
+16:26:43    ✅ Session done (empty streak=18) — 99 new cards, 39 scrolls
+16:26:43    💾 Saved 380 total  ETA=2:57:22
+16:26:43    😴 Inter-session pause 24s…
+
+16:27:07  ━━━ Session 5/20 ━━━  total=380/5,000  ETA=3:03:44
+16:27:07    🌐 Loading deals page…
+16:27:25    🍪 Cookie banner dismissed
+16:27:29    📦 Initial cards: 0 new
+16:27:41      ↕  Empty streak=5 — trying big jump…
+16:27:59      ↕  Empty streak=10 — trying big jump…
+16:28:19      ↕  Empty streak=15 — trying big jump…
+16:28:32    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:28:32    ⚠ Session 5 returned 0 cards — pausing 60s then retrying…
+16:29:32  ━━━ Session 6/20 ━━━  total=380/5,000  ETA=3:42:34
+16:29:32    🌐 Loading deals page…
+16:29:40    🍪 Cookie banner dismissed
+16:29:43    📦 Initial cards: 0 new
+16:29:56      ↕  Empty streak=5 — trying big jump…
+16:30:17      ↕  Empty streak=10 — trying big jump…
+16:30:37      ↕  Empty streak=15 — trying big jump…
+16:30:50    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:30:50    ⚠ Session 6 returned 0 cards — pausing 60s then retrying…
+16:31:50  ━━━ Session 7/20 ━━━  total=380/5,000  ETA=4:19:27
+16:31:50    🌐 Loading deals page…
+16:31:57    🍪 Cookie banner dismissed
+16:32:00    📦 Initial cards: 0 new
+16:32:15      ↕  Empty streak=5 — trying big jump…
+16:32:38      ↕  Empty streak=10 — trying big jump…
+16:32:52      scroll=  13  +18 new  session_total=18
+16:32:56      scroll=  14  + 5 new  session_total=23
+16:33:00      scroll=  15  + 6 new  session_total=29
+16:33:08    ❌ Session error (Error): Page.content: Unable to retrieve content because the page is navigating and changing the content.
+16:33:08    💾 Saved 409 total  ETA=4:13:03
+16:33:08    😴 Inter-session pause 20s…
+
+16:33:28  ━━━ Session 8/20 ━━━  total=409/5,000  ETA=4:17:52
+16:33:28    🌐 Loading deals page…
+16:33:35    🍪 Cookie banner dismissed
+16:33:38    📦 Initial cards: 0 new
+16:33:51      ↕  Empty streak=5 — trying big jump…
+16:34:03      scroll=   7  + 2 new  session_total=2
+16:34:06      scroll=   8  + 5 new  session_total=7
+16:34:11      scroll=  10  +23 new  session_total=30
+16:34:14      scroll=  11  + 2 new  session_total=32
+16:34:28      ↕  Empty streak=5 — trying big jump…
+16:34:48      ↕  Empty streak=10 — trying big jump…
+16:35:05      ↕  Empty streak=15 — trying big jump…
+16:35:18    ✅ Session done (empty streak=18) — 32 new cards, 29 scrolls
+16:35:18    💾 Saved 441 total  ETA=4:16:39
+16:35:18    😴 Inter-session pause 41s…
+
+16:35:59  ━━━ Session 9/20 ━━━  total=441/5,000  ETA=4:25:35
+16:36:00    🌐 Loading deals page…
+16:36:18    📦 Initial cards: 0 new
+16:36:24      scroll=   2  + 1 new  session_total=1
+16:36:26      scroll=   3  + 1 new  session_total=2
+16:36:29      scroll=   4  + 1 new  session_total=3
+16:36:44      ↕  Empty streak=5 — trying big jump…
+16:37:05      scroll=  14  + 2 new  session_total=5
+16:37:14      scroll=  17  + 1 new  session_total=6
+16:37:21      scroll=  20  + 2 new  session_total=8
+16:37:32      scroll=  23  + 1 new  session_total=9
+16:37:47      ↕  Empty streak=5 — trying big jump…
+16:38:07      ↕  Empty streak=10 — trying big jump…
+16:38:27      ↕  Empty streak=15 — trying big jump…
+16:38:39    ✅ Session done (empty streak=18) — 9 new cards, 41 scrolls
+16:38:39    💾 Saved 450 total  ETA=4:52:10
+16:38:39    😴 Inter-session pause 25s…
+
+16:39:04  ━━━ Session 10/20 ━━━  total=450/5,000  ETA=4:57:29
+16:39:04    🌐 Loading deals page…
+16:39:11    🍪 Cookie banner dismissed
+16:39:14    📦 Initial cards: 0 new
+16:39:29      ↕  Empty streak=5 — trying big jump…
+16:39:50      ↕  Empty streak=10 — trying big jump…
+16:40:10      ↕  Empty streak=15 — trying big jump…
+16:40:22    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:40:22    ⚠ Session 10 returned 0 cards — pausing 60s then retrying…
+16:41:22  ━━━ Session 11/20 ━━━  total=450/5,000  ETA=5:26:48
+16:41:23    🌐 Loading deals page…
+16:41:31    🍪 Cookie banner dismissed
+16:41:34    📦 Initial cards: 1 new
+16:41:37      scroll=   1  + 1 new  session_total=2
+16:41:39      scroll=   2  + 1 new  session_total=3
+16:41:50      scroll=   6  + 1 new  session_total=4
+16:41:59      scroll=   9  + 1 new  session_total=5
+16:42:06      scroll=  12  + 2 new  session_total=7
+16:42:16      scroll=  15  + 3 new  session_total=10
+16:42:30      ↕  Empty streak=5 — trying big jump…
+16:42:40      scroll=  21  + 4 new  session_total=14
+16:42:45      scroll=  23  + 5 new  session_total=19
+16:42:59      ↕  Empty streak=5 — trying big jump…
+16:43:17      ↕  Empty streak=10 — trying big jump…
+16:43:36      ↕  Empty streak=15 — trying big jump…
+16:43:48    ✅ Session done (empty streak=18) — 19 new cards, 41 scrolls
+16:43:48    💾 Saved 469 total  ETA=5:38:10
+16:43:48    😴 Inter-session pause 35s…
+
+16:44:23  ━━━ Session 12/20 ━━━  total=469/5,000  ETA=5:45:14
+16:44:23    🌐 Loading deals page…
+16:44:36    🍪 Cookie banner dismissed
+16:44:40    📦 Initial cards: 0 new
+16:44:52      ↕  Empty streak=5 — trying big jump…
+16:45:11      ↕  Empty streak=10 — trying big jump…
+16:45:32      ↕  Empty streak=15 — trying big jump…
+16:45:45    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:45:45    ⚠ Session 12 returned 0 cards — pausing 60s then retrying…
+16:46:45  ━━━ Session 13/20 ━━━  total=469/5,000  ETA=6:13:40
+16:46:45    🌐 Loading deals page…
+16:46:52    🍪 Cookie banner dismissed
+16:46:55    📦 Initial cards: 0 new
+16:47:09      ↕  Empty streak=5 — trying big jump…
+16:47:29      ↕  Empty streak=10 — trying big jump…
+16:47:37      scroll=  11  + 3 new  session_total=3
+16:47:42      scroll=  13  + 1 new  session_total=4
+16:47:57      ↕  Empty streak=5 — trying big jump…
+16:48:17      ↕  Empty streak=10 — trying big jump…
+16:48:36      ↕  Empty streak=15 — trying big jump…
+16:48:49    ✅ Session done (empty streak=18) — 4 new cards, 31 scrolls
+16:48:49    💾 Saved 473 total  ETA=6:34:02
+16:48:49    😴 Inter-session pause 45s…
+
+16:49:34  ━━━ Session 14/20 ━━━  total=473/5,000  ETA=6:42:51
+16:49:34    🌐 Loading deals page…
+16:49:47    🍪 Cookie banner dismissed
+16:49:50    📦 Initial cards: 0 new
+16:50:04      ↕  Empty streak=5 — trying big jump…
+16:50:25      ↕  Empty streak=10 — trying big jump…
+16:50:45      ↕  Empty streak=15 — trying big jump…
+16:50:57    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:50:57    ⚠ Session 14 returned 0 cards — pausing 60s then retrying…
+16:51:57  ━━━ Session 15/20 ━━━  total=473/5,000  ETA=7:11:17
+16:51:58    🌐 Loading deals page…
+16:52:04    🍪 Cookie banner dismissed
+16:52:07    📦 Initial cards: 0 new
+16:52:21      ↕  Empty streak=5 — trying big jump…
+16:52:41      ↕  Empty streak=10 — trying big jump…
+16:53:02      ↕  Empty streak=15 — trying big jump…
+16:53:15    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:53:15    ⚠ Session 15 returned 0 cards — pausing 60s then retrying…
+16:54:15  ━━━ Session 16/20 ━━━  total=473/5,000  ETA=7:38:33
+16:54:15    🌐 Loading deals page…
+16:54:24    🍪 Cookie banner dismissed
+16:54:27    📦 Initial cards: 0 new
+16:54:42      ↕  Empty streak=5 — trying big jump…
+16:55:01      ↕  Empty streak=10 — trying big jump…
+16:55:20      ↕  Empty streak=15 — trying big jump…
+16:55:33    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:55:33    ⚠ Session 16 returned 0 cards — pausing 60s then retrying…
+16:56:33  ━━━ Session 17/20 ━━━  total=473/5,000  ETA=8:05:53
+16:56:33    🌐 Loading deals page…
+16:56:40    🍪 Cookie banner dismissed
+16:56:43    📦 Initial cards: 0 new
+16:56:59      ↕  Empty streak=5 — trying big jump…
+16:57:20      ↕  Empty streak=10 — trying big jump…
+16:57:41      ↕  Empty streak=15 — trying big jump…
+16:57:54    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+16:57:54    ⚠ Session 17 returned 0 cards — pausing 60s then retrying…
+16:58:54  ━━━ Session 18/20 ━━━  total=473/5,000  ETA=8:33:51
+16:58:55    🌐 Loading deals page…
+16:59:08    🍪 Cookie banner dismissed
+16:59:11    📦 Initial cards: 0 new
+16:59:24      ↕  Empty streak=5 — trying big jump…
+16:59:44      ↕  Empty streak=10 — trying big jump…
+17:00:05      ↕  Empty streak=15 — trying big jump…
+17:00:17    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+17:00:17    ⚠ Session 18 returned 0 cards — pausing 60s then retrying…
+17:01:17  ━━━ Session 19/20 ━━━  total=473/5,000  ETA=9:02:11
+17:01:18    🌐 Loading deals page…
+17:01:25    🍪 Cookie banner dismissed
+17:01:28    📦 Initial cards: 0 new
+17:01:41      ↕  Empty streak=5 — trying big jump…
+17:02:00      ↕  Empty streak=10 — trying big jump…
+17:02:20      ↕  Empty streak=15 — trying big jump…
+17:02:33    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+17:02:33    ⚠ Session 19 returned 0 cards — pausing 60s then retrying…
+17:03:33  ━━━ Session 20/20 ━━━  total=473/5,000  ETA=9:29:06
+17:03:33    🌐 Loading deals page…
+17:03:42    🍪 Cookie banner dismissed
+17:03:45    📦 Initial cards: 0 new
+17:03:57      ↕  Empty streak=5 — trying big jump…
+17:04:17      ↕  Empty streak=10 — trying big jump…
+17:04:36      ↕  Empty streak=15 — trying big jump…
+17:04:50    ✅ Session done (empty streak=18) — 0 new cards, 18 scrolls
+17:04:50    ⚠ Session 20 returned 0 cards — pausing 60s then retrying…
+17:05:50  
+🎉 Done! 473 unique deals → d:\EMSI\S8\PFA\PFA\scraping\amazon_deals_data.json
+17:05:50     With % discount : 473
+17:05:50     No offer        : 0
+17:05:50  
+📦 Sample:
+17:05:50  [
+  {
+    "titre": "CORSAIR Vengeance DDR5 RAM 32GB (2x16GB) 6000MHz CL36 AMD Expo Compatible Computer Memory iCUE – Grey (CMK32GX5M2E6000Z36)",
+    "prixInitial": 361.99,
+    "prixBase": 339.99,
+    "prixOffre": 339.99,
+    "categorie": "Deals",
+    "location": "Amazon.fr",
+    "statut": "actif",
+    "monnaie": "EUR",
+    "offre": [
+      {
+        "typeOffre": "pourcentage",
+        "valeurOffre": 6.0,
+        "monnaie": "EUR",
+        "dateCreation": "2026-03-29",
+        "statut": "active"
+      }
+    ],
+    "seller": "",
+    "rating": "",
+    "link": "https://www.amazon.fr/dp/B0CJ8ZHMVF",
+    "date": "2026-03-29",
+    "source": "deals_page"
+  },
+  {
+    "titre": "Samsung 990 Pro NVMe M.2 Pcle 4.0 Solid State Drive, Internal SSD, 1TB Capacity, Read Speed Up to 7450MB/s, Smart Heat Management with Nickel, MZ-V9P1T0BW",
+    "prixInitial": 175.99,
+    "prixBase": 148.99,
+    "prixOffre": 148.99,
+    "categorie": "Deals",
+    "location": "Amazon.fr",
+    "statut": "actif",
+    "monnaie": "EUR",
+    "offre": [
+      {
+        "typeOffre": "pourcentage",
+        "valeurOffre": 15.0,
+        "monnaie": "EUR",
+        "dateCreation": "2026-03-29",
+        "statut": "active"
+      }
+    ],
+    "seller": "",
+    "rating": "",
+    "link": "https://www.amazon.fr/dp/B0B9C3ZVHR",
+    "date": "2026-03-29",
+    "source": "deals_page"
+  }
+]

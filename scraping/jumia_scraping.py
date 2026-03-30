@@ -1,105 +1,241 @@
-from playwright.sync_api import sync_playwright
+"""
+Jumia Maroc Scraper — v2
+━━━━━━━━━━━━━━━━━━━━━━━
+Schema aligned with the UML modelisation (same as amazone2.py):
+
+  Produit  → titre, prixInitial (float), prixBase (float), prixOffre (float),
+              categorie, location, statut, monnaie, offre, seller, rating, link, date
+
+  Offre    → typeOffre, valeurOffre (float), monnaie, dateCreation, statut
+
+Upgrades over v1:
+  ✅ UML-aligned schema (Produit + Offre)
+  ✅ Target 10 000 unique products
+  ✅ Resume — loads existing JSON on startup, skips seen links
+  ✅ Fixed output path — saves next to this script, not CWD
+  ✅ Retry queue — failed pages re-attempted at the end
+  ✅ Adaptive delays — backs off when empty pages increase
+  ✅ File logging — mirrors console to jumia_scraper.log
+  ✅ Live ETA — shows progress every page
+  ✅ Graceful Ctrl-C — partial data already saved incrementally
+"""
+
+import json
+import logging
+import random
+import re
+import sys
+import time
+import urllib.parse
+from datetime import datetime, timedelta
+from pathlib import Path
+
 from bs4 import BeautifulSoup
-import json, time, random, re
-from datetime import datetime
+from playwright.sync_api import sync_playwright
 
-# ─── Configuration ─────────────────────────────────────────────────────────────
-# Strategy: use Jumia's search catalog (/catalog/?q=keyword) which ALWAYS works,
-# combined with verified direct category slugs.
-# 25 keywords × 5 pages × ~40 products/page ≈ 5,000 potential products.
+# ─── Paths (always relative to this script, not CWD) ──────────────────────────
+SCRIPT_DIR  = Path(__file__).parent
+OUTPUT_FILE = SCRIPT_DIR / "jumia_data.json"
+LOG_FILE    = SCRIPT_DIR / "jumia_scraper.log"
 
+# ─── Config ────────────────────────────────────────────────────────────────────
+TARGET_PRODUCTS       = 10_000
+TODAY                 = datetime.today().strftime("%Y-%m-%d")
+MAX_PAGES_PER_SEARCH  = 20    # 50 terms × 20 pages × ~40 cards ≈ 40 000 targets
+MAX_PAGES_PER_DIRECT  = 10    # 15 slugs × 10 pages × ~40 cards ≈ 6 000 bonus
+SLEEP_BETWEEN_PAGES   = (2, 5)
+MAX_RETRIES           = 2
+MONNAIE               = "MAD"
+
+# ─── Logging setup ─────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler(LOG_FILE, encoding="utf-8"),
+    ],
+)
+log = logging.getLogger(__name__)
+
+# ─── Search corpus ─────────────────────────────────────────────────────────────
 SEARCH_TERMS = [
-    ("smartphone",          "Téléphones & Tablettes"),
-    ("tablette",            "Téléphones & Tablettes"),
-    ("samsung",             "Téléphones & Tablettes"),
-    ("iphone",              "Téléphones & Tablettes"),
-    ("laptop",              "Informatique"),
-    ("ordinateur",          "Informatique"),
-    ("imprimante",          "Informatique"),
-    ("television",          "Électronique"),
-    ("casque",              "Électronique"),
-    ("enceinte",            "Électronique"),
-    ("climatiseur",         "Électroménager"),
-    ("refrigerateur",       "Électroménager"),
-    ("machine a laver",     "Électroménager"),
-    ("aspirateur",          "Électroménager"),
-    ("chaussure homme",     "Mode Homme"),
-    ("sac femme",           "Mode Femme"),
-    ("robe",                "Mode Femme"),
-    ("parfum",              "Beauté & Santé"),
-    ("creme visage",        "Beauté & Santé"),
-    ("tapis",               "Maison & Cuisine"),
-    ("coussin",             "Maison & Cuisine"),
-    ("huile cuisson",       "Épicerie"),
-    ("velo",                "Sport & Loisir"),
-    ("jouet enfant",        "Jeux & Jouets"),
-    ("montre",              "Accessoires"),
+    # Téléphones & Tablettes
+    ("smartphone",           "Téléphones & Tablettes"),
+    ("tablette",             "Téléphones & Tablettes"),
+    ("samsung",              "Téléphones & Tablettes"),
+    ("iphone",               "Téléphones & Tablettes"),
+    ("huawei",               "Téléphones & Tablettes"),
+    ("xiaomi",               "Téléphones & Tablettes"),
+    ("ecouteurs bluetooth",  "Téléphones & Tablettes"),
+    # Informatique
+    ("laptop",               "Informatique"),
+    ("ordinateur portable",  "Informatique"),
+    ("imprimante",           "Informatique"),
+    ("disque dur",           "Informatique"),
+    ("clé usb",              "Informatique"),
+    ("souris sans fil",      "Informatique"),
+    ("clavier",              "Informatique"),
+    # Électronique
+    ("television",           "Électronique"),
+    ("casque",               "Électronique"),
+    ("enceinte bluetooth",   "Électronique"),
+    ("camera",               "Électronique"),
+    ("drone",                "Électronique"),
+    # Électroménager
+    ("climatiseur",          "Électroménager"),
+    ("refrigerateur",        "Électroménager"),
+    ("machine a laver",      "Électroménager"),
+    ("aspirateur",           "Électroménager"),
+    ("cafetiere",            "Électroménager"),
+    ("micro onde",           "Électroménager"),
+    ("fer repasser",         "Électroménager"),
+    # Mode
+    ("chaussure homme",      "Mode Homme"),
+    ("chemise homme",        "Mode Homme"),
+    ("sac femme",            "Mode Femme"),
+    ("robe",                 "Mode Femme"),
+    ("chaussure femme",      "Mode Femme"),
+    # Beauté & Santé
+    ("parfum",               "Beauté & Santé"),
+    ("creme visage",         "Beauté & Santé"),
+    ("shampoing",            "Beauté & Santé"),
+    ("montre",               "Accessoires"),
+    ("lunettes soleil",      "Accessoires"),
+    # Maison & Cuisine
+    ("tapis",                "Maison & Cuisine"),
+    ("coussin",              "Maison & Cuisine"),
+    ("huile cuisson",        "Épicerie"),
+    ("robot cuisine",        "Maison & Cuisine"),
+    # Sport & Loisirs
+    ("velo",                 "Sport & Loisir"),
+    ("tapis roulant",        "Sport & Loisir"),
+    ("jouet enfant",         "Jeux & Jouets"),
+    ("livre",                "Livres"),
+    # Gaming
+    ("manette",              "Gaming"),
+    ("console jeux",         "Gaming"),
+    ("jeux video",           "Gaming"),
+    # Bébé
+    ("poussette",            "Bébé"),
+    ("couche bebe",          "Bébé"),
+    ("jouet bebe",           "Bébé"),
 ]
 
-# Also try verified direct category slugs as bonus
 DIRECT_CATEGORIES = [
-    ("phones-tablets--smartphones/",           "Téléphones & Tablettes"),
-    ("tvs-audio-video/",                        "TV & Audio"),
-    ("computing/",                              "Informatique"),
-    ("home-living/",                            "Maison"),
-    ("fashion-men-shoes/",                      "Chaussures Homme"),
-    ("fashion-women-bags/",                     "Sacs Femme"),
-    ("health-beauty/",                          "Beauté & Santé"),
-    ("sporting-goods/",                         "Sport"),
-    ("baby-products/",                          "Bébé"),
-    ("garden-outdoors/",                        "Jardin"),
+    ("phones-tablets--smartphones/",  "Téléphones & Tablettes"),
+    ("phones-tablets--tablets/",      "Tablettes"),
+    ("tvs-audio-video/",              "TV & Audio"),
+    ("computing/",                    "Informatique"),
+    ("electronics/",                  "Électronique"),
+    ("home-living/",                  "Maison"),
+    ("fashion-men-shoes/",            "Chaussures Homme"),
+    ("fashion-women-bags/",           "Sacs Femme"),
+    ("fashion-women-clothing/",       "Mode Femme"),
+    ("health-beauty/",                "Beauté & Santé"),
+    ("sporting-goods/",               "Sport"),
+    ("baby-products/",                "Bébé"),
+    ("garden-outdoors/",              "Jardin"),
+    ("video-games/",                  "Gaming"),
+    ("appliances/",                   "Électroménager"),
 ]
 
-MAX_PAGES_PER_SEARCH   = 5    # 25 terms × 5 pages × ~40 = ~5,000 targets
-MAX_PAGES_PER_DIRECT   = 3    # bonus from direct category URLs
-SLEEP_BETWEEN_PAGES   = (2, 4)
-OUTPUT_FILE           = "jumia_data.json"
-
-TODAY = datetime.today().strftime("%Y-%m-%d")
-
-# ─── Helpers ───────────────────────────────────────────────────────────────────
+# ─── Price helpers ─────────────────────────────────────────────────────────────
 
 def clean_price(text: str) -> str:
-    """Normalize price text: remove currency junk, keep digits + spaces + DH."""
     if not text:
         return ""
     return re.sub(r"\s+", " ", text.replace("\u202f", " ").replace("\xa0", " ").strip())
 
 
-def parse_offer(badge_text: str) -> dict:
-    """
-    Given a Jumia discount badge text such as '-38%' or '-50 Dhs',
-    return:
-      {
-        "type_offre":  "pourcentage" | "forfaite",
-        "valeur_offre": "38%"          | "50 Dhs"
-      }
-    Returns None if no offer badge found.
-    """
-    if not badge_text:
+def price_to_float(text: str) -> float | None:
+    """Convert a Jumia price string (e.g. '1 299,00 Dhs') to a float."""
+    if not text:
         return None
-    badge_text = badge_text.strip()
-    # Percentage  e.g. "-38%" or "38%"
-    pct = re.search(r"(\d+)\s*%", badge_text)
-    if pct:
-        return {"type_offre": "pourcentage", "valeur_offre": f"{pct.group(1)}%"}
-    # Flat deduction  e.g. "-50 Dhs" or "-200DH"
-    flat = re.search(r"(\d[\d\s]*)\s*(Dhs?|MAD|DH)", badge_text, re.IGNORECASE)
-    if flat:
-        return {"type_offre": "forfaite", "valeur_offre": f"{flat.group(1).strip()} Dhs"}
-    # If badge exists but pattern doesn't match → return raw value
-    return {"type_offre": "forfaite", "valeur_offre": badge_text}
+    # Remove currency symbols and letters, keep digits , .
+    cleaned = re.sub(r"[^\d,\.]", "", clean_price(text)).replace(",", ".")
+    parts = cleaned.split(".")
+    if len(parts) > 2:
+        # '1.299.00' → thousand-sep case
+        cleaned = "".join(parts[:-1]) + "." + parts[-1]
+    try:
+        return round(float(cleaned), 2)
+    except ValueError:
+        return None
 
+
+def parse_offer(badge_text: str, price_old_str: str, price_new_str: str) -> list | None:
+    """
+    Build Offre objects matching the UML model:
+      typeOffre    : str   ('pourcentage' | 'forfaite')
+      valeurOffre  : float
+      monnaie      : str   ('MAD')
+      dateCreation : str   (ISO date)
+      statut       : str   ('active')
+    """
+    offers = []
+
+    if badge_text:
+        badge_text = badge_text.strip()
+        pct = re.search(r"(\d+)\s*%", badge_text)
+        if pct:
+            offers.append({
+                "typeOffre":    "pourcentage",
+                "valeurOffre":  float(pct.group(1)),
+                "monnaie":      MONNAIE,
+                "dateCreation": TODAY,
+                "statut":       "active",
+            })
+        else:
+            flat = re.search(r"(\d[\d\s,\.]*?)\s*(Dhs?|MAD|DH)", badge_text, re.IGNORECASE)
+            if flat:
+                val = price_to_float(flat.group(1)) or 0.0
+                offers.append({
+                    "typeOffre":    "forfaite",
+                    "valeurOffre":  val,
+                    "monnaie":      MONNAIE,
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
+            elif badge_text:
+                offers.append({
+                    "typeOffre":    "forfaite",
+                    "valeurOffre":  0.0,
+                    "monnaie":      MONNAIE,
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
+
+    # Fallback: compute % from price difference
+    if not offers and price_old_str and price_new_str:
+        ov = price_to_float(price_old_str)
+        nv = price_to_float(price_new_str)
+        if ov and nv and ov > nv:
+            p = round((ov - nv) / ov * 100, 2)
+            if p >= 1:
+                offers.append({
+                    "typeOffre":    "pourcentage",
+                    "valeurOffre":  p,
+                    "monnaie":      MONNAIE,
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
+
+    return offers or None
+
+
+# ─── HTML parser ───────────────────────────────────────────────────────────────
 
 def parse_cards(html: str, category_label: str) -> list:
-    """Extract all product cards from a Jumia listing page."""
+    """Extract and return product records matching the UML Produit model."""
     soup = BeautifulSoup(html, "html.parser")
-    # Jumia uses <article class="prd _fb col c-prd"> with <a class="core"> inside
     articles = soup.select("article.prd")
     results  = []
 
     for art in articles:
         try:
+            # Link (used as unique key)
             a_tag = art.select_one("a.core")
             link  = ""
             if a_tag and a_tag.get("href"):
@@ -109,187 +245,260 @@ def parse_cards(html: str, category_label: str) -> list:
             # Title
             title_el = art.select_one("h3.name") or art.select_one(".name")
             title    = title_el.get_text(strip=True) if title_el else ""
+            if not title:
+                continue
 
-            # Current price (offer price)
+            # Prices (raw strings → floats)
             price_offer_el = art.select_one("div.prc")
-            price_offer    = clean_price(price_offer_el.get_text()) if price_offer_el else ""
+            price_new_str  = clean_price(price_offer_el.get_text()) if price_offer_el else ""
 
-            # Original price
-            price_old_el = art.select_one("div.old")
-            price_old    = clean_price(price_old_el.get_text()) if price_old_el else ""
+            price_old_el   = art.select_one("div.old")
+            price_old_str  = clean_price(price_old_el.get_text()) if price_old_el else ""
 
-            # Seller – shown inside the card as "Vendu par X" or in a span
+            prix_offre   = price_to_float(price_new_str)
+            prix_initial = price_to_float(price_old_str)
+            prix_base    = prix_offre if prix_offre else prix_initial
+
+            # Seller / brand
             seller_el = (
-                art.select_one(".aut")          # brand/seller tag
-                or art.select_one("[class*='aut']")
-                or art.select_one(".shps")       # shipped by
+                art.select_one(".aut") or
+                art.select_one("[class*='aut']") or
+                art.select_one(".shps")
             )
             seller = seller_el.get_text(strip=True) if seller_el else ""
 
-            # Location – Jumia rarely exposes location on listing card;
-            # use seller/shipping text if present
+            # Location
             loc_el   = art.select_one(".loc") or art.select_one("[class*='loc']")
             location = loc_el.get_text(strip=True) if loc_el else "Maroc"
 
-            # Discount badge  e.g. <div class="bdg _dsct _sm">-38%</div>
+            # Discount badge
             badge_el   = art.select_one(".bdg._dsct") or art.select_one("[class*='dsct']")
             badge_text = badge_el.get_text(strip=True) if badge_el else ""
-            offer      = parse_offer(badge_text)
+            offer      = parse_offer(badge_text, price_old_str, price_new_str)
 
-            # Rating (bonus field)
+            # Rating (% width → numeric)
+            rating = ""
             rating_el = art.select_one(".stars._s")
-            stars     = ""
             if rating_el:
                 style = rating_el.get("style", "")
-                stars_match = re.search(r"width:\s*(\d+(?:\.\d+)?)", style)
-                stars = stars_match.group(1) + "%" if stars_match else ""
+                m = re.search(r"width:\s*(\d+(?:\.\d+)?)", style)
+                rating = m.group(1) + "%" if m else ""
 
-            if not title:
-                continue   # skip empty / ad cards
-
-            entry = {
-                "title":         title,
-                "price_initial": price_old,
-                "price_offre":   price_offer,
-                "seller":        seller,
-                "location":      location,
-                "category":      category_label,
-                "link":          link,
-                "date":          TODAY,
-                "rating":        stars,
-                "offre":         offer,   # None if no discount
-            }
-            results.append(entry)
+            results.append({
+                # ─── Produit (UML model) ─────────────────────────────────────
+                "titre":       title,
+                "prixInitial": prix_initial,   # float | None
+                "prixBase":    prix_base,       # float | None
+                "prixOffre":   prix_offre,      # float | None
+                "categorie":   category_label,
+                "location":    location,
+                "statut":      "actif",
+                "monnaie":     MONNAIE,
+                # ─── Offre list (UML model) ──────────────────────────────────
+                "offre":       offer,           # list[Offre] | None
+                # ─── Extra metadata ──────────────────────────────────────────
+                "seller":      seller,
+                "rating":      rating,
+                "link":        link,
+                "date":        TODAY,
+            })
 
         except Exception as e:
-            print(f"  ⚠ Card parse error: {e}")
+            log.warning(f"  ⚠ Card parse error: {e}")
 
     return results
 
 
+# ─── Persistence ──────────────────────────────────────────────────────────────
+
+def load_existing() -> tuple[list, set]:
+    """Load saved data to enable resuming interrupted runs."""
+    if OUTPUT_FILE.exists():
+        try:
+            data = json.loads(OUTPUT_FILE.read_text(encoding="utf-8"))
+            seen = {item["link"] for item in data if item.get("link")}
+            log.info(f"♻️  Resuming — loaded {len(data):,} products, {len(seen):,} known links")
+            return data, seen
+        except Exception as e:
+            log.warning(f"  ⚠ Could not load existing data: {e}")
+    return [], set()
+
+
+def save(data: list):
+    OUTPUT_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+# ─── ETA helper ───────────────────────────────────────────────────────────────
+
+class ETA:
+    def __init__(self, target: int, start_count: int):
+        self.target      = target
+        self.start_count = start_count
+        self.start_time  = time.time()
+
+    def estimate(self, current: int) -> str:
+        added   = current - self.start_count
+        elapsed = time.time() - self.start_time
+        if added <= 0 or elapsed <= 0:
+            return "—"
+        rate      = added / elapsed
+        remaining = self.target - current
+        if rate <= 0:
+            return "—"
+        return str(timedelta(seconds=int(remaining / rate)))
+
+
 # ─── Scraper core ──────────────────────────────────────────────────────────────
 
-def scrape_page(page_obj, url: str, label: str) -> list:
-    """Navigate to url and return parsed cards, or [] on failure."""
+def scrape_page(page_obj, url: str, label: str, sleep_range: tuple) -> list:
+    """Navigate to url and return parsed cards ([] on failure)."""
     try:
-        page_obj.goto(url, wait_until="domcontentloaded", timeout=60000)
-        time.sleep(random.uniform(*SLEEP_BETWEEN_PAGES))
+        page_obj.goto(url, wait_until="domcontentloaded", timeout=60_000)
+        time.sleep(random.uniform(*sleep_range))
         page_obj.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        time.sleep(1)
+        time.sleep(random.uniform(0.5, 1.5))
         return parse_cards(page_obj.content(), label)
     except Exception as e:
-        print(f"     ❌ {e}")
+        log.warning(f"     ❌ {e}")
         return []
 
 
 def scrape_jumia():
-    all_results = []
-    seen_links  = set()
+    all_results, seen_links = load_existing()
+    retry_queue: list[tuple[str, str]] = []
 
-    def absorb(cards):
-        new = 0
+    eta          = ETA(TARGET_PRODUCTS, len(all_results))
+    sleep_range  = list(SLEEP_BETWEEN_PAGES)
+    empty_streak = 0
+
+    def absorb(cards: list, url: str = "") -> int:
+        added = 0
         for item in cards:
-            if item["link"] and item["link"] not in seen_links:
-                seen_links.add(item["link"])
+            key = item.get("link", "")
+            if key and key not in seen_links:
+                seen_links.add(key)
                 all_results.append(item)
-                new += 1
-        return new
+                added += 1
+        return added
+
+    def run_pages(url_list: list[tuple[str, str]], phase_label: str):
+        nonlocal empty_streak, sleep_range
+
+        for idx, (url, label) in enumerate(url_list, 1):
+            if len(all_results) >= TARGET_PRODUCTS:
+                break
+
+            log.info(f"  [{phase_label} {idx}/{len(url_list)}] 📄 {url[-70:]}")
+
+            cards = []
+            for attempt in range(1, MAX_RETRIES + 2):
+                cards = scrape_page(page_obj, url, label, tuple(sleep_range))
+                if cards:
+                    break
+                if attempt <= MAX_RETRIES:
+                    log.info(f"    🔄 Retry {attempt}/{MAX_RETRIES}…")
+                    time.sleep(random.uniform(3, 6))
+                else:
+                    retry_queue.append((url, label))
+
+            if not cards:
+                empty_streak += 1
+                if empty_streak >= 3:
+                    # Back off delays after 3 consecutive empty pages
+                    sleep_range[0] = min(sleep_range[0] * 1.5, 15)
+                    sleep_range[1] = min(sleep_range[1] * 1.5, 30)
+                    log.info(f"  ⏱ Adaptive delay → {sleep_range[0]:.0f}–{sleep_range[1]:.0f}s")
+                    empty_streak = 0
+                log.info(f"    → 0 cards (vide)")
+                continue
+
+            empty_streak = 0
+            added = absorb(cards, url)
+            log.info(
+                f"    → {len(cards)} cards  +{added} new  "
+                f"| total: {len(all_results):,}/{TARGET_PRODUCTS:,}  "
+                f"ETA: {eta.estimate(len(all_results))}"
+            )
+            save(all_results)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        pg = browser.new_page()
-        pg.set_extra_http_headers({
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            ),
+        page_obj = browser.new_page()
+        page_obj.set_extra_http_headers({
+            "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
         })
 
-        # ── Phase 1: Search-based catalog (always returns results) ──────────────
-        total_terms = len(SEARCH_TERMS)
-        print(f"\n{'='*55}")
-        print(f"  PHASE 1 – Recherche ({total_terms} termes × {MAX_PAGES_PER_SEARCH} pages)")
-        print(f"{'='*55}")
+        # ════════════════════════════════════════════════════════════════════
+        # PHASE 1 — Search-based catalog
+        # ════════════════════════════════════════════════════════════════════
+        log.info(f"\n{'='*60}")
+        log.info(f"PHASE 1 — {len(SEARCH_TERMS)} termes × {MAX_PAGES_PER_SEARCH} pages")
+        log.info(f"{'='*60}")
 
-        for idx, (term, label) in enumerate(SEARCH_TERMS, 1):
-            import urllib.parse
-            q = urllib.parse.quote_plus(term)
-            print(f"\n  [{idx}/{total_terms}] 🔍 '{term}' → {label}")
+        phase1_urls = [
+            (f"https://www.jumia.ma/catalog/?q={urllib.parse.quote_plus(term)}&page={pnum}#catalog-listing", label)
+            for term, label in SEARCH_TERMS
+            for pnum in range(1, MAX_PAGES_PER_SEARCH + 1)
+        ]
+        run_pages(phase1_urls, "P1")
 
-            for pnum in range(1, MAX_PAGES_PER_SEARCH + 1):
-                url = f"https://www.jumia.ma/catalog/?q={q}&page={pnum}#catalog-listing"
-                print(f"    📄 Page {pnum}: {url[:80]}…")
-                cards = scrape_page(pg, url, label)
-                print(f"         → {len(cards)} cards", end="")
-                if not cards:
-                    print("  (vide – arrêt)")
-                    break
-                new = absorb(cards)
-                print(f"  +{new} nouveaux  | total: {len(all_results)}")
-                _save(all_results)
+        # ════════════════════════════════════════════════════════════════════
+        # PHASE 2 — Direct category slugs
+        # ════════════════════════════════════════════════════════════════════
+        if len(all_results) < TARGET_PRODUCTS:
+            log.info(f"\n{'='*60}")
+            log.info(f"PHASE 2 — {len(DIRECT_CATEGORIES)} catégories × {MAX_PAGES_PER_DIRECT} pages")
+            log.info(f"{'='*60}")
 
-                if len(all_results) >= 3000:
-                    print("\n  ✅ Objectif 3000 atteint, passage à la Phase 2.")
-                    break
-            if len(all_results) >= 3000:
-                break
+            phase2_urls = []
+            for slug, label in DIRECT_CATEGORIES:
+                phase2_urls.append((f"https://www.jumia.ma/{slug}", label))
+                for pnum in range(2, MAX_PAGES_PER_DIRECT + 1):
+                    phase2_urls.append((f"https://www.jumia.ma/{slug}?page={pnum}#catalog-listing", label))
+            run_pages(phase2_urls, "P2")
 
-        # ── Phase 2: Direct category URLs (bonus) ───────────────────────────────
-        print(f"\n{'='*55}")
-        print(f"  PHASE 2 – Catégories directes ({len(DIRECT_CATEGORIES)} slugs × {MAX_PAGES_PER_DIRECT} pages)")
-        print(f"{'='*55}")
-
-        for idx, (slug, label) in enumerate(DIRECT_CATEGORIES, 1):
-            print(f"\n  [{idx}/{len(DIRECT_CATEGORIES)}] 🛍  {label}")
-            for pnum in range(1, MAX_PAGES_PER_DIRECT + 1):
-                if pnum == 1:
-                    url = f"https://www.jumia.ma/{slug}"
-                else:
-                    url = f"https://www.jumia.ma/{slug}?page={pnum}#catalog-listing"
-                print(f"    📄 Page {pnum}: {url[:80]}")
-                cards = scrape_page(pg, url, label)
-                print(f"         → {len(cards)} cards", end="")
-                if not cards:
-                    print("  (vide – arrêt)")
-                    break
-                new = absorb(cards)
-                print(f"  +{new} nouveaux  | total: {len(all_results)}")
-                _save(all_results)
+        # ════════════════════════════════════════════════════════════════════
+        # PHASE 3 — Retry queue
+        # ════════════════════════════════════════════════════════════════════
+        if retry_queue and len(all_results) < TARGET_PRODUCTS:
+            log.info(f"\n{'='*60}")
+            log.info(f"PHASE 3 — Retry {len(retry_queue)} URLs échouées")
+            log.info(f"{'='*60}")
+            time.sleep(random.uniform(10, 20))
+            run_pages(retry_queue, "Retry")
 
         browser.close()
 
     return all_results
 
 
-def _save(data: list):
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-
 # ─── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("🚀 Jumia Maroc Scraper – Objectif : 1 000+ produits uniques")
-    print(f"   Phase 1 : {len(SEARCH_TERMS)} termes × {MAX_PAGES_PER_SEARCH} pages (~{len(SEARCH_TERMS)*MAX_PAGES_PER_SEARCH*40} cibles)")
-    print(f"   Phase 2 : {len(DIRECT_CATEGORIES)} catégories × {MAX_PAGES_PER_DIRECT} pages (bonus)")
-    print(f"   Fichier : {OUTPUT_FILE}")
-    print()
+    log.info("🚀 Jumia Maroc Scraper — v2 (UML model)")
+    log.info(f"   Objectif : {TARGET_PRODUCTS:,} produits uniques")
+    log.info(f"   Fichier  : {OUTPUT_FILE}")
+    log.info(f"   Log      : {LOG_FILE}")
+    log.info(f"   Phase 1  : {len(SEARCH_TERMS)} termes × {MAX_PAGES_PER_SEARCH} pages ≈ {len(SEARCH_TERMS)*MAX_PAGES_PER_SEARCH*40:,} cibles")
+    log.info(f"   Phase 2  : {len(DIRECT_CATEGORIES)} catégories × {MAX_PAGES_PER_DIRECT} pages ≈ {len(DIRECT_CATEGORIES)*MAX_PAGES_PER_DIRECT*40:,} bonus\n")
 
-    results = scrape_jumia()
+    try:
+        results = scrape_jumia()
+    except KeyboardInterrupt:
+        log.info("\n⚠️  Interrompu — données partielles déjà sauvegardées.")
+        sys.exit(0)
 
-    print(f"\n🎉 Terminé ! {len(results)} produits uniques → {OUTPUT_FILE}")
+    log.info(f"\n🎉 Terminé ! {len(results):,} produits → {OUTPUT_FILE}")
 
-    with_offer   = [r for r in results if r.get("offre")]
-    pct_offers   = [r for r in with_offer if r["offre"]["type_offre"] == "pourcentage"]
-    flat_offers  = [r for r in with_offer if r["offre"]["type_offre"] == "forfaite"]
+    with_offer  = [r for r in results if r.get("offre")]
+    pct_offers  = [r for r in with_offer if any(o["typeOffre"] == "pourcentage" for o in r["offre"])]
+    flat_offers = [r for r in with_offer if any(o["typeOffre"] == "forfaite"    for o in r["offre"])]
 
-    print(f"\n📊 Statistiques :")
-    print(f"   Produits avec offre %    : {len(pct_offers)}")
-    print(f"   Produits avec forfait    : {len(flat_offers)}")
-    print(f"   Produits sans offre      : {len(results) - len(with_offer)}")
-
-    print("\n📦 Exemples avec offre pourcentage :")
-    print(json.dumps(pct_offers[:2], ensure_ascii=False, indent=2))
-
+    log.info(f"\n📊 Statistiques :")
+    log.info(f"   % réduction : {len(pct_offers):,}")
+    log.info(f"   Forfait     : {len(flat_offers):,}")
+    log.info(f"   Sans offre  : {len(results) - len(with_offer):,}")
+    if pct_offers:
+        log.info("\n📦 Exemple :")
+        log.info(json.dumps(pct_offers[:2], ensure_ascii=False, indent=2))

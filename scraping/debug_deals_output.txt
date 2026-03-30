@@ -1,0 +1,69 @@
+Navigating to https://www.amazon.fr/-/en/deals?ref_=nav_cs_gb&promotionsSearchPageSize=60&promotionsSearchStartIndex=0
+Page loaded. Sleeping 8s for React hydration...
+
+HTML length: 1,682,088 bytes
+
+--- TOP 40 DIV CLASS PREFIXES ---
+   108x  a-section
+    62x  a-spacing-mini
+    46x  a-spacing-none
+    40x  hidden
+    32x  nav-flyout-content
+    30x  nav-div
+    30x  Carousel-module__carouselItemWrapper_IsWNNzHcsHmay
+    29x  nav-template
+    28x  nav-flyout
+    26x  nav-arrow
+    26x  nav-arrow-inner
+    26x  nav-flyout-buffer-left
+    26x  nav-flyout-buffer-right
+    26x  nav-flyout-buffer-top
+    26x  nav-flyout-buffer-bottom
+    25x  nav-spinner
+    23x  nav-coreFlyout
+    15x  GridItem-module__container_PW2gdkwTj1GQzdwJjejN
+    15x  GridItem-module__changeover_oK8RqSFeYt808QCPHUex
+    15x  a-changeover
+    15x  a-changeover-inner
+    15x  ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w
+    15x  ProductCard-module__imageWrapper_ytp7KTuzmF4mDTFCQ
+    15x  ProductCardImage-module__wrapper_YgLz4kq6ekChj01qe
+    15x  a-image-container
+    15x  a-dynamic-image-container
+    15x  aok-align-center-horizontally
+    15x  ProductCardImage-module__container_XJaC1bSBwo7eFD2
+    15x  ProductCard-module__addToCart_eUxqwjC0PpYa6bezym54
+    15x  ProductCard-module__title_awabIOxk6xfKvxKcdKDH
+    15x  style_badgeContainer__wwnoH
+    15x  style_filledRoundedBadgeLabel__Vo-4g
+    15x  style_badgeMessage__xR2lh
+    15x  ProductCard-module__priceContainer_m0ycNRDHrTYDub6
+    15x  ProductCard-module__priceToPay_olAgJzVNGyj2javg2pA
+    15x  ProductCard-module__wrapPrice__sMO92NjAjHmGPn3jnIH
+     9x  navAccessibility
+     7x  subnav-div
+     7x  a-radio
+     7x  a-radio-fancy
+
+--- data-asin elements: 15 ---
+  tag=div  asin=B0DQWLG36G  classes=['ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w']
+  tag=div  asin=B0C6MDD8V6  classes=['ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w']
+  tag=div  asin=B0DT47D1B5  classes=['ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w']
+  tag=div  asin=B0FGKM6HP8  classes=['ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w']
+  tag=div  asin=B07V45GPV4  classes=['ProductCard-module__card_uyr_Jh7WpSkPx4iEpn4w']
+
+--- data-deal-asin elements: 0 ---
+  'ProductCard' appears 195 times in HTML
+  'DealCard' appears 0 times in HTML
+  'GridItem' appears 30 times in HTML
+  'deal-card' appears 0 times in HTML
+  's-search-result' appears 0 times in HTML
+  'grid-card' appears 0 times in HTML
+
+--- Price patterns found: 49 ---
+  First 5: ['Ç0', 'Ç6,700', 'Ç0', 'Ç6,700', 'Ç59.99']
+
+--- Page text snippet ---
+Skip to Main content Keyboard shortcuts Search ALT + / Basket shift + ALT + C Home shift + ALT + H Orders shift + ALT + O Show/Hide shortcuts shift + ALT + Z To move between items, use your keyboard's up or down arrows. .fr Deliver to Morocco Deals Select the department you want to search in Deals All Departments Alexa Skills Amazon Devices Amazon Global Store Amazon Haul Amazon Resale Apps & Games Audible Audiobooks Automotive Baby Beauty Books CDs & Vinyl Classical Music Computers & Accessorie
+
+Done.

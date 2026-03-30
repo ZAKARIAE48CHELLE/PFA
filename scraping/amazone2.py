@@ -99,7 +99,7 @@ SEARCH_TERMS = [
     ("montre homme",        "Accessoires"),
     ("lunettes soleil",     "Accessoires"),
     ("coque iphone",        "Accessoires"),
-]
+] 
 
 DIRECT_CATEGORIES = [
     ("s?i=electronics",    "Électronique"),
@@ -228,32 +228,76 @@ def clean_price(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace("\u202f", " ").replace("\xa0", " ").strip())
 
 
-def parse_offer(price_old: str, price_new: str, badge: str):
-    """Return offer list matching Jumia schema, or None if no discount."""
+def price_to_float(text: str) -> float | None:
+    """Convert a raw price string (e.g. '1\u202f299,99\u00a0€') to a float."""
+    if not text:
+        return None
+    cleaned = re.sub(r"[^\d,\.]", "", clean_price(text)).replace(",", ".")
+    # Handle cases like '1.299.99' (thousand sep + decimal)
+    parts = cleaned.split(".")
+    if len(parts) > 2:
+        cleaned = "".join(parts[:-1]) + "." + parts[-1]
+    try:
+        return round(float(cleaned), 2)
+    except ValueError:
+        return None
+
+
+def parse_offer(price_old_str: str, price_new_str: str, badge: str) -> list | None:
+    """
+    Build Offre objects matching the UML model:
+      typeOffre    : str   ('pourcentage' | 'forfaite')
+      valeurOffre  : float (numeric value of the discount)
+      monnaie      : str   ('EUR')
+      dateCreation : str   (ISO date)
+      statut       : str   ('active')
+    """
     offers = []
+
     if badge:
         pct = re.search(r"(\d+)\s*%", badge)
         if pct:
-            offers.append({"type_offre": "pourcentage", "valeur_offre": f"{pct.group(1)}%"})
+            offers.append({
+                "typeOffre":    "pourcentage",
+                "valeurOffre":  float(pct.group(1)),
+                "monnaie":      "EUR",
+                "dateCreation": TODAY,
+                "statut":       "active",
+            })
         else:
-            flat = re.search(r"([\d\s,]+)\s*(EUR|€)", badge, re.IGNORECASE)
+            flat = re.search(r"([\d][\d\s,\.]*?)\s*(EUR|€)", badge, re.IGNORECASE)
             if flat:
-                offers.append({"type_offre": "forfaite", "valeur_offre": f"{flat.group(1).strip()} EUR"})
+                val = price_to_float(flat.group(1)) or 0.0
+                offers.append({
+                    "typeOffre":    "forfaite",
+                    "valeurOffre":  val,
+                    "monnaie":      "EUR",
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
             elif badge.strip():
-                offers.append({"type_offre": "forfaite", "valeur_offre": badge.strip()})
+                offers.append({
+                    "typeOffre":    "forfaite",
+                    "valeurOffre":  0.0,
+                    "monnaie":      "EUR",
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
 
-    if not offers and price_old and price_new:
-        def num(s):
-            s = re.sub(r"[^\d,\.]", "", s).replace(",", ".")
-            try:
-                return float(s)
-            except Exception:
-                return None
-        ov, nv = num(price_old), num(price_new)
+    # Fallback: compute % discount from price difference
+    if not offers and price_old_str and price_new_str:
+        ov = price_to_float(price_old_str)
+        nv = price_to_float(price_new_str)
         if ov and nv and ov > nv:
-            p = round((ov - nv) / ov * 100)
+            p = round((ov - nv) / ov * 100, 2)
             if p >= 1:
-                offers.append({"type_offre": "pourcentage", "valeur_offre": f"{p}%"})
+                offers.append({
+                    "typeOffre":    "pourcentage",
+                    "valeurOffre":  p,
+                    "monnaie":      "EUR",
+                    "dateCreation": TODAY,
+                    "statut":       "active",
+                })
 
     return offers or None
 
@@ -334,17 +378,29 @@ def parse_cards(html: str, category: str) -> list:
             badge = be.get_text(strip=True) if be else ""
             offer = parse_offer(price_old, price_offer, badge)
 
+            # ── Convert prices to floats as required by the Produit model ──
+            prix_initial = price_to_float(price_old)
+            prix_offre   = price_to_float(price_offer)
+            # prixBase = best available price (offre if present, else initial)
+            prix_base    = prix_offre if prix_offre else prix_initial
+
             out.append((asin, {
-                "title":         title,
-                "price_initial": price_old,
-                "price_offre":   price_offer,
-                "seller":        seller,
+                # ─── Produit (UML model) ────────────────────────────────
+                "titre":         title,
+                "prixInitial":   prix_initial,   # float | None
+                "prixBase":      prix_base,       # float | None  (pre-offer reference)
+                "prixOffre":     prix_offre,      # float | None  (price after discount)
+                "categorie":     category,
                 "location":      "Amazon.fr",
-                "category":      category,
+                "statut":        "actif",
+                "monnaie":       "EUR",
+                # ─── Offre list (UML model) ─────────────────────────────
+                "offre":         offer,           # list[Offre] | None
+                # ─── Extra metadata (kept for frontend / debug) ─────────────
+                "seller":        seller,
+                "rating":        rating,
                 "link":          link,
                 "date":          TODAY,
-                "rating":        rating,
-                "offre":         offer,
             }))
 
         except Exception as e:
