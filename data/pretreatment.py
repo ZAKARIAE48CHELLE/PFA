@@ -453,13 +453,15 @@ def apply_quality_rules(df: pd.DataFrame, source: str) -> pd.DataFrame:
     # 4. Clip discount to [0, 99]
     df["discount_pct"] = df["discount_pct"].clip(0, 99)
 
-    # 5. Mark duplicates
+    # 5. Mark duplicates and drop them
     df = flag_duplicates(df)
+    dup_count = df["is_duplicate"].sum()
+    df = df[~df["is_duplicate"]].copy()
 
     # ── QA report
     kept_count    = len(df)
     dropped_count = initial_count - kept_count
-    dup_count     = df["is_duplicate"].sum()
+    # dup_count computed above
     has_disc      = df["discount_pct"].notna().sum()
     no_offre      = df["price_offre"].isna().sum()
 
