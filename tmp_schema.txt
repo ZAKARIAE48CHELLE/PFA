@@ -1,0 +1,20 @@
+{
+  "id": "AMA_091e5a908c15",
+  "source": "Amazon",
+  "title_clean": "XIAOMI Smartphone Redmi A5, 3+64GO, Noir, Double Appareil Photo AI de 32 MP, Batterie Massive de 5200 mAh, Octa-Core, Écran immersif de 6,88 Pouces jusqu'à 120 Hz (Adaptateur Secteur Non Inclus)",
+  "price_initial": 95.66,
+  "price_offre": null,
+  "currency": "EUR",
+  "price_initial_mad": 1037.91,
+  "price_offre_mad": null,
+  "eur_to_mad_rate": 10.85,
+  "discount_pct": null,
+  "seller": "",
+  "location": "Amazon.fr",
+  "category": "Smartphones",
+  "rating": 4.2,
+  "date": "2026-03-29",
+  "link": "https://www.amazon.fr/dp/B0F1GF3MW6",
+  "offre_type": "forfaite",
+  "is_duplicate": false
+}
