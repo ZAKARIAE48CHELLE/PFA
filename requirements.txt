@@ -1,0 +1,15 @@
+# Scraping
+playwright
+beautifulsoup4
+requests
+
+# Data Processing
+pandas
+numpy
+nbconvert
+nbformat
+ipykernel
+
+# Utils
+python-dotenv
+pyyaml
