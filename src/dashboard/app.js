@@ -1,694 +1,608 @@
-// ==========================
-//   Dashboard Logic
-// ==========================
+// ==========================================
+//   AuraMarket Analytics — Core Dashboard
+// ==========================================
 
-// Chart global defaults for dark theme
-Chart.defaults.color = '#94a3b8';
-Chart.defaults.font.family = "'Inter', sans-serif";
+// --- Chart Global Configuration ---
+Chart.defaults.color = 'hsla(210, 15%, 70%, 1)';
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.plugins.tooltip.backgroundColor = 'hsla(230, 25%, 10%, 0.9)';
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.borderColor = 'hsla(255, 255%, 255%, 0.1)';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
 
-// State
-let dataset = [];
+// --- State Management ---
+let fullDataset = [];
+let filteredDataset = [];
 
-// Initialize Dashboard
+// --- Initialization ---
 async function initDashboard() {
-  try {
-    const response = await fetch('../../data/processed/unified_dataset.json');
-    if (!response.ok) throw new Error("Network response was not ok");
-    
-    dataset = await response.json();
-    
-    calculateKPIs();
-    renderCharts();
-    renderTopDealsTable();
-    renderCategoryTree();
-    renderOffresSection('all');
-    initOffresTabs();
-    
-  } catch (error) {
-    console.error("Error loading JSON data:", error);
-    document.getElementById('total-products').innerText = "Error";
-    document.getElementById('total-products').style.color = "#ef4444";
-    document.getElementById('total-products').nextElementSibling.innerText = "Check Local Server / CORS";
-  }
-}
+    const statusText = document.getElementById('total-products');
+    if (statusText) statusText.innerText = "Connecting...";
 
-// Calculate Top Metrics
-function calculateKPIs() {
-  // 1. Total Products
-  const total = dataset.length;
-  
-  // 2. Average Price
-  let totalPrice = 0;
-  let countPrice = 0;
-  
-  // 3. Average Discount
-  let totalDiscount = 0;
-  let countDiscount = 0;
-  
-  // 4. Average Rating
-  let totalRating = 0;
-  let countRating = 0;
+    try {
+        // Try multiple potential paths to handle various server root configurations
+        const pathsToTry = [
+            '../../data/processed/unified_dataset.json',
+            'data/processed/unified_dataset.json',
+            '/data/processed/unified_dataset.json'
+        ];
+        
+        let response = null;
+        let successfulPath = "";
 
-  dataset.forEach(item => {
-    // Price
-    if (typeof item.price_initial_mad === 'number') {
-      totalPrice += item.price_initial_mad;
-      countPrice++;
-    } else if (typeof item.price_offre_mad === 'number') {
-      totalPrice += item.price_offre_mad;
-      countPrice++;
-    }
-    
-    // Discount
-    if (typeof item.discount_pct === 'number' && item.discount_pct > 0) {
-      totalDiscount += item.discount_pct;
-      countDiscount++;
-    }
-    
-    // Rating
-    if (typeof item.rating === 'number' && item.rating > 0 && item.rating <= 5) {
-      totalRating += item.rating;
-      countRating++;
-    }
-  });
-
-  const avgPrice = countPrice > 0 ? (totalPrice / countPrice).toFixed(2) : 0;
-  const avgDiscount = countDiscount > 0 ? (totalDiscount / countDiscount).toFixed(1) : 0;
-  const avgRating = countRating > 0 ? (totalRating / countRating).toFixed(1) : 0;
-
-  // Render to DOM
-  document.getElementById('total-products').innerText = total.toLocaleString();
-  document.getElementById('avg-price').innerText = Number(avgPrice).toLocaleString();
-  document.getElementById('avg-discount').innerText = avgDiscount + "%";
-  document.getElementById('avg-rating').innerText = avgRating + " / 5";
-}
-
-// Prepare Data & Render Charts
-function renderCharts() {
-  // --- Data aggregation for Platform Distribution ---
-  const sourceCount = {};
-  dataset.forEach(item => {
-    const src = item.source || "Unknown";
-    sourceCount[src] = (sourceCount[src] || 0) + 1;
-  });
-
-  const sourceLabels = Object.keys(sourceCount);
-  const sourceData = Object.values(sourceCount);
-
-  // Colors mapping for platforms
-  const bgColors = sourceLabels.map(label => {
-    if (label.toLowerCase().includes('amazon')) return 'rgba(245, 158, 11, 0.8)';
-    if (label.toLowerCase().includes('jumia')) return 'rgba(249, 115, 22, 0.8)';
-    if (label.toLowerCase().includes('avito')) return 'rgba(236, 72, 153, 0.8)';
-    if (label.toLowerCase().includes('cdiscount')) return 'rgba(59, 130, 246, 0.8)';
-    return 'rgba(148, 163, 184, 0.8)';
-  });
-
-  // Render Source Doughnut Chart
-  const ctxSource = document.getElementById('sourceChart').getContext('2d');
-  new Chart(ctxSource, {
-    type: 'doughnut',
-    data: {
-      labels: sourceLabels,
-      datasets: [{
-        data: sourceData,
-        backgroundColor: bgColors,
-        borderColor: 'rgba(255, 255, 255, 0.05)',
-        borderWidth: 2,
-        hoverOffset: 10
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right' }
-      },
-      cutout: '70%'
-    }
-  });
-
-
-  // --- Data aggregation for Pricing by Category ---
-  const catPriceSum = {};
-  const catPriceCount = {};
-  
-  dataset.forEach(item => {
-    const cat = item.category || "Other";
-    const price = item.price_offre_mad || item.price_initial_mad || 0;
-    
-    // Ignore extreme outliers or missing data for clean chart
-    if (price > 0 && price < 100000) {
-      catPriceSum[cat] = (catPriceSum[cat] || 0) + price;
-      catPriceCount[cat] = (catPriceCount[cat] || 0) + 1;
-    }
-  });
-
-  const catNames = Object.keys(catPriceSum);
-  const avgPrices = catNames.map(cat => Math.round(catPriceSum[cat] / catPriceCount[cat]));
-
-  // Get Top 7 categories by volume
-  const combined = catNames.map((name, i) => ({
-    name, 
-    avg: avgPrices[i], 
-    count: catPriceCount[name]
-  })).sort((a, b) => b.count - a.count).slice(0, 7);
-
-  const finalCatLabels = combined.map(c => c.name);
-  const finalCatPrices = combined.map(c => c.avg);
-
-  // Gradient for Bar Chart
-  const ctxPrice = document.getElementById('priceChart').getContext('2d');
-  let gradientBar = ctxPrice.createLinearGradient(0, 0, 0, 400);
-  gradientBar.addColorStop(0, 'rgba(139, 92, 246, 0.8)'); // Purple
-  gradientBar.addColorStop(1, 'rgba(59, 130, 246, 0.2)'); // Blue
-
-  new Chart(ctxPrice, {
-    type: 'bar',
-    data: {
-      labels: finalCatLabels,
-      datasets: [{
-        label: 'Average Price (MAD)',
-        data: finalCatPrices,
-        backgroundColor: gradientBar,
-        borderRadius: 6,
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              return context.parsed.y + ' MAD';
+        for (const path of pathsToTry) {
+            try {
+                console.log(`Attempting to load data from: ${path}`);
+                const res = await fetch(path);
+                if (res.ok) {
+                    response = res;
+                    successfulPath = path;
+                    break; 
+                }
+            } catch (e) {
+                console.warn(`Path ${path} failed or blocked.`);
             }
-          }
         }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: 'rgba(255, 255, 255, 0.05)' }
-        },
-        x: {
-          grid: { display: false },
-          ticks: {
-             callback: function(val, index) {
-               let label = this.getLabelForValue(val);
-               return label.length > 12 ? label.substring(0, 10) + '...' : label;
-             }
-          }
+
+        if (!response) {
+            throw new Error(`Data Connectivity Error: Failed to find unified_dataset.json in any mapped location. Ensure you are running the server from the project root.`);
         }
-      }
+        
+        console.log(`Successfully connected via: ${successfulPath}`);
+        fullDataset = await response.json();
+        console.log(`Payload received: ${fullDataset.length.toLocaleString()} rows.`);
+        
+        filteredDataset = [...fullDataset];
+        refreshDashboard();
+        setupEventListeners();
+        
+    } catch (error) {
+        console.error("Dashboard Critical Error:", error);
+        handleFetchError(error);
     }
-  });
 }
 
-// Render Top Deals Table
-function renderTopDealsTable() {
-  const tbody = document.querySelector("#deals-table tbody");
-  
-  // Sort by highest discount percentage and slice top 10
-  const sorted = [...dataset]
-    .filter(item => typeof item.discount_pct === 'number')
-    .sort((a, b) => b.discount_pct - a.discount_pct)
-    .slice(0, 10);
-    
-  sorted.forEach(item => {
-    const tr = document.createElement("tr");
+function handleFetchError(error) {
+    const kpiElements = ['total-products', 'avg-price', 'avg-discount', 'avg-rating'];
+    kpiElements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerText = "ERROR";
+            el.style.color = "#ef4444";
+        }
+    });
 
-    // Platform Badge formulation
-    let sourceClass = "amazon"; // default fallback
-    const srcLower = (item.source || "").toLowerCase();
-    if(srcLower.includes("jumia")) sourceClass = "jumia";
-    if(srcLower.includes("avito")) sourceClass = "avito";
-    if(srcLower.includes("cdiscount")) sourceClass = "cdiscount";
-
-    const badge = `<span class="platform-badge ${sourceClass}">${item.source || "Unknown"}</span>`;
-    
-    // Title truncation
-    let rawTitle = item.title_clean || "Unnamed Product";
-    const titleStr = rawTitle.length > 40 ? rawTitle.substring(0, 40) + "..." : rawTitle;
-    
-    // Prices
-    const displayPrice = (item.price_offre_mad || item.price_initial_mad || 0).toLocaleString();
-    const discountStr = `-${item.discount_pct}%`;
-
-    tr.innerHTML = `
-      <td>${badge}</td>
-      <td title="${rawTitle}"><a href="${item.link || '#'}" target="_blank" style="color: inherit; text-decoration: none;">${titleStr}</a></td>
-      <td class="discount-tag">${discountStr}</td>
-      <td><strong>${displayPrice}</strong></td>
+    const banner = document.createElement('div');
+    banner.style.cssText = "position: fixed; top: 20px; right: 20px; background: #991b1b; color: #fee2e2; padding: 24px; border-radius: 12px; z-index: 10000; box-shadow: 0 20px 50px rgba(0,0,0,0.6); max-width: 450px; border: 1px solid #f87171; font-family: sans-serif;";
+    banner.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <div style="background: #f87171; color: #991b1b; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">!</div>
+            <div>
+                <h4 style="margin: 0 0 10px 0; font-size: 1.1rem;">Data Synchronization Failure</h4>
+                <p style="font-size: 0.9rem; line-height: 1.5; margin: 0 0 15px 0;">${error.message}</p>
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; font-size: 0.8rem;">
+                    <strong>Common Fixes:</strong>
+                    <ul style="margin: 8px 0 0 18px; padding: 0;">
+                        <li>Run the dashboard from the <code>PFA/</code> root directory.</li>
+                        <li>If using VS Code, right-click the <b>PFA folder</b> and select 'Open with Live Server'.</li>
+                        <li>Ensure <code>data/processed/unified_dataset.json</code> exists.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     `;
-    
-    tbody.appendChild(tr);
-  });
+    document.body.appendChild(banner);
 }
 
-// Boot up
-document.addEventListener("DOMContentLoaded", initDashboard);
+function refreshDashboard() {
+    if (!filteredDataset.length) return;
+    
+    calculateKPIs(filteredDataset);
+    renderPlatformDistribution(filteredDataset);
+    renderPriceBarChart(filteredDataset);
+    renderDealsTable(filteredDataset);
+    renderCategoryTree(filteredDataset);
+    renderOffresSection(filteredDataset, 'all');
+    
+    if (window.lucide) window.lucide.createIcons();
+}
 
-// ==========================
-//   OFFRES SECTION
-// ==========================
+// --- KPI Calculations ---
+function calculateKPIs(data) {
+    const total = data.length;
+    let totalPrice = 0, priceCount = 0;
+    let totalDisc = 0, discCount = 0;
+    let totalRating = 0, ratCount = 0;
 
-// Chart instances we'll need to destroy & re-create on tab switch
+    data.forEach(item => {
+        const price = parseFloat(item.price_offre_mad || item.price_initial_mad);
+        if (!isNaN(price) && price > 0 && price < 1000000) {
+            totalPrice += price;
+            priceCount++;
+        }
+        const disc = parseFloat(item.discount_pct);
+        if (!isNaN(disc) && disc > 0) {
+            totalDisc += disc;
+            discCount++;
+        }
+        const rat = parseFloat(item.rating);
+        if (!isNaN(rat) && rat > 0) {
+            totalRating += rat;
+            ratCount++;
+        }
+    });
+
+    const avgPrice = priceCount > 0 ? (totalPrice / priceCount).toFixed(0) : 0;
+    const avgDisc = discCount > 0 ? (totalDisc / discCount).toFixed(1) : 0;
+    const avgRat = ratCount > 0 ? (totalRating / ratCount).toFixed(1) : 0;
+
+    animateValue("total-products", total);
+    animateValue("avg-price", avgPrice, " MAD");
+    animateValue("avg-discount", avgDisc, "%");
+    animateValue("avg-rating", avgRat, " / 5");
+}
+
+function animateValue(id, value, suffix = "") {
+    const obj = document.getElementById(id);
+    if (!obj) return;
+    
+    if (value === 0 || value === "0") {
+        obj.innerHTML = "0" + suffix;
+        return;
+    }
+
+    const startValue = 0;
+    const duration = 1200;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const current = easeProgress * (Number(value) - startValue) + startValue;
+        
+        obj.innerHTML = current.toLocaleString(undefined, {
+            maximumFractionDigits: (Number(value) % 1 === 0) ? 0 : 1
+        }) + suffix;
+
+        if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
+
+// --- Chart Rendering ---
+let charts = {};
+
+function renderPlatformDistribution(data) {
+    const counts = {};
+    data.forEach(d => counts[d.source] = (counts[d.source] || 0) + 1);
+
+    const canvas = document.getElementById('sourceChart');
+    if (!canvas) return;
+    
+    if (charts.source) charts.source.destroy();
+
+    charts.source = new Chart(canvas.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(counts),
+            datasets: [{
+                data: Object.values(counts),
+                backgroundColor: [
+                    'hsla(250, 100%, 65%, 0.8)',
+                    'hsla(210, 100%, 55%, 0.8)',
+                    'hsla(150, 100%, 45%, 0.8)',
+                    'hsla(35, 100%, 55%, 0.8)',
+                    'hsla(330, 100%, 65%, 0.8)',
+                    'hsla(210, 20%, 40%, 0.8)'
+                ],
+                borderWidth: 0,
+                hoverOffset: 20
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, color: '#94a3b8' } }
+            }
+        }
+    });
+}
+
+function renderPriceBarChart(data) {
+    const cats = {};
+    data.forEach(d => {
+        const p = parseFloat(d.price_offre_mad || d.price_initial_mad);
+        if (!isNaN(p) && p > 0) {
+            const catName = d.category || "Uncategorized";
+            if (!cats[catName]) cats[catName] = { sum: 0, count: 0 };
+            cats[catName].sum += p;
+            cats[catName].count++;
+        }
+    });
+
+    const sorted = Object.entries(cats)
+        .map(([name, v]) => ({ name, avg: Math.round(v.sum / v.count) }))
+        .sort((a, b) => b.avg - a.avg)
+        .slice(0, 8);
+
+    const canvas = document.getElementById('priceChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (charts.price) charts.price.destroy();
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 400);
+    grad.addColorStop(0, 'hsla(250, 100%, 65%, 0.9)');
+    grad.addColorStop(1, 'hsla(250, 100%, 65%, 0.1)');
+
+    charts.price = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(d => d.name),
+            datasets: [{
+                label: 'Avg Price',
+                data: sorted.map(d => d.avg),
+                backgroundColor: grad,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } }
+            }
+        }
+    });
+}
+
+function renderDealsTable(data) {
+    const tbody = document.querySelector("#deals-table tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const deals = [...data]
+        .filter(d => parseFloat(d.discount_pct) > 0)
+        .sort((a, b) => parseFloat(b.discount_pct) - parseFloat(a.discount_pct))
+        .slice(0, 10);
+
+    deals.forEach(d => {
+        const tr = document.createElement("tr");
+        const srcClass = (d.source || "amazon").toLowerCase().replace(" ", "");
+        const price = parseFloat(d.price_offre_mad || d.price_initial_mad);
+        tr.innerHTML = `
+            <td><span class="badge badge-${srcClass}">${d.source}</span></td>
+            <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <a href="${d.link}" target="_blank" style="color: inherit; text-decoration: none;">${d.title_clean}</a>
+            </td>
+            <td><span class="discount-pill">-${parseFloat(d.discount_pct).toFixed(0)}%</span></td>
+            <td style="font-weight: 600; color: #fff;">${price.toLocaleString()} MAD</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// --- Category Tree Logic ---
+const CATEGORY_TREE_MAP = [
+  { label: 'Tech & Computing', icon: '💻', children: ['Informatique'] },
+  { label: 'Mobile & Tablets', icon: '📱', children: ['Smartphones', 'Tablettes', 'Téléphones & Tablettes'] },
+  { label: 'Home & Appliances', icon: '🏠', children: ['Maison', 'Maison & Cuisine', 'Électroménager'] },
+  { label: 'Entertainment', icon: '🎮', children: ['Gaming', 'Jouets', 'Jeux & Jouets'] },
+  { label: 'TV, Audio & Photo', icon: '📺', children: ['TV & Vidéo', 'TV & Home Cinéma', 'Audio', 'Photo & Caméra'] },
+  { label: 'Fashion & Accessories', icon: '👗', children: ['Mode Femme', 'Mode Homme', 'Montres', 'Accessoires'] },
+  { label: 'Beauty & Health', icon: '✨', children: ['Beauté', 'Beauté & Santé'] },
+  { label: 'Sports & Outdoors', icon: '⚽', children: ['Sport'] },
+  { label: 'Electronics (General)', icon: '🔌', children: ['Électronique'] },
+  { label: 'Steam Digital Store', icon: '🎮', children: ['Steam Specials', 'Steam Top Sellers', 'Steam Popular New', 'Steam All Games'] }
+];
+
+function buildCategoryStats(data) {
+    const stats = new Map();
+    data.forEach(d => {
+        const cat = d.category || 'Other';
+        if (!stats.has(cat)) stats.set(cat, {
+            count: 0, sources: new Set(),
+            withOffer: 0, sumDisc: 0, maxDisc: 0,
+            priceSum: 0, priceCount: 0
+        });
+        const s = stats.get(cat);
+        s.count++;
+        s.sources.add(d.source);
+        const disc = parseFloat(d.discount_pct);
+        if (!isNaN(disc) && disc > 0) {
+            s.withOffer++;
+            s.sumDisc += disc;
+            s.maxDisc = Math.max(s.maxDisc, disc);
+        }
+        const p = parseFloat(d.price_offre_mad || d.price_initial_mad);
+        if (!isNaN(p) && p > 0 && p < 1000000) { s.priceSum += p; s.priceCount++; }
+    });
+    return stats;
+}
+
+function renderCategoryTree(data) {
+    const tbody = document.querySelector('#category-tree-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const stats = buildCategoryStats(data);
+    let groupIdx = 0;
+
+    CATEGORY_TREE_MAP.forEach(group => {
+        const activeChildren = group.children.filter(c => stats.has(c));
+        if (activeChildren.length === 0) return;
+
+        const gid = `tree-group-${groupIdx++}`;
+        let pTotal = 0, pWithOffer = 0, pSumDisc = 0, pMaxDisc = 0, pPriceSum = 0, pPriceCount = 0;
+        const pSources = new Set();
+
+        activeChildren.forEach(c => {
+            const s = stats.get(c);
+            pTotal += s.count;
+            pWithOffer += s.withOffer;
+            pSumDisc += s.sumDisc;
+            pMaxDisc = Math.max(pMaxDisc, s.maxDisc);
+            pPriceSum += s.priceSum;
+            pPriceCount += s.priceCount;
+            s.sources.forEach(src => pSources.add(src));
+        });
+
+        const pCoverage = pTotal > 0 ? (pWithOffer / pTotal) * 100 : 0;
+        const pAvgPrice = pPriceCount > 0 ? Math.round(pPriceSum / pPriceCount) : 0;
+
+        const parentTr = document.createElement('tr');
+        parentTr.className = 'tree-parent-row';
+        parentTr.innerHTML = `
+            <td>
+                <span class="tree-row-toggle" data-group="${gid}">▶</span>
+                <span style="font-size: 1.1rem; margin-right: 8px;">${group.icon}</span>
+                <strong>${group.label}</strong>
+            </td>
+            <td style="color: var(--accent-primary); font-weight: 700;">${pTotal.toLocaleString()}</td>
+            <td>${pWithOffer.toLocaleString()}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="flex:1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                        <div style="width: ${pCoverage}%; height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));"></div>
+                    </div>
+                    <span style="font-size: 0.75rem; min-width: 30px;">${pCoverage.toFixed(0)}%</span>
+                </div>
+            </td>
+            <td>${pWithOffer > 0 ? (pSumDisc / pWithOffer).toFixed(1) : 0}%</td>
+            <td style="color: var(--accent-success); font-weight: 700;">-${pMaxDisc.toFixed(0)}%</td>
+            <td>${pAvgPrice.toLocaleString()}</td>
+            <td><div style="display: flex; gap: 4px; flex-wrap: wrap;">${Array.from(pSources).map(src => `<span class="badge badge-${src.toLowerCase().replace(' ', '')}" style="font-size: 0.6rem; padding: 2px 6px;">${src}</span>`).join('')}</div></td>
+        `;
+        tbody.appendChild(parentTr);
+
+        activeChildren.forEach((catName, idx) => {
+            const s = stats.get(catName);
+            const coverage = s.count > 0 ? (s.withOffer / s.count) * 100 : 0;
+            const isLast = idx === activeChildren.length - 1;
+
+            const childTr = document.createElement('tr');
+            childTr.className = `tree-child-row collapsed ${isLast ? 'last-child' : ''}`;
+            childTr.dataset.parent = gid;
+            childTr.innerHTML = `
+                <td><span class="tree-child-name">${catName}</span></td>
+                <td>${s.count.toLocaleString()}</td>
+                <td>${s.withOffer.toLocaleString()}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="flex:1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
+                            <div style="width: ${coverage}%; height: 100%; background: hsla(250, 100%, 65%, 0.4);"></div>
+                        </div>
+                        <span style="font-size: 0.7rem;">${coverage.toFixed(0)}%</span>
+                    </div>
+                </td>
+                <td>${s.withOffer > 0 ? (s.sumDisc / s.withOffer).toFixed(1) : 0}%</td>
+                <td style="color: var(--accent-success); opacity: 0.8;">-${s.maxDisc.toFixed(0)}%</td>
+                <td>${Math.round(s.priceSum / (s.priceCount || 1)).toLocaleString()}</td>
+                <td><div style="display: flex; gap: 4px;">${Array.from(s.sources).map(src => `<span class="badge badge-${src.toLowerCase().replace(' ', '')}" style="font-size: 0.6rem; opacity: 0.8;">${src}</span>`).join('')}</div></td>
+            `;
+            tbody.appendChild(childTr);
+        });
+
+        parentTr.addEventListener('click', () => {
+            const toggle = parentTr.querySelector('.tree-row-toggle');
+            if (toggle) toggle.classList.toggle('expanded');
+            tbody.querySelectorAll(`tr[data-parent="${gid}"]`).forEach(row => row.classList.toggle('collapsed'));
+        });
+    });
+
+    const expandBtn = document.getElementById('expand-all-btn');
+    const collapseBtn = document.getElementById('collapse-all-btn');
+    if (expandBtn) expandBtn.onclick = () => {
+        tbody.querySelectorAll('.tree-child-row').forEach(r => r.classList.remove('collapsed'));
+        tbody.querySelectorAll('.tree-row-toggle').forEach(t => t.classList.add('expanded'));
+    };
+    if (collapseBtn) collapseBtn.onclick = () => {
+        tbody.querySelectorAll('.tree-child-row').forEach(r => r.classList.add('collapsed'));
+        tbody.querySelectorAll('.tree-row-toggle').forEach(t => t.classList.remove('expanded'));
+    };
+}
+
+// --- Multi-Channel Offer Depth (Section Logic) ---
 let offresByCatChartInst = null;
 let offresTypeChartInst  = null;
 
-// Platform color palette (consistent with doughnut)
-const PLATFORM_COLORS = {
-  amazon:    { fill: 'rgba(245,158,11,0.75)',   border: 'rgba(245,158,11,1)' },
-  jumia:     { fill: 'rgba(249,115,22,0.75)',   border: 'rgba(249,115,22,1)' },
-  avito:     { fill: 'rgba(236,72,153,0.75)',   border: 'rgba(236,72,153,1)' },
-  cdiscount: { fill: 'rgba(59,130,246,0.75)',   border: 'rgba(59,130,246,1)'  },
-  unknown:   { fill: 'rgba(148,163,184,0.75)',  border: 'rgba(148,163,184,1)' },
-};
+function renderOffresSection(data, filter = 'all') {
+    // 1. Filter dataset by selected source tab
+    const filtered = filter === 'all' 
+        ? data 
+        : data.filter(d => (d.source || "").toLowerCase().includes(filter.toLowerCase()));
+    
+    const tbody = document.querySelector('#offres-category-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = "";
 
-function platformKey(src) {
-  const s = (src || '').toLowerCase();
-  if (s.includes('amazon'))    return 'amazon';
-  if (s.includes('jumia'))     return 'jumia';
-  if (s.includes('avito'))     return 'avito';
-  if (s.includes('cdiscount')) return 'cdiscount';
-  return 'unknown';
-}
-
-function renderOffresSection(filterSource = 'all') {
-  // ── Filter dataset ────────────────────────────────────────────────────
-  const filtered = filterSource === 'all'
-    ? dataset
-    : dataset.filter(d => (d.source || '').toLowerCase().includes(filterSource.toLowerCase()));
-
-  const withOffer = filtered.filter(d =>
-    d.offre_type ||
-    (typeof d.discount_pct === 'number' && d.discount_pct > 0)
-  );
-
-  // ── Mini KPIs ─────────────────────────────────────────────────────────
-  document.getElementById('total-offres').textContent   = withOffer.length.toLocaleString();
-  document.getElementById('pct-offres').textContent     =
-    filtered.length ? ((withOffer.length / filtered.length) * 100).toFixed(1) + '%' : '—';
-
-  // Best platform = highest avg discount
-  const srcAvg = {};
-  const srcCnt = {};
-  dataset.forEach(d => {
-    if (typeof d.discount_pct !== 'number' || d.discount_pct <= 0) return;
-    const k = d.source || 'Unknown';
-    srcAvg[k] = (srcAvg[k] || 0) + d.discount_pct;
-    srcCnt[k] = (srcCnt[k] || 0) + 1;
-  });
-  let bestSrc = '—', bestAvgVal = 0;
-  Object.keys(srcAvg).forEach(k => {
-    const avg = srcAvg[k] / srcCnt[k];
-    if (avg > bestAvgVal) { bestAvgVal = avg; bestSrc = k; }
-  });
-  document.getElementById('best-offre-src').textContent = bestSrc;
-
-  // ── Category aggregation ──────────────────────────────────────────────
-  const catStats = {};   // { cat: { total, withOffer, sumDisc, maxDisc } }
-  filtered.forEach(d => {
-    const cat = d.category || 'Other';
-    if (!catStats[cat]) catStats[cat] = { total: 0, withOffer: 0, sumDisc: 0, maxDisc: 0 };
-    catStats[cat].total++;
-    const disc = typeof d.discount_pct === 'number' ? d.discount_pct : 0;
-    if (disc > 0 || d.offre_type) {
-      catStats[cat].withOffer++;
-      catStats[cat].sumDisc  += disc;
-      catStats[cat].maxDisc   = Math.max(catStats[cat].maxDisc, disc);
-    }
-  });
-
-  // Sort by number of offers descending, take top 8 for chart
-  const sorted = Object.entries(catStats)
-    .filter(([, v]) => v.withOffer > 0)
-    .sort(([, a], [, b]) => b.withOffer - a.withOffer);
-
-  const top8 = sorted.slice(0, 8);
-
-  // ── Chart 1: Avg Discount % per Category ─────────────────────────────
-  if (offresByCatChartInst) offresByCatChartInst.destroy();
-
-  const catLabels   = top8.map(([k]) => k.length > 14 ? k.slice(0, 13) + '…' : k);
-  const catAvgDiscs = top8.map(([, v]) => v.withOffer > 0 ? +(v.sumDisc / v.withOffer).toFixed(1) : 0);
-
-  const ctx1 = document.getElementById('offresByCatChart').getContext('2d');
-  const grad1 = ctx1.createLinearGradient(0, 0, 0, 340);
-  grad1.addColorStop(0, 'rgba(139,92,246,0.85)');
-  grad1.addColorStop(1, 'rgba(59,130,246,0.3)');
-
-  offresByCatChartInst = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: catLabels,
-      datasets: [{
-        label: 'Avg Discount %',
-        data: catAvgDiscs,
-        backgroundColor: grad1,
-        borderRadius: 6,
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      indexAxis: 'y',            // Horizontal bar → more readable labels
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ctx.parsed.x.toFixed(1) + '%' } },
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: { callback: v => v + '%' },
-        },
-        y: { grid: { display: false } },
-      },
-    },
-  });
-
-  // ── Chart 2: Offer Type Distribution per Platform ─────────────────────
-  if (offresTypeChartInst) offresTypeChartInst.destroy();
-
-  // Aggregate: for each source, count pourcentage vs forfaite vs none
-  const sources = [...new Set(filtered.map(d => d.source || 'Unknown'))].sort();
-  const pctCounts  = sources.map(s =>
-    filtered.filter(d => (d.source || 'Unknown') === s && d.offre_type === 'pourcentage').length
-  );
-  const flatCounts = sources.map(s =>
-    filtered.filter(d => (d.source || 'Unknown') === s && d.offre_type === 'forfaite').length
-  );
-  const noneCounts = sources.map((s, i) => {
-    const total = filtered.filter(d => (d.source || 'Unknown') === s).length;
-    return total - pctCounts[i] - flatCounts[i];
-  });
-
-  const ctx2 = document.getElementById('offresTypeChart').getContext('2d');
-  offresTypeChartInst = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: sources,
-      datasets: [
-        {
-          label: 'Pourcentage',
-          data: pctCounts,
-          backgroundColor: 'rgba(139,92,246,0.8)',
-          borderRadius: 4,
-        },
-        {
-          label: 'Forfaitaire',
-          data: flatCounts,
-          backgroundColor: 'rgba(59,130,246,0.8)',
-          borderRadius: 4,
-        },
-        {
-          label: 'No Offer',
-          data: noneCounts,
-          backgroundColor: 'rgba(148,163,184,0.25)',
-          borderRadius: 4,
-        },
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { boxWidth: 12, padding: 16 },
-        },
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false } },
-        y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' } },
-      },
-    },
-  });
-
-  // ── Category breakdown table ──────────────────────────────────────────
-  const tbody = document.querySelector('#offres-category-table tbody');
-  tbody.innerHTML = '';
-
-  sorted.forEach(([cat, v]) => {
-    const coverage = v.total > 0 ? (v.withOffer / v.total) * 100 : 0;
-    const avgDisc  = v.withOffer > 0 ? (v.sumDisc / v.withOffer).toFixed(1) + '%' : '—';
-    const bestDeal = v.maxDisc > 0  ? '-' + v.maxDisc.toFixed(0) + '%' : '—';
-    const coveragePct = coverage.toFixed(1) + '%';
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${cat}</strong></td>
-      <td>${v.total.toLocaleString()}</td>
-      <td>${v.withOffer.toLocaleString()}</td>
-      <td>
-        <div class="coverage-bar-wrap">
-          <div class="coverage-bar">
-            <div class="coverage-bar-fill" style="width:${Math.min(coverage,100)}%"></div>
-          </div>
-          <span class="coverage-pct">${coveragePct}</span>
-        </div>
-      </td>
-      <td>${avgDisc}</td>
-      <td class="discount-tag">${bestDeal}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// ── Tab wiring ────────────────────────────────────────────────────────────────
-function initOffresTabs() {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const src = btn.dataset.source;
-      const label = src === 'all' ? '— All Platforms' : `— ${btn.textContent.trim()}`;
-      document.getElementById('filter-label-display').textContent = label;
-      renderOffresSection(src);
+    // 2. Data aggregation for Categories within the current platform filter
+    const cats = {};
+    filtered.forEach(d => {
+        const catName = d.category || "Other";
+        if (!cats[catName]) cats[catName] = { total: 0, off: 0, disc: 0, max: 0 };
+        cats[catName].total++;
+        const disc = parseFloat(d.discount_pct);
+        if (!isNaN(disc) && disc > 0) {
+            cats[catName].off++;
+            cats[catName].disc += disc;
+            cats[catName].max = Math.max(cats[catName].max, disc);
+        }
     });
-  });
-}
 
-// ==========================
-//   CATEGORY TREE
-// ==========================
+    const sortedCats = Object.entries(cats)
+        .sort((a,b) => b[1].off - a[1].off)
+        .slice(0, 10);
 
-/**
- * Hierarchical mapping: parent group → { icon, children[] }
- * Each child is a raw `category` value from the dataset.
- * Categories that overlap conceptually are grouped under the same parent.
- */
-const CATEGORY_TREE_MAP = [
-  {
-    label: 'Tech & Computing',
-    icon: '💻',
-    children: ['Informatique']
-  },
-  {
-    label: 'Mobile & Tablets',
-    icon: '📱',
-    children: ['Smartphones', 'Tablettes', 'Téléphones & Tablettes']
-  },
-  {
-    label: 'Home & Appliances',
-    icon: '🏠',
-    children: ['Maison', 'Maison & Cuisine', 'Électroménager']
-  },
-  {
-    label: 'Entertainment',
-    icon: '🎮',
-    children: ['Gaming', 'Jouets', 'Jeux & Jouets']
-  },
-  {
-    label: 'TV, Audio & Photo',
-    icon: '📺',
-    children: ['TV & Vidéo', 'TV & Home Cinéma', 'Audio', 'Photo & Caméra']
-  },
-  {
-    label: 'Fashion & Accessories',
-    icon: '👗',
-    children: ['Mode Femme', 'Mode Homme', 'Montres', 'Accessoires']
-  },
-  {
-    label: 'Beauty & Health',
-    icon: '✨',
-    children: ['Beauté', 'Beauté & Santé']
-  },
-  {
-    label: 'Sports & Outdoors',
-    icon: '⚽',
-    children: ['Sport']
-  },
-  {
-    label: 'Electronics (General)',
-    icon: '🔌',
-    children: ['Électronique']
-  }
-];
-
-/**
- * Build live stats per raw category from the loaded dataset.
- * Returns Map<category, { count, sources, withOffer, sumDisc, maxDisc, priceSum, priceCount }>
- */
-function buildCategoryStats() {
-  const stats = new Map();
-  dataset.forEach(d => {
-    const cat = d.category || 'Other';
-    if (!stats.has(cat)) stats.set(cat, {
-      count: 0, sources: new Set(),
-      withOffer: 0, sumDisc: 0, maxDisc: 0,
-      priceSum: 0, priceCount: 0
+    // 3. Render Table with Coverage Bars
+    sortedCats.forEach(([name, s]) => {
+        const tr = document.createElement("tr");
+        const coverage = ((s.off / s.total) * 100).toFixed(0);
+        tr.innerHTML = `
+            <td><strong>${name}</strong></td>
+            <td>${s.total.toLocaleString()}</td>
+            <td>${s.off.toLocaleString()}</td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="flex:1; height: 4px; background: hsla(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${coverage}%; height: 100%; background: var(--accent-secondary);"></div>
+                    </div>
+                    <span style="font-size: 0.75rem;">${coverage}%</span>
+                </div>
+            </td>
+            <td style="font-weight: 500;">${(s.disc / (s.off || 1)).toFixed(1)}%</td>
+            <td style="color: var(--accent-success); font-weight: 700;">-${s.max.toFixed(0)}%</td>
+        `;
+        tbody.appendChild(tr);
     });
-    const s = stats.get(cat);
-    s.count++;
-    s.sources.add(d.source || 'Unknown');
 
-    const disc = typeof d.discount_pct === 'number' ? d.discount_pct : 0;
-    if (disc > 0 || d.offre_type) {
-      s.withOffer++;
-      s.sumDisc += disc;
-      s.maxDisc = Math.max(s.maxDisc, disc);
+    // 4. Chart 1: Average Discount % by Category
+    const ctx1 = document.getElementById('offresByCatChart');
+    if (ctx1) {
+        if (offresByCatChartInst) offresByCatChartInst.destroy();
+        
+        const catLabels = sortedCats.map(([n]) => n.length > 15 ? n.slice(0, 14) + '…' : n);
+        const catAvgDisc = sortedCats.map(([, s]) => s.off > 0 ? (s.disc / s.off).toFixed(1) : 0);
+        
+        const grad = ctx1.getContext('2d').createLinearGradient(0, 0, 400, 0);
+        grad.addColorStop(0, 'hsla(150, 100%, 45%, 0.4)');
+        grad.addColorStop(1, 'hsla(150, 100%, 45%, 0.8)');
+
+        offresByCatChartInst = new Chart(ctx1.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'Avg Discount %',
+                    data: catAvgDisc,
+                    backgroundColor: grad,
+                    borderRadius: 4,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                    y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
     }
 
-    const price = d.price_offre_mad || d.price_initial_mad || 0;
-    if (price > 0 && price < 100000) { s.priceSum += price; s.priceCount++; }
-  });
-  return stats;
+    // 5. Chart 2: Offer Type Stacked Bar (Proportion Analysis)
+    const ctx2 = document.getElementById('offresTypeChart');
+    if (ctx2) {
+        if (offresTypeChartInst) offresTypeChartInst.destroy();
+
+        // Get unique platforms in the current filter
+        const sources = [...new Set(filtered.map(d => d.source || "Unknown"))].sort();
+        
+        const typeStats = sources.map(s => {
+            const platformData = filtered.filter(d => (d.source || "Unknown") === s);
+            const total = platformData.length;
+            const percentages = platformData.filter(d => d.offre_type === 'pourcentage').length;
+            const flats = platformData.filter(d => d.offre_type === 'forfaite').length;
+            return {
+                source: s,
+                pourcentage: (percentages / total * 100).toFixed(1),
+                forfaite: (flats / total * 100).toFixed(1),
+                none: ( (total - percentages - flats) / total * 100).toFixed(1)
+            };
+        });
+
+        offresTypeChartInst = new Chart(ctx2.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: typeStats.map(t => t.source),
+                datasets: [
+                    {
+                        label: 'Pourcentage Deals (%)',
+                        data: typeStats.map(t => t.pourcentage),
+                        backgroundColor: 'hsla(250, 100%, 65%, 0.75)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Fixed Reduction (%)',
+                        data: typeStats.map(t => t.forfaite),
+                        backgroundColor: 'hsla(210, 100%, 55%, 0.75)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Standard Pricing (%)',
+                        data: typeStats.map(t => t.none),
+                        backgroundColor: 'hsla(210, 15%, 20%, 0.5)',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }, ticks: { color: '#94a3b8' } },
+                    y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false }, ticks: { color: '#64748b' } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 20, color: '#94a3b8', font: { size: 10 } } }
+                }
+            }
+        });
+    }
 }
 
-/**
- * Build source tag HTML string
- */
-function sourceTagsHTML(sources) {
-  return [...sources].sort().map(src => {
-    const key = platformKey(src);
-    return `<span class="tree-source-tag ${key}">${src}</span>`;
-  }).join('');
-}
+// --- Interaction Drivers ---
+function setupEventListeners() {
+    const search = document.getElementById('global-search');
+    if (search) {
+        search.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            filteredDataset = fullDataset.filter(d => 
+                (d.title_clean || "").toLowerCase().includes(query) || 
+                (d.category || "").toLowerCase().includes(query) ||
+                (d.source || "").toLowerCase().includes(query)
+            );
+            refreshDashboard();
+        });
+    }
 
-/**
- * Build a coverage bar HTML (same as in the offres table)
- */
-function coverageBarHTML(coverage) {
-  const pct = coverage.toFixed(1);
-  return `
-    <div class="coverage-bar-wrap">
-      <div class="coverage-bar">
-        <div class="coverage-bar-fill" style="width:${Math.min(coverage, 100)}%"></div>
-      </div>
-      <span class="coverage-pct">${pct}%</span>
-    </div>`;
-}
-
-/**
- * Render the category tree as a hierarchical table into #category-tree-table
- */
-function renderCategoryTree() {
-  const tbody = document.querySelector('#category-tree-table tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-
-  const stats = buildCategoryStats();
-
-  // Track group IDs for expand/collapse
-  let groupIdx = 0;
-
-  CATEGORY_TREE_MAP.forEach(group => {
-    const activeChildren = group.children.filter(c => stats.has(c));
-    if (activeChildren.length === 0) return;
-
-    const gid = `tree-group-${groupIdx++}`;
-
-    // Aggregate parent stats
-    let pTotal = 0, pWithOffer = 0, pSumDisc = 0, pMaxDisc = 0;
-    let pPriceSum = 0, pPriceCount = 0;
-    const pSources = new Set();
-    activeChildren.forEach(c => {
-      const s = stats.get(c);
-      pTotal += s.count;
-      pWithOffer += s.withOffer;
-      pSumDisc += s.sumDisc;
-      pMaxDisc = Math.max(pMaxDisc, s.maxDisc);
-      pPriceSum += s.priceSum;
-      pPriceCount += s.priceCount;
-      s.sources.forEach(src => pSources.add(src));
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderOffresSection(filteredDataset, btn.dataset.source);
+        });
     });
-
-    const pCoverage = pTotal > 0 ? (pWithOffer / pTotal) * 100 : 0;
-    const pAvgDisc = pWithOffer > 0 ? (pSumDisc / pWithOffer).toFixed(1) + '%' : '—';
-    const pBestDeal = pMaxDisc > 0 ? '-' + pMaxDisc.toFixed(0) + '%' : '—';
-    const pAvgPrice = pPriceCount > 0 ? Math.round(pPriceSum / pPriceCount).toLocaleString() : '—';
-
-    // Parent row
-    const parentTr = document.createElement('tr');
-    parentTr.className = 'tree-parent-row';
-    parentTr.dataset.group = gid;
-    parentTr.innerHTML = `
-      <td>
-        <span class="tree-row-toggle" data-group="${gid}">▶</span>
-        <span class="tree-parent-icon">${group.icon}</span>
-        <strong>${group.label}</strong>
-      </td>
-      <td class="tree-parent-count">${pTotal.toLocaleString()}</td>
-      <td class="tree-parent-count">${pWithOffer.toLocaleString()}</td>
-      <td>${coverageBarHTML(pCoverage)}</td>
-      <td class="tree-parent-discount">${pAvgDisc}</td>
-      <td class="discount-tag">${pBestDeal}</td>
-      <td>${pAvgPrice}</td>
-      <td><div class="tree-sources">${sourceTagsHTML(pSources)}</div></td>
-    `;
-    tbody.appendChild(parentTr);
-
-    // Child rows (initially collapsed)
-    activeChildren.forEach((catName, idx) => {
-      const s = stats.get(catName);
-      const coverage = s.count > 0 ? (s.withOffer / s.count) * 100 : 0;
-      const avgDisc = s.withOffer > 0 ? (s.sumDisc / s.withOffer).toFixed(1) + '%' : '—';
-      const bestDeal = s.maxDisc > 0 ? '-' + s.maxDisc.toFixed(0) + '%' : '—';
-      const avgPrice = s.priceCount > 0 ? Math.round(s.priceSum / s.priceCount).toLocaleString() : '—';
-      const isLast = idx === activeChildren.length - 1;
-
-      const childTr = document.createElement('tr');
-      childTr.className = `tree-child-row collapsed ${isLast ? 'last-child' : ''}`;
-      childTr.dataset.parent = gid;
-      childTr.innerHTML = `
-        <td>
-          <span class="tree-child-dot"></span>
-          <span class="tree-child-name">${catName}</span>
-        </td>
-        <td>${s.count.toLocaleString()}</td>
-        <td>${s.withOffer.toLocaleString()}</td>
-        <td>${coverageBarHTML(coverage)}</td>
-        <td>${avgDisc}</td>
-        <td class="discount-tag">${bestDeal}</td>
-        <td>${avgPrice}</td>
-        <td><div class="tree-sources">${sourceTagsHTML(s.sources)}</div></td>
-      `;
-      tbody.appendChild(childTr);
-    });
-
-    // Toggle click on parent row
-    parentTr.addEventListener('click', () => {
-      const toggle = parentTr.querySelector('.tree-row-toggle');
-      toggle.classList.toggle('expanded');
-      tbody.querySelectorAll(`tr[data-parent="${gid}"]`).forEach(row => {
-        row.classList.toggle('collapsed');
-      });
-    });
-  });
-
-  // Wire Expand / Collapse all buttons
-  document.getElementById('expand-all-btn')?.addEventListener('click', () => {
-    tbody.querySelectorAll('.tree-child-row').forEach(row => row.classList.remove('collapsed'));
-    tbody.querySelectorAll('.tree-row-toggle').forEach(el => el.classList.add('expanded'));
-  });
-  document.getElementById('collapse-all-btn')?.addEventListener('click', () => {
-    tbody.querySelectorAll('.tree-child-row').forEach(row => row.classList.add('collapsed'));
-    tbody.querySelectorAll('.tree-row-toggle').forEach(el => el.classList.remove('expanded'));
-  });
 }
+
+// Launch
+initDashboard();

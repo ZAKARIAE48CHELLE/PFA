@@ -35,8 +35,8 @@ from playwright.sync_api import sync_playwright
 
 # ─── Paths (always relative to this script, not CWD) ──────────────────────────
 SCRIPT_DIR  = Path(__file__).parent
-OUTPUT_FILE = SCRIPT_DIR.parent.parent.parent / "data" / "raw" / "jumia_full.json"
-LOG_FILE    = SCRIPT_DIR.parent.parent.parent / "logs" / "jumia_scraper.log"
+OUTPUT_FILE = SCRIPT_DIR / "jumia_data.json"
+LOG_FILE    = SCRIPT_DIR / "jumia_scraper.log"
 
 # ─── Config ────────────────────────────────────────────────────────────────────
 TARGET_PRODUCTS       = 10_000

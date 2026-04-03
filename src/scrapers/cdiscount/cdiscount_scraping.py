@@ -42,8 +42,8 @@ from playwright.sync_api import sync_playwright
 # ─── Paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR  = Path(__file__).parent
 # Write to the shared project data folder, not next to the script
-OUTPUT_FILE = SCRIPT_DIR.parent.parent.parent / "data" / "raw" / "cdiscount_full.json"
-LOG_FILE    = SCRIPT_DIR.parent.parent.parent / "logs" / "cdiscount_scraper.log"
+OUTPUT_FILE = SCRIPT_DIR.parent.parent / "data" / "cDiscount_data.json"
+LOG_FILE    = SCRIPT_DIR / "cdiscount_scraper.log"
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 TARGET_PRODUCTS       = 20_000

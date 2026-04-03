@@ -3,226 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Unified Dashboard</title>
+    <title>AuraMarket Analytics — Dashboard</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js + plugins -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-
-    <main class="dashboard-container">
-        <!-- Header -->
-        <header class="dashboard-header glass-panel">
-            <div class="header-titles">
-                <h1>Data Analytics</h1>
-                <p>Unified E-Commerce Market Intelligence</p>
+    <div class="dashboard-shell">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">A</div>
+                <span class="logo-text">AuraMarket</span>
             </div>
-            <div class="header-status">
-                <div class="status-indicator"></div>
-                <span>Live Database</span>
-            </div>
-        </header>
+            
+            <nav class="nav-list">
+                <a href="#" class="nav-item active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#offres-section" class="nav-item">
+                    <i data-lucide="tags"></i>
+                    <span>Market Offers</span>
+                </a>
+                <a href="#category-tree-section" class="nav-item">
+                    <i data-lucide="tree-structure"></i>
+                    <span>Categories</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Price Trends</span>
+                </a>
+            </nav>
 
-        <!-- KPI Cards -->
-        <section class="kpi-grid">
-            <div class="kpi-card glass-panel">
-                <div class="kpi-icon">📦</div>
-                <div class="kpi-data">
+            <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-light);">
+                <div class="status-indicator-wrap" style="display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                    <div style="width: 8px; height: 8px; background: var(--accent-success); border-radius: 50%; box-shadow: 0 0 8px var(--accent-success);"></div>
+                    Live Database
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header Area -->
+            <header class="page-header">
+                <div class="page-title">
+                    <h1>Market Intelligence</h1>
+                    <p>Real-time analytics across 4 major e-commerce platforms.</p>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search products...">
+                    </div>
+                </div>
+            </header>
+
+            <!-- KPI Row -->
+            <section class="kpi-grid">
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <p>Total Products</p>
+                        <div class="kpi-icon-wrap"><i data-lucide="package"></i></div>
+                    </div>
                     <h3 id="total-products">--</h3>
-                    <p>Total Products</p>
                 </div>
-            </div>
-            <div class="kpi-card glass-panel">
-                <div class="kpi-icon">💰</div>
-                <div class="kpi-data">
+                
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <p>Avg. Price (MAD)</p>
+                        <div class="kpi-icon-wrap"><i data-lucide="banknote"></i></div>
+                    </div>
                     <h3 id="avg-price">--</h3>
-                    <p>Avg. Price (MAD)</p>
                 </div>
-            </div>
-            <div class="kpi-card glass-panel">
-                <div class="kpi-icon">🔥</div>
-                <div class="kpi-data">
-                    <h3 id="avg-discount">--</h3>
-                    <p>Global Discount Avg</p>
-                </div>
-            </div>
-            <div class="kpi-card glass-panel">
-                <div class="kpi-icon">⭐</div>
-                <div class="kpi-data">
-                    <h3 id="avg-rating">--</h3>
-                    <p>Average Rating</p>
-                </div>
-            </div>
-        </section>
 
-        <!-- Main Content Area -->
-        <div class="content-grid">
-            <!-- Left Column: Charts -->
-            <div class="charts-column">
-                <div class="chart-container glass-panel">
-                    <h2>Market Share by Platform</h2>
-                    <div class="chart-wrapper">
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <p>Global Discount</p>
+                        <div class="kpi-icon-wrap"><i data-lucide="trending-down"></i></div>
+                    </div>
+                    <h3 id="avg-discount">--</h3>
+                </div>
+
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <p>Market Health</p>
+                        <div class="kpi-icon-wrap"><i data-lucide="star"></i></div>
+                    </div>
+                    <h3 id="avg-rating">--</h3>
+                </div>
+            </section>
+
+            <!-- Charts Row -->
+            <section class="charts-grid">
+                <div class="glass-panel chart-box">
+                    <header class="chart-header">
+                        <h2>Platform Distribution</h2>
+                        <i data-lucide="pie-chart" style="color: var(--text-muted);"></i>
+                    </header>
+                    <div style="flex: 1; position: relative;">
                         <canvas id="sourceChart"></canvas>
                     </div>
                 </div>
-                
-                <div class="chart-container glass-panel">
-                    <h2>Pricing Distribution (MAD)</h2>
-                    <div class="chart-wrapper">
+
+                <div class="glass-panel chart-box">
+                    <header class="chart-header">
+                        <h2>Pricing by Category</h2>
+                        <i data-lucide="bar-chart-big" style="color: var(--text-muted);"></i>
+                    </header>
+                    <div style="flex: 1; position: relative;">
                         <canvas id="priceChart"></canvas>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Right Column: Deal List -->
-            <div class="table-column">
-                <div class="table-container glass-panel">
-                    <h2>Top Ranked Deals</h2>
-                    <p class="subtitle">Products ordered by highest percentage discount</p>
-                    
-                    <div class="table-responsive">
+            <!-- Top Deals Table -->
+            <section class="table-area" style="margin-bottom: 2.5rem;">
+                <div class="glass-panel">
+                    <header class="chart-header">
+                        <h2>Premium Deals — Top 10</h2>
+                        <div class="badge badge-cdiscount">High Impact</div>
+                    </header>
+                    <div style="overflow-x: auto;">
                         <table id="deals-table">
                             <thead>
                                 <tr>
                                     <th>Platform</th>
-                                    <th>Product</th>
+                                    <th>Product Title</th>
                                     <th>Discount</th>
-                                    <th>Price (MAD)</th>
+                                    <th>Final Price</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Rows injected via JS -->
+                                <!-- Injected by JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- ═══════════════════════════════════════════
-             CATEGORY TREE TABLE
-        ════════════════════════════════════════════ -->
-        <section class="category-tree-section">
-            <div class="tree-header">
-                <div>
-                    <h2 class="section-title">🌳 Product Category Tree</h2>
-                    <p class="subtitle">Hierarchical offer breakdown grouped by category family</p>
-                </div>
-                <div class="tree-controls">
-                    <button class="tree-ctrl-btn" id="expand-all-btn" title="Expand All">⊞ Expand All</button>
-                    <button class="tree-ctrl-btn" id="collapse-all-btn" title="Collapse All">⊟ Collapse All</button>
-                </div>
-            </div>
-            <div class="glass-panel tree-table-wrap">
-                <div class="table-responsive">
-                    <table id="category-tree-table">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Products</th>
-                                <th>With Offer</th>
-                                <th>Coverage</th>
-                                <th>Avg Discount</th>
-                                <th>Best Deal</th>
-                                <th>Avg Price (MAD)</th>
-                                <th>Sources</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Rows injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ═══════════════════════════════════════════
-             OFFRES BY SOURCE & CATEGORY
-        ════════════════════════════════════════════ -->
-        <section class="offres-section">
-            <div class="offres-header">
-                <div>
-                    <h2 class="section-title">🏷️ Offres by Source &amp; Category</h2>
-                    <p class="subtitle">Discount availability and depth across platforms and categories</p>
-                </div>
-                <!-- KPI mini-cards for offers -->
-                <div class="offres-kpis">
-                    <div class="mini-kpi glass-panel">
-                        <span class="mini-kpi-value" id="total-offres">--</span>
-                        <span class="mini-kpi-label">Total Offers</span>
-                    </div>
-                    <div class="mini-kpi glass-panel">
-                        <span class="mini-kpi-value" id="pct-offres">--</span>
-                        <span class="mini-kpi-label">% with Offer</span>
-                    </div>
-                    <div class="mini-kpi glass-panel">
-                        <span class="mini-kpi-value" id="best-offre-src">--</span>
-                        <span class="mini-kpi-label">Best Deal Platform</span>
+            <!-- Category Tree (Collapsed by default) -->
+            <section id="category-tree-section" class="table-area" style="margin-bottom: 2.5rem;">
+                <div class="glass-panel">
+                    <header class="chart-header">
+                        <h2>Hierarchical Market Coverage</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="expand-all-btn" class="badge" style="cursor: pointer; border: 1px solid var(--border-light); background: hsla(250, 100%, 65%, 0.1);">Expand All</button>
+                            <button id="collapse-all-btn" class="badge" style="cursor: pointer; border: 1px solid var(--border-light);">Collapse All</button>
+                        </div>
+                    </header>
+                    <div style="overflow-x: auto;">
+                        <table id="category-tree-table">
+                            <thead>
+                                <tr>
+                                    <th>Category Tree</th>
+                                    <th>Volume</th>
+                                    <th>Offers</th>
+                                    <th>Coverage</th>
+                                    <th>Avg Disc.</th>
+                                    <th>Best Deal</th>
+                                    <th>Avg Price</th>
+                                    <th>Sources</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Source filter tabs -->
-            <div class="tab-bar">
-                <button class="tab-btn active" data-source="all" id="tab-all">All Platforms</button>
-                <button class="tab-btn" data-source="Amazon" id="tab-amazon">Amazon</button>
-                <button class="tab-btn" data-source="Jumia" id="tab-jumia">Jumia</button>
-                <button class="tab-btn" data-source="Avito" id="tab-avito">Avito</button>
-                <button class="tab-btn" data-source="Cdiscount" id="tab-cdiscount">Cdiscount</button>
-            </div>
+            <!-- Offers Analysis -->
+            <section id="offres-section" class="table-area">
+                <div class="glass-panel">
+                    <header class="chart-header">
+                        <h2>Multi-Channel Offer Depth</h2>
+                    </header>
+                    
+                    <div class="tab-bar" style="margin-bottom: 1.5rem;">
+                        <button class="nav-item active tab-btn" style="border: none; cursor: pointer;" data-source="all">All Platforms</button>
+                        <button class="nav-item tab-btn" style="border: none; cursor: pointer;" data-source="Amazon">Amazon</button>
+                        <button class="nav-item tab-btn" style="border: none; cursor: pointer;" data-source="Jumia">Jumia</button>
+                        <button class="nav-item tab-btn" style="border: none; cursor: pointer;" data-source="Avito">Avito</button>
+                        <button class="nav-item tab-btn" style="border: none; cursor: pointer;" data-source="Cdiscount">Cdiscount</button>
+                        <button class="nav-item tab-btn" style="border: none; cursor: pointer;" data-source="Steam">Steam</button>
+                    </div>
 
-            <!-- Two charts side by side -->
-            <div class="offres-charts-grid">
-                <!-- Grouped bar: avg discount % by category per source -->
-                <div class="chart-container glass-panel">
-                    <h2>Avg. Discount % by Category</h2>
-                    <p class="subtitle">Top 8 categories with the deepest discounts</p>
-                    <div class="chart-wrapper chart-wrapper-tall">
-                        <canvas id="offresByCatChart"></canvas>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div style="height: 350px;"><canvas id="offresByCatChart"></canvas></div>
+                        <div style="height: 350px;"><canvas id="offresTypeChart"></canvas></div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="offres-category-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Total Products</th>
+                                    <th>With Offer</th>
+                                    <th>Market Coverage</th>
+                                    <th>Avg Discount</th>
+                                    <th>Deepest Cut</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-
-                <!-- Stacked bar: offer type breakdown per source -->
-                <div class="chart-container glass-panel">
-                    <h2>Offer Type Distribution</h2>
-                    <p class="subtitle">Percentage vs flat-rate offers per platform</p>
-                    <div class="chart-wrapper chart-wrapper-tall">
-                        <canvas id="offresTypeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detailed offres table -->
-            <div class="glass-panel offres-table-wrap">
-                <h2>Category Offer Breakdown <span class="filter-label" id="filter-label-display">— All Platforms</span></h2>
-                <p class="subtitle">Number of discounted products vs total, per category</p>
-                <div class="table-responsive">
-                    <table id="offres-category-table">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Products</th>
-                                <th>With Offer</th>
-                                <th>Coverage</th>
-                                <th>Avg Discount</th>
-                                <th>Best Deal</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
+    </div>
 
     <!-- App Logic -->
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+    </script>
     <script src="app.js"></script>
 </body>
 </html>

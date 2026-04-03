@@ -1,11 +1,8 @@
-from pathlib import Path
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 from bs4 import BeautifulSoup
 import time, random, json, urllib.parse
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-OUTPUT_FILE = SCRIPT_DIR.parent.parent.parent / "data" / "raw" / "amazon_full.json"
-LOG_FILE    = SCRIPT_DIR.parent.parent.parent / "logs" / "amazon_scraper.log"
+OUTPUT_FILE = "amazon_data.json"
 
 SEARCH_TERMS = [
     ("smartphone", "Smartphones"),

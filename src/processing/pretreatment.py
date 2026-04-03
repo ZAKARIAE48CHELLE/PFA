@@ -54,8 +54,9 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 RAW_FILES = {
     "amazon"    : RAW_DIR / "amazon_full.json",
     "cdiscount" : RAW_DIR / "cdiscount_full.json",
-    "avito"     : RAW_DIR / "avito_full.json",
+    # "avito"     : RAW_DIR / "avito_full.json",
     "jumia"     : RAW_DIR / "jumia_full.json",
+    "steam"     : RAW_DIR / "steam_products.json",
 }
 
 # Exchange rate: 1 EUR = X MAD  (update as needed)
@@ -137,6 +138,20 @@ def parse_rating(raw) -> float | None:
         return round(v, 2) if 0 <= v <= 5 else None
     except ValueError:
         return None
+
+
+def parse_steam_rating(raw) -> float | None:
+    """
+    Extract percentage from Steam rating (e.g. "très positives 91%")
+    and map it to [0, 5].
+    """
+    if not raw or not isinstance(raw, str):
+        return None
+    match = re.search(r"(\d+)\s*%", raw)
+    if match:
+        pct = float(match.group(1))
+        return round((pct / 100) * 5, 2)
+    return None
 
 
 def parse_discount_pct(offre_list) -> float | None:
@@ -426,6 +441,30 @@ def normalise_jumia(records: list) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def normalise_steam(records: list) -> pd.DataFrame:
+    rows = []
+    for r in records:
+        p_init  = parse_price(r.get("prixInitial"))
+        p_offre = parse_price(r.get("prixOffre"))
+        rows.append(build_row(
+            row_id     = make_row_id("steam", r.get("link", "")),
+            source     = "Steam",
+            title      = r.get("titre", ""),
+            p_init     = p_init,
+            p_offre    = p_offre,
+            currency   = (r.get("monnaie") or "EUR").strip(),
+            disc_pct   = r.get("discountPercentage"),
+            seller     = (r.get("seller") or "Valve").strip(),
+            location   = (r.get("location") or "Steam").strip(),
+            category   = f"Steam {r.get('source', 'Games')}".strip(),
+            rating     = parse_steam_rating(r.get("rating")),
+            date       = r.get("date"),
+            link       = (r.get("link") or "").strip(),
+            offre_type = _first_offre_type(r.get("offre")),
+        ))
+    return pd.DataFrame(rows)
+
+
 # ─────────────────────────────────────────────
 #  QUALITY RULES
 # ─────────────────────────────────────────────
@@ -556,6 +595,13 @@ def run():
         normalise_jumia(load_json(RAW_FILES["jumia"])), "Jumia"
     )
     save(frames["jumia"], "jumia_clean")
+
+    # ── Steam (EUR)
+    print("\n▶ Steam")
+    frames["steam"] = apply_quality_rules(
+        normalise_steam(load_json(RAW_FILES["steam"])), "Steam"
+    )
+    save(frames["steam"], "steam_clean")
 
     # ── Unified
     print("\n▶ Unified dataset")

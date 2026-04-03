@@ -29,9 +29,7 @@ CATEGORIES = {
 
 MAX_PAGES_PER_URL   = 3          # increase to 5 or 10 for even more data
 SLEEP_BETWEEN_PAGES = (2, 4)     # random sleep range in seconds (be polite)
-from pathlib import Path
-SCRIPT_DIR  = Path(__file__).parent
-OUTPUT_FILE = SCRIPT_DIR.parent.parent.parent / "data" / "raw" / "avito_full.json"
+OUTPUT_FILE         = "avito_data.json"
 
 TODAY = datetime.today().strftime("%Y-%m-%d")
 
