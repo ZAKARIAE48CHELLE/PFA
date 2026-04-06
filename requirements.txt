@@ -6,6 +6,7 @@ requests
 # Data Processing
 pandas
 numpy
+scikit-learn
 nbconvert
 nbformat
 ipykernel
