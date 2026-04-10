@@ -10,6 +10,15 @@ scikit-learn
 nbconvert
 nbformat
 ipykernel
+joblib
+
+# Visualisation
+matplotlib
+seaborn
+
+# ML — boosting models
+xgboost
+lightgbm
 
 # Utils
 python-dotenv
