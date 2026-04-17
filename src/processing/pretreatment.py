@@ -52,12 +52,11 @@ OUTPUT_DIR = DATA_DIR / "processed"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 RAW_FILES = {
-    # "amazon"    : RAW_DIR / "amazon_full.json",
-    # "cdiscount" : RAW_DIR / "cdiscount_full.json",
+    "amazon"    : RAW_DIR / "amazon_full.json",
+    "cdiscount" : RAW_DIR / "cdiscount_full.json",
     # "avito"     : RAW_DIR / "avito_full.json",
-    #"jumia"     : RAW_DIR / "jumia_full.json",
-    # "steam"     : RAW_DIR / "steam_products.json",
-    "fnac"     : RAW_DIR / "fnac.json",
+    "jumia"     : RAW_DIR / "jumia_full.json",
+    "steam"     : RAW_DIR / "steam_products.json",
 }
 
 # Exchange rate: 1 EUR = X MAD  (update as needed)
@@ -466,30 +465,6 @@ def normalise_steam(records: list) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def normalise_fnac(records: list) -> pd.DataFrame:
-    rows = []
-    for r in records:
-        p_init  = parse_price(r.get("price_initial"))
-        p_offre = parse_price(r.get("price_offre"))
-        rows.append(build_row(
-            row_id     = make_row_id("fnac", r.get("link", "")),
-            source     = "Fnac",
-            title      = r.get("title", ""),
-            p_init     = p_init,
-            p_offre    = p_offre,
-            currency   = "EUR",
-            disc_pct   = parse_discount_pct(r.get("offre")),
-            seller     = (r.get("seller") or "").strip(),
-            location   = (r.get("location") or "Fnac").strip(),
-            category   = (r.get("category") or "").strip(),
-            rating     = r.get("rating"),
-            date       = r.get("date"),
-            link       = (r.get("link") or "").strip(),
-            offre_type = _first_offre_type(r.get("offre")),
-        ))
-    return pd.DataFrame(rows)
-
-
 # ─────────────────────────────────────────────
 #  QUALITY RULES
 # ─────────────────────────────────────────────
@@ -594,52 +569,39 @@ def run():
     frames = {}
 
     # ── Amazon (EUR)
-    if "amazon" in RAW_FILES:
-        print("▶ Amazon")
-        frames["amazon"] = apply_quality_rules(
-            normalise_amazon(load_json(RAW_FILES["amazon"])), "Amazon"
-        )
-        save(frames["amazon"], "amazon_clean")
+    print("▶ Amazon")
+    frames["amazon"] = apply_quality_rules(
+        normalise_amazon(load_json(RAW_FILES["amazon"])), "Amazon"
+    )
+    save(frames["amazon"], "amazon_clean")
 
     # ── CDiscount (EUR)
-    if "cdiscount" in RAW_FILES:
-        print("\n▶ CDiscount")
-        frames["cdiscount"] = apply_quality_rules(
-            normalise_cdiscount(load_json(RAW_FILES["cdiscount"])), "CDiscount"
-        )
-        save(frames["cdiscount"], "cdiscount_clean")
+    print("\n▶ CDiscount")
+    frames["cdiscount"] = apply_quality_rules(
+        normalise_cdiscount(load_json(RAW_FILES["cdiscount"])), "CDiscount"
+    )
+    save(frames["cdiscount"], "cdiscount_clean")
 
     # ── Avito (MAD)
-    if "avito" in RAW_FILES:
-        print("\n▶ Avito")
-        frames["avito"] = apply_quality_rules(
-            normalise_avito(load_json(RAW_FILES["avito"])), "Avito"
-        )
-        save(frames["avito"], "avito_clean")
+    # print("\n▶ Avito")
+    # frames["avito"] = apply_quality_rules(
+    #     normalise_avito(load_json(RAW_FILES["avito"])), "Avito"
+    # )
+    # save(frames["avito"], "avito_clean")
 
     # ── Jumia (MAD)
-    if "jumia" in RAW_FILES:
-        print("\n▶ Jumia")
-        frames["jumia"] = apply_quality_rules(
-            normalise_jumia(load_json(RAW_FILES["jumia"])), "Jumia"
-        )
-        save(frames["jumia"], "jumia_clean")
+    print("\n▶ Jumia")
+    frames["jumia"] = apply_quality_rules(
+        normalise_jumia(load_json(RAW_FILES["jumia"])), "Jumia"
+    )
+    save(frames["jumia"], "jumia_clean")
 
     # ── Steam (EUR)
-    if "steam" in RAW_FILES:
-        print("\n▶ Steam")
-        frames["steam"] = apply_quality_rules(
-            normalise_steam(load_json(RAW_FILES["steam"])), "Steam"
-        )
-        save(frames["steam"], "steam_clean")
-
-    # ── Fnac (EUR)
-    if "fnac" in RAW_FILES:
-        print("\n▶ Fnac")
-        frames["fnac"] = apply_quality_rules(
-            normalise_fnac(load_json(RAW_FILES["fnac"])), "Fnac"
-        )
-        save(frames["fnac"], "fnac_clean")
+    print("\n▶ Steam")
+    frames["steam"] = apply_quality_rules(
+        normalise_steam(load_json(RAW_FILES["steam"])), "Steam"
+    )
+    save(frames["steam"], "steam_clean")
 
     # ── Unified
     print("\n▶ Unified dataset")

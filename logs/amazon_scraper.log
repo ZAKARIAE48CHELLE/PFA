@@ -1,0 +1,1503 @@
+12:48:19  🚀 Amazon.fr Scraper — stealth edition v2
+12:48:19     Target  : 10,000 unique products
+12:48:19     Output  : c:\Users\HP\Desktop\projet atteif\amazon_data.json
+12:48:19     Log     : c:\Users\HP\Desktop\projet atteif\amazon_scraper.log
+12:48:19     Phase 1 : 40 terms × 20 pages ≈ 12,800 targets
+12:48:19     Phase 2 : 13 cats  × 10  pages ≈ 2,080 bonus
+
+12:48:28  🌐 Browser ready — going directly to search pages (debug_amazon.py style)…
+12:48:32  
+============================================================
+12:48:32  PHASE 1 — 40 terms × 20 pages
+12:48:32  ============================================================
+12:48:32    [P1 1/800] 📄 https://www.amazon.fr/s?k=smartphone&page=1  
+12:48:43    ⚠ No cards. Snippet: 'Amazon.fr : livres, DVD, jeux vidéo, musique, high-tech, informatique, jouets, vêtements, chaussures, sport, bricolage, maison, beauté, puériculture, épicerie et plus encore ! Cookies et choix publici'
+12:48:50      → 0 cards  +0 new  | total: 0/10,000  ETA: —
+12:48:50    [P1 2/800] 📄 https://www.amazon.fr/s?k=smartphone&page=2  
+12:49:09      → 48 cards  +48 new  | total: 48/10,000  ETA: 2:51:15
+12:49:09    [P1 3/800] 📄 https://www.amazon.fr/s?k=smartphone&page=3  
+12:49:30      → 48 cards  +48 new  | total: 96/10,000  ETA: 2:01:42
+12:49:30    [P1 4/800] 📄 https://www.amazon.fr/s?k=smartphone&page=4  
+12:49:52      → 48 cards  +48 new  | total: 144/10,000  ETA: 1:45:29
+12:49:52    [P1 5/800] 📄 https://www.amazon.fr/s?k=smartphone&page=5  
+12:50:10      → 48 cards  +47 new  | total: 191/10,000  ETA: 1:34:46
+12:50:10    [P1 6/800] 📄 https://www.amazon.fr/s?k=smartphone&page=6  
+12:50:29      → 48 cards  +46 new  | total: 237/10,000  ETA: 1:28:50
+12:50:29    [P1 7/800] 📄 https://www.amazon.fr/s?k=smartphone&page=7  
+12:50:50      → 18 cards  +15 new  | total: 252/10,000  ETA: 1:37:05
+12:50:50    [P1 8/800] 📄 https://www.amazon.fr/s?k=smartphone&page=8  
+12:51:09      → 0 cards  +0 new  | total: 252/10,000  ETA: 1:49:20
+12:51:09    [P1 9/800] 📄 https://www.amazon.fr/s?k=smartphone&page=9  
+12:51:27      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:00:38
+12:51:27    [P1 10/800] 📄 https://www.amazon.fr/s?k=smartphone&page=10  
+12:51:42      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:10:52
+12:51:43    [P1 11/800] 📄 https://www.amazon.fr/s?k=smartphone&page=11  
+12:52:00      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:22:09
+12:52:00    [P1 12/800] 📄 https://www.amazon.fr/s?k=smartphone&page=12  
+12:52:21      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:35:27
+12:52:21    [P1 13/800] 📄 https://www.amazon.fr/s?k=smartphone&page=13  
+12:52:39      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:47:05
+12:52:39    [P1 14/800] 📄 https://www.amazon.fr/s?k=smartphone&page=14  
+12:52:56      → 0 cards  +0 new  | total: 252/10,000  ETA: 2:58:34
+12:52:56    [P1 15/800] 📄 https://www.amazon.fr/s?k=smartphone&page=15  
+12:53:17      → 0 cards  +0 new  | total: 252/10,000  ETA: 3:11:38
+12:53:17    [P1 16/800] 📄 https://www.amazon.fr/s?k=smartphone&page=16  
+12:53:36      → 0 cards  +0 new  | total: 252/10,000  ETA: 3:24:08
+12:53:36    [P1 17/800] 📄 https://www.amazon.fr/s?k=smartphone&page=17  
+12:53:56      → 12 cards  +11 new  | total: 263/10,000  ETA: 3:27:30
+12:53:56    [P1 18/800] 📄 https://www.amazon.fr/s?k=smartphone&page=18  
+12:54:15      → 0 cards  +0 new  | total: 263/10,000  ETA: 3:39:11
+12:54:15    [P1 19/800] 📄 https://www.amazon.fr/s?k=smartphone&page=19  
+12:54:33      → 0 cards  +0 new  | total: 263/10,000  ETA: 3:50:26
+12:54:33    [P1 20/800] 📄 https://www.amazon.fr/s?k=smartphone&page=20  
+12:54:51      → 0 cards  +0 new  | total: 263/10,000  ETA: 4:01:31
+12:54:51    [P1 21/800] 📄 https://www.amazon.fr/s?k=iphone&page=1  
+12:55:11      → 48 cards  +44 new  | total: 307/10,000  ETA: 3:36:26
+12:55:11    [P1 22/800] 📄 https://www.amazon.fr/s?k=iphone&page=2  
+12:55:30      → 48 cards  +47 new  | total: 354/10,000  ETA: 3:15:29
+12:55:30    [P1 23/800] 📄 https://www.amazon.fr/s?k=iphone&page=3  
+12:55:51      → 48 cards  +47 new  | total: 401/10,000  ETA: 3:00:11
+12:55:51    [P1 24/800] 📄 https://www.amazon.fr/s?k=iphone&page=4  
+12:56:13      → 48 cards  +47 new  | total: 448/10,000  ETA: 2:48:26
+12:56:14    [P1 25/800] 📄 https://www.amazon.fr/s?k=iphone&page=5  
+12:56:35      → 48 cards  +48 new  | total: 496/10,000  ETA: 2:38:22
+12:56:35    🔄 Scheduled context rotation…
+12:56:39    [P1 26/800] 📄 https://www.amazon.fr/s?k=iphone&page=6  
+12:57:01      → 48 cards  +43 new  | total: 539/10,000  ETA: 2:32:39
+12:57:01    [P1 27/800] 📄 https://www.amazon.fr/s?k=iphone&page=7  
+12:57:20      → 18 cards  +5 new  | total: 544/10,000  ETA: 2:36:33
+12:57:20    [P1 28/800] 📄 https://www.amazon.fr/s?k=iphone&page=8  
+12:57:36      → 0 cards  +0 new  | total: 544/10,000  ETA: 2:41:17
+12:57:36    [P1 29/800] 📄 https://www.amazon.fr/s?k=iphone&page=9  
+12:57:56      → 0 cards  +0 new  | total: 544/10,000  ETA: 2:46:58
+12:57:56    [P1 30/800] 📄 https://www.amazon.fr/s?k=iphone&page=10  
+12:58:15      → 0 cards  +0 new  | total: 544/10,000  ETA: 2:52:33
+12:58:15    [P1 31/800] 📄 https://www.amazon.fr/s?k=iphone&page=11  
+12:58:34      → 0 cards  +0 new  | total: 544/10,000  ETA: 2:57:56
+12:58:34    [P1 32/800] 📄 https://www.amazon.fr/s?k=iphone&page=12  
+12:58:53      → 0 cards  +0 new  | total: 544/10,000  ETA: 3:03:24
+12:58:53    [P1 33/800] 📄 https://www.amazon.fr/s?k=iphone&page=13  
+12:59:10      → 4 cards  +2 new  | total: 546/10,000  ETA: 3:07:44
+12:59:10    [P1 34/800] 📄 https://www.amazon.fr/s?k=iphone&page=14  
+12:59:30      → 4 cards  +1 new  | total: 547/10,000  ETA: 3:13:07
+12:59:30    [P1 35/800] 📄 https://www.amazon.fr/s?k=iphone&page=15  
+12:59:46      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:17:47
+12:59:46    [P1 36/800] 📄 https://www.amazon.fr/s?k=iphone&page=16  
+13:00:05      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:23:20
+13:00:06    [P1 37/800] 📄 https://www.amazon.fr/s?k=iphone&page=17  
+13:00:23      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:28:18
+13:00:23    [P1 38/800] 📄 https://www.amazon.fr/s?k=iphone&page=18  
+13:00:42      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:33:53
+13:00:42    [P1 39/800] 📄 https://www.amazon.fr/s?k=iphone&page=19  
+13:01:01      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:39:27
+13:01:01    [P1 40/800] 📄 https://www.amazon.fr/s?k=iphone&page=20  
+13:01:18      → 0 cards  +0 new  | total: 547/10,000  ETA: 3:44:16
+13:01:18    [P1 41/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=1  
+13:01:39      → 48 cards  +22 new  | total: 569/10,000  ETA: 3:40:56
+13:01:39    [P1 42/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=2  
+13:01:57      → 48 cards  +29 new  | total: 598/10,000  ETA: 3:34:20
+13:01:58    [P1 43/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=3  
+13:02:14      → 48 cards  +46 new  | total: 644/10,000  ETA: 3:22:09
+13:02:14    [P1 44/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=4  
+13:02:37      → 48 cards  +47 new  | total: 691/10,000  ETA: 3:12:30
+13:02:37    [P1 45/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=5  
+13:02:56      → 48 cards  +48 new  | total: 739/10,000  ETA: 3:03:01
+13:02:56    [P1 46/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=6  
+13:03:14      → 48 cards  +40 new  | total: 779/10,000  ETA: 2:56:29
+13:03:14    [P1 47/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=7  
+13:03:35      → 18 cards  +15 new  | total: 794/10,000  ETA: 2:56:53
+13:03:35    [P1 48/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=8  
+13:03:52      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:00:11
+13:03:52    [P1 49/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=9  
+13:04:09      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:03:32
+13:04:09    [P1 50/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=10  
+13:04:29      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:07:26
+13:04:30    🔄 Scheduled context rotation…
+13:04:35    [P1 51/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=11  
+13:04:42    🔴 BLOCKED (streak=1) — rotating context in 60s…
+13:05:47      🔄 Retry 1/2…
+13:05:57    ⚠ No cards. Snippet: 'Amazon.fr : livres, DVD, jeux vidéo, musique, high-tech, informatique, jouets, vêtements, chaussures, sport, bricolage, maison, beauté, puériculture, épicerie et plus encore ! Cookies et choix publici'
+13:06:06      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:26:00
+13:06:06    [P1 52/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=12  
+13:06:25      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:29:44
+13:06:25    [P1 53/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=13  
+13:06:44      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:33:25
+13:06:44    [P1 54/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=14  
+13:07:05      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:37:32
+13:07:05    [P1 55/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=15  
+13:07:26      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:41:30
+13:07:26    [P1 56/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=16  
+13:07:43      → 0 cards  +0 new  | total: 794/10,000  ETA: 3:44:49
+13:07:43    [P1 57/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=17  
+13:08:04      → 12 cards  +8 new  | total: 802/10,000  ETA: 3:46:29
+13:08:04    [P1 58/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=18  
+13:08:22      → 0 cards  +0 new  | total: 802/10,000  ETA: 3:49:55
+13:08:22    [P1 59/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=19  
+13:08:43      → 0 cards  +0 new  | total: 802/10,000  ETA: 3:53:47
+13:08:43    [P1 60/800] 📄 https://www.amazon.fr/s?k=samsung+galaxy&page=20  
+13:09:00      → 0 cards  +0 new  | total: 802/10,000  ETA: 3:57:05
+13:09:00    [P1 61/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=1  
+13:09:21      → 48 cards  +38 new  | total: 840/10,000  ETA: 3:49:12
+13:09:21    [P1 62/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=2  
+13:09:41      → 48 cards  +42 new  | total: 882/10,000  ETA: 3:40:46
+13:09:41    [P1 63/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=3  
+13:10:02      → 60 cards  +49 new  | total: 931/10,000  ETA: 3:31:24
+13:10:02    [P1 64/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=4  
+13:10:21      → 48 cards  +46 new  | total: 977/10,000  ETA: 3:23:24
+13:10:21    [P1 65/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=5  
+13:10:42      → 48 cards  +46 new  | total: 1,023/10,000  ETA: 3:16:18
+13:10:42    [P1 66/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=6  
+13:11:01      → 48 cards  +42 new  | total: 1,065/10,000  ETA: 3:10:21
+13:11:01    [P1 67/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=7  
+13:11:19      → 18 cards  +14 new  | total: 1,079/10,000  ETA: 3:10:06
+13:11:19    [P1 68/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=8  
+13:11:36      → 12 cards  +2 new  | total: 1,081/10,000  ETA: 3:12:05
+13:11:36    [P1 69/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=9  
+13:11:56      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:14:51
+13:11:57    [P1 70/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=10  
+13:12:19      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:17:58
+13:12:19    [P1 71/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=11  
+13:12:42      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:21:09
+13:12:42    [P1 72/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=12  
+13:13:04      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:24:05
+13:13:04    [P1 73/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=13  
+13:13:25      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:27:01
+13:13:25    [P1 74/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=14  
+13:13:48      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:30:09
+13:13:48    🔄 Scheduled context rotation…
+13:13:52    [P1 75/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=15  
+13:14:13      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:33:37
+13:14:13    [P1 76/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=16  
+13:14:35      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:36:36
+13:14:35    [P1 77/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=17  
+13:15:01      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:40:11
+13:15:01    [P1 78/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=18  
+13:15:22      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:43:05
+13:15:22    [P1 79/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=19  
+13:15:42      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:45:50
+13:15:42    [P1 80/800] 📄 https://www.amazon.fr/s?k=tablette+android&page=20  
+13:16:00      → 0 cards  +0 new  | total: 1,081/10,000  ETA: 3:48:21
+13:16:00    [P1 81/800] 📄 https://www.amazon.fr/s?k=ipad&page=1  
+13:16:24      → 48 cards  +42 new  | total: 1,123/10,000  ETA: 3:41:58
+13:16:24    [P1 82/800] 📄 https://www.amazon.fr/s?k=ipad&page=2  
+13:16:49      → 48 cards  +46 new  | total: 1,169/10,000  ETA: 3:35:15
+13:16:49    [P1 83/800] 📄 https://www.amazon.fr/s?k=ipad&page=3  
+13:17:17      → 48 cards  +46 new  | total: 1,215/10,000  ETA: 3:29:21
+13:17:17    [P1 84/800] 📄 https://www.amazon.fr/s?k=ipad&page=4  
+13:17:41      → 48 cards  +46 new  | total: 1,261/10,000  ETA: 3:23:30
+13:17:42    [P1 85/800] 📄 https://www.amazon.fr/s?k=ipad&page=5  
+13:18:05      → 48 cards  +48 new  | total: 1,309/10,000  ETA: 3:17:34
+13:18:05    [P1 86/800] 📄 https://www.amazon.fr/s?k=ipad&page=6  
+13:18:31      → 48 cards  +40 new  | total: 1,349/10,000  ETA: 3:13:36
+13:18:31    [P1 87/800] 📄 https://www.amazon.fr/s?k=ipad&page=7  
+13:18:56      → 18 cards  +13 new  | total: 1,362/10,000  ETA: 3:14:08
+13:18:56    [P1 88/800] 📄 https://www.amazon.fr/s?k=ipad&page=8  
+13:19:17      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:16:21
+13:19:17    [P1 89/800] 📄 https://www.amazon.fr/s?k=ipad&page=9  
+13:19:39      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:18:42
+13:19:39    [P1 90/800] 📄 https://www.amazon.fr/s?k=ipad&page=10  
+13:19:58      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:20:37
+13:19:58    [P1 91/800] 📄 https://www.amazon.fr/s?k=ipad&page=11  
+13:20:19      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:22:50
+13:20:19    [P1 92/800] 📄 https://www.amazon.fr/s?k=ipad&page=12  
+13:20:39      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:24:57
+13:20:39    [P1 93/800] 📄 https://www.amazon.fr/s?k=ipad&page=13  
+13:20:59      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:27:05
+13:20:59    [P1 94/800] 📄 https://www.amazon.fr/s?k=ipad&page=14  
+13:21:20      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:29:20
+13:21:20    [P1 95/800] 📄 https://www.amazon.fr/s?k=ipad&page=15  
+13:21:42      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:31:41
+13:21:42    [P1 96/800] 📄 https://www.amazon.fr/s?k=ipad&page=16  
+13:22:04      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:34:00
+13:22:04    [P1 97/800] 📄 https://www.amazon.fr/s?k=ipad&page=17  
+13:22:23      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:36:00
+13:22:23    [P1 98/800] 📄 https://www.amazon.fr/s?k=ipad&page=18  
+13:22:45      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:38:22
+13:22:46    [P1 99/800] 📄 https://www.amazon.fr/s?k=ipad&page=19  
+13:23:05      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:40:29
+13:23:06    🔄 Scheduled context rotation…
+13:23:12    [P1 100/800] 📄 https://www.amazon.fr/s?k=ipad&page=20  
+13:23:23    ⚠ No cards. Snippet: 'Amazon.fr : livres, DVD, jeux vidéo, musique, high-tech, informatique, jouets, vêtements, chaussures, sport, bricolage, maison, beauté, puériculture, épicerie et plus encore ! Cookies et choix publici'
+13:23:31      → 0 cards  +0 new  | total: 1,362/10,000  ETA: 3:43:09
+13:23:31    [P1 101/800] 📄 https://www.amazon.fr/s?k=laptop&page=1  
+13:24:00      → 60 cards  +53 new  | total: 1,415/10,000  ETA: 3:36:25
+13:24:00    [P1 102/800] 📄 https://www.amazon.fr/s?k=laptop&page=2  
+13:24:23      → 48 cards  +46 new  | total: 1,461/10,000  ETA: 3:30:44
+13:24:23    [P1 103/800] 📄 https://www.amazon.fr/s?k=laptop&page=3  
+13:24:49      → 48 cards  +48 new  | total: 1,509/10,000  ETA: 3:25:19
+13:24:49    [P1 104/800] 📄 https://www.amazon.fr/s?k=laptop&page=4  
+13:25:13      → 48 cards  +48 new  | total: 1,557/10,000  ETA: 3:20:04
+13:25:13    [P1 105/800] 📄 https://www.amazon.fr/s?k=laptop&page=5  
+13:25:35      → 48 cards  +48 new  | total: 1,605/10,000  ETA: 3:14:51
+13:25:35    [P1 106/800] 📄 https://www.amazon.fr/s?k=laptop&page=6  
+13:26:00      → 48 cards  +40 new  | total: 1,645/10,000  ETA: 3:11:19
+13:26:00    [P1 107/800] 📄 https://www.amazon.fr/s?k=laptop&page=7  
+13:26:20      → 18 cards  +15 new  | total: 1,660/10,000  ETA: 3:10:59
+13:26:21    [P1 108/800] 📄 https://www.amazon.fr/s?k=laptop&page=8  
+13:26:38      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:12:30
+13:26:39    [P1 109/800] 📄 https://www.amazon.fr/s?k=laptop&page=9  
+13:27:01      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:14:22
+13:27:01    [P1 110/800] 📄 https://www.amazon.fr/s?k=laptop&page=10  
+13:27:25      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:16:22
+13:27:25    [P1 111/800] 📄 https://www.amazon.fr/s?k=laptop&page=11  
+13:27:46      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:18:07
+13:27:46    [P1 112/800] 📄 https://www.amazon.fr/s?k=laptop&page=12  
+13:28:08      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:20:01
+13:28:08    [P1 113/800] 📄 https://www.amazon.fr/s?k=laptop&page=13  
+13:28:29      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:21:45
+13:28:29    [P1 114/800] 📄 https://www.amazon.fr/s?k=laptop&page=14  
+13:28:49      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:23:25
+13:28:49    [P1 115/800] 📄 https://www.amazon.fr/s?k=laptop&page=15  
+13:29:08      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:25:01
+13:29:08    [P1 116/800] 📄 https://www.amazon.fr/s?k=laptop&page=16  
+13:29:26      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:26:29
+13:29:26    [P1 117/800] 📄 https://www.amazon.fr/s?k=laptop&page=17  
+13:29:44      → 0 cards  +0 new  | total: 1,660/10,000  ETA: 3:28:04
+13:29:45    [P1 118/800] 📄 https://www.amazon.fr/s?k=laptop&page=18  
+13:30:06      → 12 cards  +3 new  | total: 1,663/10,000  ETA: 3:29:26
+13:30:06    [P1 119/800] 📄 https://www.amazon.fr/s?k=laptop&page=19  
+13:30:23      → 0 cards  +0 new  | total: 1,663/10,000  ETA: 3:30:53
+13:30:24    [P1 120/800] 📄 https://www.amazon.fr/s?k=laptop&page=20  
+13:30:43      → 0 cards  +0 new  | total: 1,663/10,000  ETA: 3:32:31
+13:30:43    [P1 121/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=1  
+13:31:08      → 48 cards  +15 new  | total: 1,678/10,000  ETA: 3:32:18
+13:31:08    [P1 122/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=2  
+13:31:29      → 48 cards  +32 new  | total: 1,710/10,000  ETA: 3:29:11
+13:31:29    [P1 123/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=3  
+13:31:52      → 48 cards  +34 new  | total: 1,744/10,000  ETA: 3:26:08
+13:31:52    [P1 124/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=4  
+13:32:18      → 60 cards  +43 new  | total: 1,787/10,000  ETA: 3:22:05
+13:32:18    🔄 Scheduled context rotation…
+13:32:23    [P1 125/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=5  
+13:32:46      → 48 cards  +39 new  | total: 1,826/10,000  ETA: 3:18:58
+13:32:47    [P1 126/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=6  
+13:33:10      → 48 cards  +32 new  | total: 1,858/10,000  ETA: 3:16:28
+13:33:10    [P1 127/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=7  
+13:33:31      → 18 cards  +10 new  | total: 1,868/10,000  ETA: 3:16:43
+13:33:31    [P1 128/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=8  
+13:33:58      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:18:39
+13:33:58    [P1 129/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=9  
+13:34:20      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:20:18
+13:34:20    [P1 130/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=10  
+13:34:40      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:21:45
+13:34:40    [P1 131/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=11  
+13:34:59      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:23:08
+13:34:59    [P1 132/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=12  
+13:35:22      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:24:45
+13:35:22    [P1 133/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=13  
+13:35:43      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:26:17
+13:35:43    [P1 134/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=14  
+13:36:09      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:28:10
+13:36:09    [P1 135/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=15  
+13:36:28      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:29:36
+13:36:28    [P1 136/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=16  
+13:36:51      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:31:16
+13:36:51    [P1 137/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=17  
+13:37:15      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:32:58
+13:37:15    [P1 138/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=18  
+13:37:36      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:34:28
+13:37:36    [P1 139/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=19  
+13:37:57      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:36:03
+13:37:57    [P1 140/800] 📄 https://www.amazon.fr/s?k=ordinateur+portable&page=20  
+13:38:20      → 0 cards  +0 new  | total: 1,868/10,000  ETA: 3:37:41
+13:38:20    [P1 141/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=1  
+13:38:41      → 48 cards  +46 new  | total: 1,914/10,000  ETA: 3:32:43
+13:38:41    [P1 142/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=2  
+13:39:00      → 48 cards  +48 new  | total: 1,962/10,000  ETA: 3:27:36
+13:39:00    [P1 143/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=3  
+13:39:22      → 48 cards  +48 new  | total: 2,010/10,000  ETA: 3:22:55
+13:39:22    [P1 144/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=4  
+13:39:43      → 48 cards  +48 new  | total: 2,058/10,000  ETA: 3:18:20
+13:39:43    [P1 145/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=5  
+13:40:06      → 48 cards  +47 new  | total: 2,105/10,000  ETA: 3:14:11
+13:40:06    [P1 146/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=6  
+13:40:27      → 48 cards  +47 new  | total: 2,152/10,000  ETA: 3:10:04
+13:40:27    [P1 147/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=7  
+13:40:47      → 18 cards  +15 new  | total: 2,167/10,000  ETA: 3:09:35
+13:40:47    [P1 148/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=8  
+13:41:11      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:11:02
+13:41:11    [P1 149/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=9  
+13:41:29      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:12:07
+13:41:29    🔄 Scheduled context rotation…
+13:41:33    [P1 150/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=10  
+13:41:54      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:13:37
+13:41:54    [P1 151/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=11  
+13:42:13      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:14:47
+13:42:13    [P1 152/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=12  
+13:42:34      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:16:05
+13:42:35    [P1 153/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=13  
+13:42:54      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:17:17
+13:42:54    [P1 154/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=14  
+13:43:18      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:18:41
+13:43:18    [P1 155/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=15  
+13:43:41      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:20:04
+13:43:41    [P1 156/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=16  
+13:44:00      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:21:14
+13:44:00    [P1 157/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=17  
+13:44:22      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:22:33
+13:44:22    [P1 158/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=18  
+13:44:42      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:23:46
+13:44:42    [P1 159/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=19  
+13:45:02      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:24:58
+13:45:02    [P1 160/800] 📄 https://www.amazon.fr/s?k=disque+dur+externe&page=20  
+13:45:24      → 0 cards  +0 new  | total: 2,167/10,000  ETA: 3:26:17
+13:45:24    [P1 161/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=1  
+13:45:46      → 48 cards  +47 new  | total: 2,214/10,000  ETA: 3:21:59
+13:45:46    [P1 162/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=2  
+13:46:07      → 48 cards  +48 new  | total: 2,262/10,000  ETA: 3:17:42
+13:46:07    [P1 163/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=3  
+13:46:30      → 48 cards  +48 new  | total: 2,310/10,000  ETA: 3:13:39
+13:46:30    [P1 164/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=4  
+13:46:53      → 48 cards  +47 new  | total: 2,357/10,000  ETA: 3:09:52
+13:46:53    [P1 165/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=5  
+13:47:17      → 48 cards  +48 new  | total: 2,405/10,000  ETA: 3:06:10
+13:47:17    [P1 166/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=6  
+13:47:44      → 48 cards  +46 new  | total: 2,451/10,000  ETA: 3:02:57
+13:47:44    [P1 167/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=7  
+13:48:07      → 18 cards  +14 new  | total: 2,465/10,000  ETA: 3:02:46
+13:48:07    [P1 168/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=8  
+13:48:26      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:03:45
+13:48:26    [P1 169/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=9  
+13:48:45      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:04:42
+13:48:45    [P1 170/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=10  
+13:49:03      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:05:37
+13:49:03    [P1 171/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=11  
+13:49:21      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:06:33
+13:49:22    [P1 172/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=12  
+13:49:44      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:07:41
+13:49:44    [P1 173/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=13  
+13:50:03      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:08:41
+13:50:03    [P1 174/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=14  
+13:50:23      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:09:41
+13:50:23    🔄 Scheduled context rotation…
+13:50:28    [P1 175/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=15  
+13:50:38    ⚠ No cards. Snippet: 'Amazon.fr : livres, DVD, jeux vidéo, musique, high-tech, informatique, jouets, vêtements, chaussures, sport, bricolage, maison, beauté, puériculture, épicerie et plus encore ! Cookies et choix publici'
+13:50:48      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:10:57
+13:50:48    [P1 176/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=16  
+13:51:12      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:12:12
+13:51:12    [P1 177/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=17  
+13:51:31      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:13:10
+13:51:31    [P1 178/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=18  
+13:51:53      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:14:16
+13:51:53    [P1 179/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=19  
+13:52:11      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:15:13
+13:52:12    [P1 180/800] 📄 https://www.amazon.fr/s?k=cl%C3%A9+usb&page=20  
+13:52:33      → 0 cards  +0 new  | total: 2,465/10,000  ETA: 3:16:20
+13:52:33    [P1 181/800] 📄 https://www.amazon.fr/s?k=imprimante&page=1  
+13:52:57      → 48 cards  +48 new  | total: 2,513/10,000  ETA: 3:12:31
+13:52:57    [P1 182/800] 📄 https://www.amazon.fr/s?k=imprimante&page=2  
+13:53:21      → 48 cards  +48 new  | total: 2,561/10,000  ETA: 3:08:53
+13:53:21    [P1 183/800] 📄 https://www.amazon.fr/s?k=imprimante&page=3  
+13:53:47      → 48 cards  +48 new  | total: 2,609/10,000  ETA: 3:05:25
+13:53:47    [P1 184/800] 📄 https://www.amazon.fr/s?k=imprimante&page=4  
+13:54:11      → 48 cards  +48 new  | total: 2,657/10,000  ETA: 3:02:00
+13:54:11    [P1 185/800] 📄 https://www.amazon.fr/s?k=imprimante&page=5  
+13:54:34      → 48 cards  +47 new  | total: 2,704/10,000  ETA: 2:58:44
+13:54:34    [P1 186/800] 📄 https://www.amazon.fr/s?k=imprimante&page=6  
+13:54:56      → 48 cards  +46 new  | total: 2,750/10,000  ETA: 2:55:35
+13:54:56    [P1 187/800] 📄 https://www.amazon.fr/s?k=imprimante&page=7  
+13:55:19      → 18 cards  +15 new  | total: 2,765/10,000  ETA: 2:55:18
+13:55:19    [P1 188/800] 📄 https://www.amazon.fr/s?k=imprimante&page=8  
+13:55:40      → 0 cards  +0 new  | total: 2,765/10,000  ETA: 2:56:12
+13:55:40    [P1 189/800] 📄 https://www.amazon.fr/s?k=imprimante&page=9  
+13:56:02      → 0 cards  +0 new  | total: 2,765/10,000  ETA: 2:57:10
+13:56:02    [P1 190/800] 📄 https://www.amazon.fr/s?k=imprimante&page=10  
+13:56:20      → 0 cards  +0 new  | total: 2,765/10,000  ETA: 2:57:57
+13:56:20    [P1 191/800] 📄 https://www.amazon.fr/s?k=imprimante&page=11  
+13:56:37      → 0 cards  +0 new  | total: 2,765/10,000  ETA: 2:58:42
+13:56:37    [P1 192/800] 📄 https://www.amazon.fr/s?k=imprimante&page=12  
+13:57:00      → 12 cards  +5 new  | total: 2,770/10,000  ETA: 2:59:14
+13:57:00    [P1 193/800] 📄 https://www.amazon.fr/s?k=imprimante&page=13  
+13:57:18      → 0 cards  +0 new  | total: 2,770/10,000  ETA: 3:00:00
+13:57:18    [P1 194/800] 📄 https://www.amazon.fr/s?k=imprimante&page=14  
+13:57:36      → 0 cards  +0 new  | total: 2,770/10,000  ETA: 3:00:48
+13:57:36    [P1 195/800] 📄 https://www.amazon.fr/s?k=imprimante&page=15  
+13:57:54      → 0 cards  +0 new  | total: 2,770/10,000  ETA: 3:01:34
+13:57:54    [P1 196/800] 📄 https://www.amazon.fr/s?k=imprimante&page=16  
+13:58:14      → 12 cards  +1 new  | total: 2,771/10,000  ETA: 3:02:23
+13:58:14    [P1 197/800] 📄 https://www.amazon.fr/s?k=imprimante&page=17  
+13:58:34      → 0 cards  +0 new  | total: 2,771/10,000  ETA: 3:03:14
+13:58:34    [P1 198/800] 📄 https://www.amazon.fr/s?k=imprimante&page=18  
+13:58:52      → 0 cards  +0 new  | total: 2,771/10,000  ETA: 3:04:01
+13:58:52    [P1 199/800] 📄 https://www.amazon.fr/s?k=imprimante&page=19  
+13:59:13      → 0 cards  +0 new  | total: 2,771/10,000  ETA: 3:04:55
+13:59:13    🔄 Scheduled context rotation…
+13:59:17    [P1 200/800] 📄 https://www.amazon.fr/s?k=imprimante&page=20  
+13:59:37      → 0 cards  +0 new  | total: 2,771/10,000  ETA: 3:06:00
+13:59:38    [P1 201/800] 📄 https://www.amazon.fr/s?k=television+4k&page=1  
+14:00:03      → 48 cards  +48 new  | total: 2,819/10,000  ETA: 3:02:42
+14:00:03    [P1 202/800] 📄 https://www.amazon.fr/s?k=television+4k&page=2  
+14:00:25      → 48 cards  +48 new  | total: 2,867/10,000  ETA: 2:59:20
+14:00:25    [P1 203/800] 📄 https://www.amazon.fr/s?k=television+4k&page=3  
+14:00:46      → 48 cards  +48 new  | total: 2,915/10,000  ETA: 2:56:03
+14:00:46    [P1 204/800] 📄 https://www.amazon.fr/s?k=television+4k&page=4  
+14:01:10      → 48 cards  +48 new  | total: 2,963/10,000  ETA: 2:52:59
+14:01:10    [P1 205/800] 📄 https://www.amazon.fr/s?k=television+4k&page=5  
+14:01:30      → 48 cards  +46 new  | total: 3,009/10,000  ETA: 2:50:00
+14:01:30    [P1 206/800] 📄 https://www.amazon.fr/s?k=television+4k&page=6  
+14:01:52      → 48 cards  +39 new  | total: 3,048/10,000  ETA: 2:47:43
+14:01:52    [P1 207/800] 📄 https://www.amazon.fr/s?k=television+4k&page=7  
+14:02:16      → 18 cards  +10 new  | total: 3,058/10,000  ETA: 2:47:52
+14:02:16    [P1 208/800] 📄 https://www.amazon.fr/s?k=television+4k&page=8  
+14:02:37      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:48:38
+14:02:37    [P1 209/800] 📄 https://www.amazon.fr/s?k=television+4k&page=9  
+14:02:56      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:49:22
+14:02:56    [P1 210/800] 📄 https://www.amazon.fr/s?k=television+4k&page=10  
+14:03:18      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:50:11
+14:03:18    [P1 211/800] 📄 https://www.amazon.fr/s?k=television+4k&page=11  
+14:03:39      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:51:00
+14:03:40    [P1 212/800] 📄 https://www.amazon.fr/s?k=television+4k&page=12  
+14:04:01      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:51:50
+14:04:01    [P1 213/800] 📄 https://www.amazon.fr/s?k=television+4k&page=13  
+14:04:22      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:52:37
+14:04:22    [P1 214/800] 📄 https://www.amazon.fr/s?k=television+4k&page=14  
+14:04:44      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:53:28
+14:04:45    [P1 215/800] 📄 https://www.amazon.fr/s?k=television+4k&page=15  
+14:05:07      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:54:19
+14:05:07    [P1 216/800] 📄 https://www.amazon.fr/s?k=television+4k&page=16  
+14:05:29      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:55:09
+14:05:29    [P1 217/800] 📄 https://www.amazon.fr/s?k=television+4k&page=17  
+14:05:49      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:55:55
+14:05:49    [P1 218/800] 📄 https://www.amazon.fr/s?k=television+4k&page=18  
+14:06:12      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:56:46
+14:06:12    [P1 219/800] 📄 https://www.amazon.fr/s?k=television+4k&page=19  
+14:06:31      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:57:29
+14:06:31    [P1 220/800] 📄 https://www.amazon.fr/s?k=television+4k&page=20  
+14:06:48      → 0 cards  +0 new  | total: 3,058/10,000  ETA: 2:58:08
+14:06:48    [P1 221/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=1  
+14:07:15      → 48 cards  +46 new  | total: 3,104/10,000  ETA: 2:55:20
+14:07:15    [P1 222/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=2  
+14:07:39      → 48 cards  +47 new  | total: 3,151/10,000  ETA: 2:52:26
+14:07:40    [P1 223/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=3  
+14:08:05      → 48 cards  +48 new  | total: 3,199/10,000  ETA: 2:49:33
+14:08:05    [P1 224/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=4  
+14:08:31      → 48 cards  +30 new  | total: 3,229/10,000  ETA: 2:48:09
+14:08:31    🔄 Scheduled context rotation…
+14:08:36    [P1 225/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=5  
+14:09:03      → 48 cards  +41 new  | total: 3,270/10,000  ETA: 2:46:08
+14:09:03    [P1 226/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=6  
+14:09:30      → 48 cards  +36 new  | total: 3,306/10,000  ETA: 2:44:22
+14:09:30    [P1 227/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=7  
+14:09:50      → 18 cards  +13 new  | total: 3,319/10,000  ETA: 2:44:04
+14:09:50    [P1 228/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=8  
+14:10:12      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:44:48
+14:10:12    [P1 229/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=9  
+14:10:36      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:45:37
+14:10:37    [P1 230/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=10  
+14:10:55      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:46:14
+14:10:55    [P1 231/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=11  
+14:11:16      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:46:56
+14:11:16    [P1 232/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=12  
+14:11:38      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:47:42
+14:11:39    [P1 233/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=13  
+14:12:03      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:48:32
+14:12:03    [P1 234/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=14  
+14:12:26      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:49:17
+14:12:26    [P1 235/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=15  
+14:12:46      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:49:58
+14:12:46    [P1 236/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=16  
+14:13:07      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:50:40
+14:13:07    [P1 237/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=17  
+14:13:29      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:51:24
+14:13:29    [P1 238/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=18  
+14:13:53      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:52:12
+14:13:53    [P1 239/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=19  
+14:14:15      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:52:56
+14:14:15    [P1 240/800] 📄 https://www.amazon.fr/s?k=casque+bluetooth&page=20  
+14:14:37      → 0 cards  +0 new  | total: 3,319/10,000  ETA: 2:53:42
+14:14:37    [P1 241/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=1  
+14:15:07      → 48 cards  +48 new  | total: 3,367/10,000  ETA: 2:50:58
+14:15:07    [P1 242/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=2  
+14:15:33      → 48 cards  +48 new  | total: 3,415/10,000  ETA: 2:48:10
+14:15:33    [P1 243/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=3  
+14:15:59      → 60 cards  +54 new  | total: 3,469/10,000  ETA: 2:45:01
+14:15:59    [P1 244/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=4  
+14:16:22      → 48 cards  +47 new  | total: 3,516/10,000  ETA: 2:42:22
+14:16:23    [P1 245/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=5  
+14:16:49      → 48 cards  +46 new  | total: 3,562/10,000  ETA: 2:39:56
+14:16:50    [P1 246/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=6  
+14:17:15      → 48 cards  +47 new  | total: 3,609/10,000  ETA: 2:37:28
+14:17:15    [P1 247/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=7  
+14:17:38      → 18 cards  +16 new  | total: 3,625/10,000  ETA: 2:37:03
+14:17:38    [P1 248/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=8  
+14:18:01      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:37:44
+14:18:01    [P1 249/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=9  
+14:18:23      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:38:23
+14:18:24    🔄 Scheduled context rotation…
+14:18:28    [P1 250/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=10  
+14:18:51      → 12 cards  +0 new  | total: 3,625/10,000  ETA: 2:39:12
+14:18:52    [P1 251/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=11  
+14:19:12      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:39:49
+14:19:13    [P1 252/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=12  
+14:19:34      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:40:27
+14:19:34    [P1 253/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=13  
+14:19:56      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:41:05
+14:19:56    [P1 254/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=14  
+14:20:20      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:41:48
+14:20:20    [P1 255/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=15  
+14:20:41      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:42:24
+14:20:41    [P1 256/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=16  
+14:21:05      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:43:07
+14:21:05    [P1 257/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=17  
+14:21:26      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:43:44
+14:21:26    [P1 258/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=18  
+14:21:45      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:44:18
+14:21:46    [P1 259/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=19  
+14:22:04      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:44:52
+14:22:05    [P1 260/800] 📄 https://www.amazon.fr/s?k=enceinte+bluetooth&page=20  
+14:22:26      → 0 cards  +0 new  | total: 3,625/10,000  ETA: 2:45:29
+14:22:26    [P1 261/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=1  
+14:22:50      → 48 cards  +29 new  | total: 3,654/10,000  ETA: 2:44:08
+14:22:50    [P1 262/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=2  
+14:23:14      → 48 cards  +36 new  | total: 3,690/10,000  ETA: 2:42:17
+14:23:14    [P1 263/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=3  
+14:23:35      → 48 cards  +33 new  | total: 3,723/10,000  ETA: 2:40:36
+14:23:35    [P1 264/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=4  
+14:23:57      → 48 cards  +39 new  | total: 3,762/10,000  ETA: 2:38:33
+14:23:57    [P1 265/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=5  
+14:24:19      → 48 cards  +32 new  | total: 3,794/10,000  ETA: 2:37:00
+14:24:19    [P1 266/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=6  
+14:24:45      → 60 cards  +39 new  | total: 3,833/10,000  ETA: 2:35:08
+14:24:45    [P1 267/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=7  
+14:25:08      → 18 cards  +14 new  | total: 3,847/10,000  ETA: 2:34:51
+14:25:09    [P1 268/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=8  
+14:25:29      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:35:23
+14:25:29    [P1 269/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=9  
+14:25:49      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:35:55
+14:25:49    [P1 270/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=10  
+14:26:07      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:36:24
+14:26:07    [P1 271/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=11  
+14:26:27      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:36:56
+14:26:27    [P1 272/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=12  
+14:26:46      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:37:27
+14:26:47    [P1 273/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=13  
+14:27:08      → 12 cards  +0 new  | total: 3,847/10,000  ETA: 2:38:02
+14:27:08    [P1 274/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=14  
+14:27:31      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:38:38
+14:27:31    🔄 Scheduled context rotation…
+14:27:36    [P1 275/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=15  
+14:27:56      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:39:19
+14:27:57    [P1 276/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=16  
+14:28:19      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:39:55
+14:28:19    [P1 277/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=17  
+14:28:40      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:40:29
+14:28:40    [P1 278/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=18  
+14:28:59      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:41:00
+14:28:59    [P1 279/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=19  
+14:29:21      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:41:34
+14:29:21    [P1 280/800] 📄 https://www.amazon.fr/s?k=ecouteurs+sans+fil&page=20  
+14:29:42      → 0 cards  +0 new  | total: 3,847/10,000  ETA: 2:42:09
+14:29:43    [P1 281/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=1  
+14:30:07      → 48 cards  +48 new  | total: 3,895/10,000  ETA: 2:39:32
+14:30:07    [P1 282/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=2  
+14:30:31      → 48 cards  +48 new  | total: 3,943/10,000  ETA: 2:36:58
+14:30:31    [P1 283/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=3  
+14:30:56      → 48 cards  +48 new  | total: 3,991/10,000  ETA: 2:34:28
+14:30:56    [P1 284/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=4  
+14:31:16      → 48 cards  +34 new  | total: 4,025/10,000  ETA: 2:32:48
+14:31:16    [P1 285/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=5  
+14:31:42      → 48 cards  +29 new  | total: 4,054/10,000  ETA: 2:31:37
+14:31:42    [P1 286/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=6  
+14:32:05      → 48 cards  +43 new  | total: 4,097/10,000  ETA: 2:29:29
+14:32:05    [P1 287/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=7  
+14:32:27      → 18 cards  +14 new  | total: 4,111/10,000  ETA: 2:29:09
+14:32:27    [P1 288/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=8  
+14:32:49      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:29:40
+14:32:49    [P1 289/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=9  
+14:33:10      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:30:10
+14:33:10    [P1 290/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=10  
+14:33:31      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:30:40
+14:33:31    [P1 291/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=11  
+14:33:54      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:31:13
+14:33:54    [P1 292/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=12  
+14:34:11      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:31:39
+14:34:12    [P1 293/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=13  
+14:34:34      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:32:12
+14:34:35    [P1 294/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=14  
+14:34:52      → 0 cards  +0 new  | total: 4,111/10,000  ETA: 2:32:37
+14:34:52    [P1 295/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=15  
+14:35:12      → 12 cards  +8 new  | total: 4,119/10,000  ETA: 2:32:35
+14:35:12    [P1 296/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=16  
+14:35:30      → 0 cards  +0 new  | total: 4,119/10,000  ETA: 2:33:01
+14:35:30    [P1 297/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=17  
+14:35:54      → 0 cards  +0 new  | total: 4,119/10,000  ETA: 2:33:35
+14:35:54    [P1 298/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=18  
+14:36:15      → 0 cards  +0 new  | total: 4,119/10,000  ETA: 2:34:05
+14:36:15    [P1 299/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=19  
+14:36:33      → 0 cards  +0 new  | total: 4,119/10,000  ETA: 2:34:31
+14:36:33    🔄 Scheduled context rotation…
+14:36:37    [P1 300/800] 📄 https://www.amazon.fr/s?k=appareil+photo&page=20  
+14:36:55      → 0 cards  +0 new  | total: 4,119/10,000  ETA: 2:35:02
+14:36:55    [P1 301/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=1  
+14:37:19      → 48 cards  +48 new  | total: 4,167/10,000  ETA: 2:32:33
+14:37:19    [P1 302/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=2  
+14:37:40      → 48 cards  +48 new  | total: 4,215/10,000  ETA: 2:30:04
+14:37:40    [P1 303/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=3  
+14:38:06      → 48 cards  +48 new  | total: 4,263/10,000  ETA: 2:27:43
+14:38:06    [P1 304/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=4  
+14:38:31      → 48 cards  +47 new  | total: 4,310/10,000  ETA: 2:25:27
+14:38:31    [P1 305/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=5  
+14:38:54      → 53 cards  +52 new  | total: 4,362/10,000  ETA: 2:22:55
+14:38:54    [P1 306/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=6  
+14:39:17      → 48 cards  +31 new  | total: 4,393/10,000  ETA: 2:21:36
+14:39:17    [P1 307/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=7  
+14:39:38      → 18 cards  +6 new  | total: 4,399/10,000  ETA: 2:21:43
+14:39:38    [P1 308/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=8  
+14:39:59      → 0 cards  +0 new  | total: 4,399/10,000  ETA: 2:22:09
+14:39:59    [P1 309/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=9  
+14:40:19      → 6 cards  +1 new  | total: 4,400/10,000  ETA: 2:22:31
+14:40:19    [P1 310/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=10  
+14:40:39      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:22:57
+14:40:39    [P1 311/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=11  
+14:40:56      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:23:19
+14:40:57    [P1 312/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=12  
+14:41:13      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:23:40
+14:41:13    [P1 313/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=13  
+14:41:32      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:24:04
+14:41:32    [P1 314/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=14  
+14:41:49      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:24:26
+14:41:49    [P1 315/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=15  
+14:42:09      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:24:51
+14:42:09    [P1 316/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=16  
+14:42:25      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:25:12
+14:42:25    [P1 317/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=17  
+14:42:42      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:25:34
+14:42:42    [P1 318/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=18  
+14:42:59      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:25:55
+14:42:59    [P1 319/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=19  
+14:43:15      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:26:15
+14:43:15    [P1 320/800] 📄 https://www.amazon.fr/s?k=drone+camera&page=20  
+14:43:31      → 0 cards  +0 new  | total: 4,400/10,000  ETA: 2:26:36
+14:43:31    [P1 321/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=1  
+14:43:49      → 48 cards  +48 new  | total: 4,448/10,000  ETA: 2:24:09
+14:43:49    [P1 322/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=2  
+14:44:10      → 48 cards  +44 new  | total: 4,492/10,000  ETA: 2:22:02
+14:44:10    [P1 323/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=3  
+14:44:29      → 48 cards  +45 new  | total: 4,537/10,000  ETA: 2:19:52
+14:44:29    [P1 324/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=4  
+14:44:51      → 48 cards  +36 new  | total: 4,573/10,000  ETA: 2:18:17
+14:44:51    🔄 Scheduled context rotation…
+14:44:54    [P1 325/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=5  
+14:45:15      → 48 cards  +44 new  | total: 4,617/10,000  ETA: 2:16:19
+14:45:15    [P1 326/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=6  
+14:45:36      → 48 cards  +37 new  | total: 4,654/10,000  ETA: 2:14:42
+14:45:36    [P1 327/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=7  
+14:45:56      → 18 cards  +6 new  | total: 4,660/10,000  ETA: 2:14:46
+14:45:56    [P1 328/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=8  
+14:46:18      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:15:11
+14:46:18    [P1 329/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=9  
+14:46:36      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:15:31
+14:46:36    [P1 330/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=10  
+14:46:53      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:15:51
+14:46:53    [P1 331/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=11  
+14:47:11      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:16:12
+14:47:11    [P1 332/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=12  
+14:47:28      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:16:31
+14:47:28    [P1 333/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=13  
+14:47:50      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:16:56
+14:47:50    [P1 334/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=14  
+14:48:07      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:17:16
+14:48:07    [P1 335/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=15  
+14:48:25      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:17:37
+14:48:26    [P1 336/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=16  
+14:48:42      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:17:56
+14:48:42    [P1 337/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=17  
+14:49:00      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:18:17
+14:49:00    [P1 338/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=18  
+14:49:18      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:18:37
+14:49:18    [P1 339/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=19  
+14:49:39      → 0 cards  +0 new  | total: 4,660/10,000  ETA: 2:19:01
+14:49:39    [P1 340/800] 📄 https://www.amazon.fr/s?k=montre+connect%C3%A9e&page=20  
+14:49:58      → 12 cards  +4 new  | total: 4,664/10,000  ETA: 2:19:10
+14:49:59    [P1 341/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=1  
+14:50:21      → 48 cards  +46 new  | total: 4,710/10,000  ETA: 2:17:02
+14:50:21    [P1 342/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=2  
+14:50:43      → 48 cards  +48 new  | total: 4,758/10,000  ETA: 2:14:50
+14:50:43    [P1 343/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=3  
+14:51:01      → 48 cards  +46 new  | total: 4,804/10,000  ETA: 2:12:42
+14:51:01    [P1 344/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=4  
+14:51:19      → 48 cards  +29 new  | total: 4,833/10,000  ETA: 2:11:29
+14:51:19    [P1 345/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=5  
+14:51:37      → 48 cards  +41 new  | total: 4,874/10,000  ETA: 2:09:40
+14:51:37    [P1 346/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=6  
+14:51:58      → 48 cards  +33 new  | total: 4,907/10,000  ETA: 2:08:20
+14:51:59    [P1 347/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=7  
+14:52:18      → 18 cards  +6 new  | total: 4,913/10,000  ETA: 2:08:22
+14:52:18    [P1 348/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=8  
+14:52:35      → 0 cards  +0 new  | total: 4,913/10,000  ETA: 2:08:40
+14:52:36    [P1 349/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=9  
+14:52:54      → 0 cards  +0 new  | total: 4,913/10,000  ETA: 2:08:58
+14:52:54    🔄 Scheduled context rotation…
+14:52:59    [P1 350/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=10  
+14:53:16      → 12 cards  +6 new  | total: 4,919/10,000  ETA: 2:09:03
+14:53:16    [P1 351/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=11  
+14:53:36      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:09:24
+14:53:37    [P1 352/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=12  
+14:53:53      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:09:42
+14:53:54    [P1 353/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=13  
+14:54:13      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:10:01
+14:54:13    [P1 354/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=14  
+14:54:31      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:10:21
+14:54:32    [P1 355/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=15  
+14:54:49      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:10:39
+14:54:49    [P1 356/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=16  
+14:55:07      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:10:58
+14:55:08    [P1 357/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=17  
+14:55:28      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:11:19
+14:55:28    [P1 358/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=18  
+14:55:46      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:11:38
+14:55:47    [P1 359/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=19  
+14:56:04      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:11:56
+14:56:04    [P1 360/800] 📄 https://www.amazon.fr/s?k=manette+gaming&page=20  
+14:56:20      → 0 cards  +0 new  | total: 4,919/10,000  ETA: 2:12:13
+14:56:20    [P1 361/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=1  
+14:56:38      → 48 cards  +48 new  | total: 4,967/10,000  ETA: 2:10:01
+14:56:39    [P1 362/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=2  
+14:56:57      → 48 cards  +46 new  | total: 5,013/10,000  ETA: 2:07:57
+14:56:57    [P1 363/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=3  
+14:57:15      → 48 cards  +48 new  | total: 5,061/10,000  ETA: 2:05:49
+14:57:15    [P1 364/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=4  
+14:57:33      → 48 cards  +45 new  | total: 5,106/10,000  ETA: 2:03:51
+14:57:33    [P1 365/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=5  
+14:57:54      → 48 cards  +43 new  | total: 5,149/10,000  ETA: 2:02:04
+14:57:54    [P1 366/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=6  
+14:58:12      → 48 cards  +38 new  | total: 5,187/10,000  ETA: 2:00:30
+14:58:12    [P1 367/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=7  
+14:58:32      → 18 cards  +7 new  | total: 5,194/10,000  ETA: 2:00:28
+14:58:32    [P1 368/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=8  
+14:58:53      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:00:48
+14:58:54    [P1 369/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=9  
+14:59:09      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:01:02
+14:59:09    [P1 370/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=10  
+14:59:28      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:01:20
+14:59:28    [P1 371/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=11  
+14:59:45      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:01:36
+14:59:45    [P1 372/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=12  
+15:00:01      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:01:51
+15:00:01    [P1 373/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=13  
+15:00:19      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:02:07
+15:00:19    [P1 374/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=14  
+15:00:34      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:02:22
+15:00:35    🔄 Scheduled context rotation…
+15:00:40    [P1 375/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=15  
+15:01:00      → 0 cards  +0 new  | total: 5,194/10,000  ETA: 2:02:45
+15:01:00    [P1 376/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=16  
+15:01:16      → 12 cards  +8 new  | total: 5,202/10,000  ETA: 2:02:37
+15:01:17    [P1 377/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=17  
+15:01:36      → 0 cards  +0 new  | total: 5,202/10,000  ETA: 2:02:55
+15:01:37    [P1 378/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=18  
+15:01:58      → 12 cards  +7 new  | total: 5,209/10,000  ETA: 2:02:54
+15:01:58    [P1 379/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=19  
+15:02:16      → 0 cards  +0 new  | total: 5,209/10,000  ETA: 2:03:11
+15:02:16    [P1 380/800] 📄 https://www.amazon.fr/s?k=console+jeux&page=20  
+15:02:37      → 0 cards  +0 new  | total: 5,209/10,000  ETA: 2:03:30
+15:02:37    [P1 381/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=1  
+15:02:58      → 48 cards  +47 new  | total: 5,256/10,000  ETA: 2:01:31
+15:02:58    [P1 382/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=2  
+15:03:16      → 60 cards  +57 new  | total: 5,313/10,000  ETA: 1:59:02
+15:03:16    [P1 383/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=3  
+15:03:38      → 48 cards  +47 new  | total: 5,360/10,000  ETA: 1:57:07
+15:03:38    [P1 384/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=4  
+15:04:01      → 48 cards  +29 new  | total: 5,389/10,000  ETA: 1:56:06
+15:04:01    [P1 385/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=5  
+15:04:21      → 60 cards  +45 new  | total: 5,434/10,000  ETA: 1:54:17
+15:04:21    [P1 386/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=6  
+15:04:39      → 48 cards  +41 new  | total: 5,475/10,000  ETA: 1:52:40
+15:04:40    [P1 387/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=7  
+15:05:00      → 30 cards  +15 new  | total: 5,490/10,000  ETA: 1:52:16
+15:05:00    [P1 388/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=8  
+15:05:19      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:52:31
+15:05:19    [P1 389/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=9  
+15:05:40      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:52:49
+15:05:40    [P1 390/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=10  
+15:05:57      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:53:03
+15:05:57    [P1 391/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=11  
+15:06:14      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:53:17
+15:06:14    [P1 392/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=12  
+15:06:30      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:53:30
+15:06:30    [P1 393/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=13  
+15:06:49      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:53:46
+15:06:49    [P1 394/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=14  
+15:07:07      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:54:01
+15:07:07    [P1 395/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=15  
+15:07:29      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:54:19
+15:07:29    [P1 396/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=16  
+15:07:50      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:54:36
+15:07:50    [P1 397/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=17  
+15:08:09      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:54:51
+15:08:09    [P1 398/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=18  
+15:08:30      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:55:08
+15:08:30    [P1 399/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=19  
+15:08:46      → 0 cards  +0 new  | total: 5,490/10,000  ETA: 1:55:22
+15:08:46    🔄 Scheduled context rotation…
+15:08:50    [P1 400/800] 📄 https://www.amazon.fr/s?k=souris+sans+fil&page=20  
+15:09:09      → 12 cards  +2 new  | total: 5,492/10,000  ETA: 1:55:35
+15:09:09    [P1 401/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=1  
+15:09:32      → 48 cards  +48 new  | total: 5,540/10,000  ETA: 1:53:41
+15:09:33    [P1 402/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=2  
+15:09:54      → 48 cards  +48 new  | total: 5,588/10,000  ETA: 1:51:46
+15:09:54    [P1 403/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=3  
+15:10:16      → 48 cards  +47 new  | total: 5,635/10,000  ETA: 1:49:56
+15:10:16    [P1 404/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=4  
+15:10:36      → 48 cards  +48 new  | total: 5,683/10,000  ETA: 1:48:04
+15:10:36    [P1 405/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=5  
+15:10:57      → 48 cards  +48 new  | total: 5,731/10,000  ETA: 1:46:14
+15:10:57    [P1 406/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=6  
+15:11:17      → 48 cards  +46 new  | total: 5,777/10,000  ETA: 1:44:30
+15:11:17    [P1 407/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=7  
+15:11:36      → 18 cards  +16 new  | total: 5,793/10,000  ETA: 1:44:02
+15:11:36    [P1 408/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=8  
+15:11:56      → 0 cards  +0 new  | total: 5,793/10,000  ETA: 1:44:17
+15:11:56    [P1 409/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=9  
+15:12:15      → 0 cards  +0 new  | total: 5,793/10,000  ETA: 1:44:31
+15:12:15    [P1 410/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=10  
+15:12:34      → 0 cards  +0 new  | total: 5,793/10,000  ETA: 1:44:44
+15:12:34    [P1 411/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=11  
+15:12:55      → 0 cards  +0 new  | total: 5,793/10,000  ETA: 1:45:00
+15:12:55    [P1 412/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=12  
+15:13:14      → 12 cards  +8 new  | total: 5,801/10,000  ETA: 1:44:53
+15:13:15    [P1 413/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=13  
+15:13:34      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:45:08
+15:13:34    [P1 414/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=14  
+15:13:55      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:45:22
+15:13:55    [P1 415/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=15  
+15:14:14      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:45:36
+15:14:14    [P1 416/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=16  
+15:14:32      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:45:49
+15:14:32    [P1 417/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=17  
+15:14:52      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:46:04
+15:14:52    [P1 418/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=18  
+15:15:12      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:46:18
+15:15:12    [P1 419/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=19  
+15:15:30      → 0 cards  +0 new  | total: 5,801/10,000  ETA: 1:46:31
+15:15:30    [P1 420/800] 📄 https://www.amazon.fr/s?k=cafetiere&page=20  
+15:15:49      → 12 cards  +4 new  | total: 5,805/10,000  ETA: 1:46:34
+15:15:49    [P1 421/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=1  
+15:16:11      → 48 cards  +48 new  | total: 5,853/10,000  ETA: 1:44:45
+15:16:11    [P1 422/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=2  
+15:16:30      → 48 cards  +48 new  | total: 5,901/10,000  ETA: 1:42:55
+15:16:30    [P1 423/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=3  
+15:16:48      → 48 cards  +48 new  | total: 5,949/10,000  ETA: 1:41:06
+15:16:48    [P1 424/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=4  
+15:17:08      → 48 cards  +48 new  | total: 5,997/10,000  ETA: 1:39:19
+15:17:08    🔄 Scheduled context rotation…
+15:17:13    [P1 425/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=5  
+15:17:33      → 48 cards  +47 new  | total: 6,044/10,000  ETA: 1:37:40
+15:17:34    [P1 426/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=6  
+15:17:56      → 48 cards  +46 new  | total: 6,090/10,000  ETA: 1:36:03
+15:17:56    [P1 427/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=7  
+15:18:15      → 18 cards  +16 new  | total: 6,106/10,000  ETA: 1:35:36
+15:18:15    [P1 428/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=8  
+15:18:32      → 0 cards  +0 new  | total: 6,106/10,000  ETA: 1:35:47
+15:18:32    [P1 429/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=9  
+15:18:51      → 0 cards  +0 new  | total: 6,106/10,000  ETA: 1:35:59
+15:18:51    [P1 430/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=10  
+15:19:11      → 0 cards  +0 new  | total: 6,106/10,000  ETA: 1:36:12
+15:19:11    [P1 431/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=11  
+15:19:30      → 0 cards  +0 new  | total: 6,106/10,000  ETA: 1:36:24
+15:19:30    [P1 432/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=12  
+15:19:50      → 0 cards  +0 new  | total: 6,106/10,000  ETA: 1:36:37
+15:19:50    [P1 433/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=13  
+15:20:11      → 12 cards  +6 new  | total: 6,112/10,000  ETA: 1:36:36
+15:20:11    [P1 434/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=14  
+15:20:30      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:36:48
+15:20:31    [P1 435/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=15  
+15:20:48      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:36:59
+15:20:48    [P1 436/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=16  
+15:21:10      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:37:13
+15:21:10    [P1 437/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=17  
+15:21:29      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:37:25
+15:21:30    [P1 438/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=18  
+15:21:46      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:37:36
+15:21:46    [P1 439/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=19  
+15:22:04      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:37:47
+15:22:04    [P1 440/800] 📄 https://www.amazon.fr/s?k=aspirateur&page=20  
+15:22:22      → 0 cards  +0 new  | total: 6,112/10,000  ETA: 1:37:59
+15:22:22    [P1 441/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=1  
+15:22:44      → 48 cards  +48 new  | total: 6,160/10,000  ETA: 1:36:15
+15:22:44    [P1 442/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=2  
+15:23:04      → 48 cards  +48 new  | total: 6,208/10,000  ETA: 1:34:31
+15:23:04    [P1 443/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=3  
+15:23:23      → 48 cards  +48 new  | total: 6,256/10,000  ETA: 1:32:47
+15:23:23    [P1 444/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=4  
+15:23:44      → 48 cards  +47 new  | total: 6,303/10,000  ETA: 1:31:09
+15:23:44    [P1 445/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=5  
+15:24:04      → 48 cards  +45 new  | total: 6,348/10,000  ETA: 1:29:36
+15:24:05    [P1 446/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=6  
+15:24:25      → 48 cards  +42 new  | total: 6,390/10,000  ETA: 1:28:11
+15:24:26    [P1 447/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=7  
+15:24:46      → 18 cards  +15 new  | total: 6,405/10,000  ETA: 1:27:48
+15:24:46    [P1 448/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=8  
+15:25:03      → 0 cards  +0 new  | total: 6,405/10,000  ETA: 1:27:57
+15:25:03    [P1 449/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=9  
+15:25:23      → 0 cards  +0 new  | total: 6,405/10,000  ETA: 1:28:09
+15:25:24    🔄 Scheduled context rotation…
+15:25:28    [P1 450/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=10  
+15:25:44      → 0 cards  +0 new  | total: 6,405/10,000  ETA: 1:28:20
+15:25:44    [P1 451/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=11  
+15:26:02      → 0 cards  +0 new  | total: 6,405/10,000  ETA: 1:28:31
+15:26:03    [P1 452/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=12  
+15:26:23      → 12 cards  +8 new  | total: 6,413/10,000  ETA: 1:28:24
+15:26:23    [P1 453/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=13  
+15:26:43      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:28:35
+15:26:43    [P1 454/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=14  
+15:27:00      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:28:45
+15:27:00    [P1 455/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=15  
+15:27:18      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:28:55
+15:27:18    [P1 456/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=16  
+15:27:39      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:29:06
+15:27:39    [P1 457/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=17  
+15:27:59      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:29:17
+15:27:59    [P1 458/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=18  
+15:28:16      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:29:27
+15:28:16    [P1 459/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=19  
+15:28:38      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:29:39
+15:28:38    [P1 460/800] 📄 https://www.amazon.fr/s?k=robot+cuisine&page=20  
+15:28:56      → 0 cards  +0 new  | total: 6,413/10,000  ETA: 1:29:50
+15:28:56    [P1 461/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=1  
+15:29:15      → 48 cards  +30 new  | total: 6,443/10,000  ETA: 1:28:50
+15:29:15    [P1 462/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=2  
+15:29:35      → 48 cards  +40 new  | total: 6,483/10,000  ETA: 1:27:29
+15:29:36    [P1 463/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=3  
+15:29:57      → 48 cards  +40 new  | total: 6,523/10,000  ETA: 1:26:08
+15:29:57    [P1 464/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=4  
+15:30:14      → 48 cards  +48 new  | total: 6,571/10,000  ETA: 1:24:29
+15:30:14    [P1 465/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=5  
+15:30:36      → 48 cards  +48 new  | total: 6,619/10,000  ETA: 1:22:53
+15:30:36    [P1 466/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=6  
+15:30:56      → 48 cards  +45 new  | total: 6,664/10,000  ETA: 1:21:24
+15:30:56    [P1 467/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=7  
+15:31:14      → 18 cards  +17 new  | total: 6,681/10,000  ETA: 1:20:55
+15:31:14    [P1 468/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=8  
+15:31:30      → 0 cards  +0 new  | total: 6,681/10,000  ETA: 1:21:03
+15:31:31    [P1 469/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=9  
+15:31:50      → 12 cards  +6 new  | total: 6,687/10,000  ETA: 1:21:00
+15:31:50    [P1 470/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=10  
+15:32:10      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:21:10
+15:32:10    [P1 471/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=11  
+15:32:28      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:21:19
+15:32:28    [P1 472/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=12  
+15:32:48      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:21:29
+15:32:48    [P1 473/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=13  
+15:33:06      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:21:38
+15:33:06    [P1 474/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=14  
+15:33:25      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:21:47
+15:33:25    🔄 Scheduled context rotation…
+15:33:29    [P1 475/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=15  
+15:33:53      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:01
+15:33:53    [P1 476/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=16  
+15:34:11      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:10
+15:34:11    [P1 477/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=17  
+15:34:31      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:20
+15:34:32    [P1 478/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=18  
+15:34:51      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:30
+15:34:51    [P1 479/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=19  
+15:35:09      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:39
+15:35:10    [P1 480/800] 📄 https://www.amazon.fr/s?k=machine+nespresso&page=20  
+15:35:32      → 0 cards  +0 new  | total: 6,687/10,000  ETA: 1:22:50
+15:35:32    [P1 481/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=1  
+15:35:54      → 48 cards  +47 new  | total: 6,734/10,000  ETA: 1:21:16
+15:35:54    [P1 482/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=2  
+15:36:14      → 48 cards  +48 new  | total: 6,782/10,000  ETA: 1:19:40
+15:36:14    [P1 483/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=3  
+15:36:34      → 48 cards  +47 new  | total: 6,829/10,000  ETA: 1:18:07
+15:36:34    [P1 484/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=4  
+15:36:55      → 48 cards  +47 new  | total: 6,876/10,000  ETA: 1:16:35
+15:36:55    [P1 485/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=5  
+15:37:14      → 48 cards  +48 new  | total: 6,924/10,000  ETA: 1:15:02
+15:37:14    [P1 486/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=6  
+15:37:33      → 48 cards  +44 new  | total: 6,968/10,000  ETA: 1:13:38
+15:37:33    [P1 487/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=7  
+15:37:52      → 18 cards  +18 new  | total: 6,986/10,000  ETA: 1:13:08
+15:37:52    [P1 488/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=8  
+15:38:13      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:17
+15:38:13    [P1 489/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=9  
+15:38:34      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:26
+15:38:34    [P1 490/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=10  
+15:38:53      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:34
+15:38:53    [P1 491/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=11  
+15:39:10      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:42
+15:39:10    [P1 492/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=12  
+15:39:31      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:51
+15:39:32    [P1 493/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=13  
+15:39:48      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:13:58
+15:39:48    [P1 494/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=14  
+15:40:07      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:14:06
+15:40:07    [P1 495/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=15  
+15:40:27      → 0 cards  +0 new  | total: 6,986/10,000  ETA: 1:14:15
+15:40:27    [P1 496/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=16  
+15:40:45      → 12 cards  +8 new  | total: 6,994/10,000  ETA: 1:14:06
+15:40:45    [P1 497/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=17  
+15:41:05      → 0 cards  +0 new  | total: 6,994/10,000  ETA: 1:14:15
+15:41:05    [P1 498/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=18  
+15:41:22      → 0 cards  +0 new  | total: 6,994/10,000  ETA: 1:14:22
+15:41:22    [P1 499/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=19  
+15:41:40      → 0 cards  +0 new  | total: 6,994/10,000  ETA: 1:14:29
+15:41:40    🔄 Scheduled context rotation…
+15:41:46    [P1 500/800] 📄 https://www.amazon.fr/s?k=lampe+led&page=20  
+15:42:03      → 0 cards  +0 new  | total: 6,994/10,000  ETA: 1:14:39
+15:42:03    [P1 501/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=1  
+15:42:23      → 48 cards  +48 new  | total: 7,042/10,000  ETA: 1:13:06
+15:42:23    [P1 502/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=2  
+15:42:45      → 48 cards  +48 new  | total: 7,090/10,000  ETA: 1:11:35
+15:42:45    [P1 503/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=3  
+15:43:07      → 48 cards  +48 new  | total: 7,138/10,000  ETA: 1:10:04
+15:43:07    [P1 504/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=4  
+15:43:27      → 48 cards  +48 new  | total: 7,186/10,000  ETA: 1:08:34
+15:43:28    [P1 505/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=5  
+15:43:49      → 48 cards  +48 new  | total: 7,234/10,000  ETA: 1:07:06
+15:43:50    [P1 506/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=6  
+15:44:07      → 48 cards  +42 new  | total: 7,276/10,000  ETA: 1:05:48
+15:44:07    [P1 507/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=7  
+15:44:27      → 18 cards  +14 new  | total: 7,290/10,000  ETA: 1:05:28
+15:44:28    [P1 508/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=8  
+15:44:44      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:05:34
+15:44:44    [P1 509/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=9  
+15:45:05      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:05:42
+15:45:05    [P1 510/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=10  
+15:45:23      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:05:49
+15:45:23    [P1 511/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=11  
+15:45:42      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:05:56
+15:45:42    [P1 512/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=12  
+15:46:01      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:03
+15:46:01    [P1 513/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=13  
+15:46:17      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:09
+15:46:17    [P1 514/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=14  
+15:46:35      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:15
+15:46:35    [P1 515/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=15  
+15:46:55      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:23
+15:46:55    [P1 516/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=16  
+15:47:11      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:29
+15:47:12    [P1 517/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=17  
+15:47:30      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:36
+15:47:31    [P1 518/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=18  
+15:47:47      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:42
+15:47:47    [P1 519/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=19  
+15:48:05      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:49
+15:48:05    [P1 520/800] 📄 https://www.amazon.fr/s?k=coussin+canap%C3%A9&page=20  
+15:48:25      → 0 cards  +0 new  | total: 7,290/10,000  ETA: 1:06:56
+15:48:25    [P1 521/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=1  
+15:48:45      → 48 cards  +48 new  | total: 7,338/10,000  ETA: 1:05:27
+15:48:46    [P1 522/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=2  
+15:49:10      → 48 cards  +48 new  | total: 7,386/10,000  ETA: 1:04:00
+15:49:10    [P1 523/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=3  
+15:49:34      → 48 cards  +48 new  | total: 7,434/10,000  ETA: 1:02:33
+15:49:35    [P1 524/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=4  
+15:50:00      → 48 cards  +48 new  | total: 7,482/10,000  ETA: 1:01:08
+15:50:00    🔄 Scheduled context rotation…
+15:50:04    [P1 525/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=5  
+15:50:23      → 48 cards  +32 new  | total: 7,514/10,000  ETA: 1:00:13
+15:50:23    [P1 526/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=6  
+15:50:50      → 48 cards  +38 new  | total: 7,552/10,000  ETA: 0:59:09
+15:50:50    [P1 527/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=7  
+15:51:10      → 18 cards  +12 new  | total: 7,564/10,000  ETA: 0:58:53
+15:51:11    [P1 528/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=8  
+15:51:32      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:00
+15:51:33    [P1 529/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=9  
+15:51:54      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:07
+15:51:55    [P1 530/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=10  
+15:52:17      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:14
+15:52:18    [P1 531/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=11  
+15:52:36      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:20
+15:52:37    [P1 532/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=12  
+15:52:57      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:27
+15:52:57    [P1 533/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=13  
+15:53:18      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:34
+15:53:19    [P1 534/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=14  
+15:53:38      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:40
+15:53:38    [P1 535/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=15  
+15:53:59      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:47
+15:53:59    [P1 536/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=16  
+15:54:18      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 0:59:53
+15:54:18    [P1 537/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=17  
+15:54:43      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 1:00:01
+15:54:43    [P1 538/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=18  
+15:55:06      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 1:00:09
+15:55:06    [P1 539/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=19  
+15:55:28      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 1:00:16
+15:55:28    [P1 540/800] 📄 https://www.amazon.fr/s?k=tapis+salon&page=20  
+15:55:46      → 0 cards  +0 new  | total: 7,564/10,000  ETA: 1:00:22
+15:55:47    [P1 541/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=1  
+15:56:09      → 48 cards  +48 new  | total: 7,612/10,000  ETA: 0:58:55
+15:56:09    [P1 542/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=2  
+15:56:32      → 48 cards  +48 new  | total: 7,660/10,000  ETA: 0:57:29
+15:56:32    [P1 543/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=3  
+15:56:55      → 48 cards  +48 new  | total: 7,708/10,000  ETA: 0:56:04
+15:56:55    [P1 544/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=4  
+15:57:17      → 48 cards  +48 new  | total: 7,756/10,000  ETA: 0:54:40
+15:57:18    [P1 545/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=5  
+15:57:39      → 48 cards  +48 new  | total: 7,804/10,000  ETA: 0:53:16
+15:57:39    [P1 546/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=6  
+15:58:03      → 48 cards  +47 new  | total: 7,851/10,000  ETA: 0:51:55
+15:58:03    [P1 547/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=7  
+15:58:21      → 18 cards  +16 new  | total: 7,867/10,000  ETA: 0:51:31
+15:58:21    [P1 548/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=8  
+15:58:39      → 0 cards  +0 new  | total: 7,867/10,000  ETA: 0:51:36
+15:58:40    [P1 549/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=9  
+15:59:00      → 0 cards  +0 new  | total: 7,867/10,000  ETA: 0:51:41
+15:59:00    🔄 Scheduled context rotation…
+15:59:05    [P1 550/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=10  
+15:59:24      → 0 cards  +0 new  | total: 7,867/10,000  ETA: 0:51:48
+15:59:24    [P1 551/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=11  
+15:59:46      → 0 cards  +0 new  | total: 7,867/10,000  ETA: 0:51:54
+15:59:46    [P1 552/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=12  
+16:00:09      → 0 cards  +0 new  | total: 7,867/10,000  ETA: 0:52:00
+16:00:10    [P1 553/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=13  
+16:00:35      → 12 cards  +5 new  | total: 7,872/10,000  ETA: 0:51:58
+16:00:36    [P1 554/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=14  
+16:00:56      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:04
+16:00:57    [P1 555/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=15  
+16:01:16      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:09
+16:01:17    [P1 556/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=16  
+16:01:40      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:15
+16:01:40    [P1 557/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=17  
+16:02:01      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:21
+16:02:01    [P1 558/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=18  
+16:02:20      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:26
+16:02:20    [P1 559/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=19  
+16:02:41      → 0 cards  +0 new  | total: 7,872/10,000  ETA: 0:52:32
+16:02:42    [P1 560/800] 📄 https://www.amazon.fr/s?k=parfum+homme&page=20  
+16:03:02      → 12 cards  +2 new  | total: 7,874/10,000  ETA: 0:52:34
+16:03:03    [P1 561/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=1  
+16:03:31      → 48 cards  +48 new  | total: 7,922/10,000  ETA: 0:51:12
+16:03:31    [P1 562/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=2  
+16:03:56      → 48 cards  +48 new  | total: 7,970/10,000  ETA: 0:49:49
+16:03:57    [P1 563/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=3  
+16:04:22      → 48 cards  +48 new  | total: 8,018/10,000  ETA: 0:48:27
+16:04:22    [P1 564/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=4  
+16:04:46      → 48 cards  +48 new  | total: 8,066/10,000  ETA: 0:47:06
+16:04:46    [P1 565/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=5  
+16:05:10      → 48 cards  +48 new  | total: 8,114/10,000  ETA: 0:45:45
+16:05:10    [P1 566/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=6  
+16:05:35      → 48 cards  +46 new  | total: 8,160/10,000  ETA: 0:44:28
+16:05:35    [P1 567/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=7  
+16:05:57      → 18 cards  +15 new  | total: 8,175/10,000  ETA: 0:44:07
+16:05:58    [P1 568/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=8  
+16:06:16      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:11
+16:06:17    [P1 569/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=9  
+16:06:39      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:16
+16:06:39    [P1 570/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=10  
+16:07:01      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:21
+16:07:02    [P1 571/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=11  
+16:07:23      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:26
+16:07:23    [P1 572/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=12  
+16:07:42      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:30
+16:07:42    [P1 573/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=13  
+16:08:01      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:34
+16:08:02    [P1 574/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=14  
+16:08:23      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:39
+16:08:24    🔄 Scheduled context rotation…
+16:08:29    [P1 575/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=15  
+16:08:52      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:46
+16:08:53    [P1 576/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=16  
+16:09:13      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:50
+16:09:14    [P1 577/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=17  
+16:09:37      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:44:56
+16:09:37    [P1 578/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=18  
+16:09:55      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:45:00
+16:09:56    [P1 579/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=19  
+16:10:14      → 0 cards  +0 new  | total: 8,175/10,000  ETA: 0:45:04
+16:10:14    [P1 580/800] 📄 https://www.amazon.fr/s?k=cr%C3%A8me+visage&page=20  
+16:10:36      → 12 cards  +5 new  | total: 8,180/10,000  ETA: 0:45:00
+16:10:37    [P1 581/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=1  
+16:11:05      → 48 cards  +48 new  | total: 8,228/10,000  ETA: 0:43:39
+16:11:05    [P1 582/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=2  
+16:11:31      → 48 cards  +48 new  | total: 8,276/10,000  ETA: 0:42:19
+16:11:32    [P1 583/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=3  
+16:11:56      → 48 cards  +48 new  | total: 8,324/10,000  ETA: 0:40:59
+16:11:56    [P1 584/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=4  
+16:12:22      → 48 cards  +48 new  | total: 8,372/10,000  ETA: 0:39:40
+16:12:22    [P1 585/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=5  
+16:12:50      → 48 cards  +48 new  | total: 8,420/10,000  ETA: 0:38:22
+16:12:50    [P1 586/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=6  
+16:13:17      → 48 cards  +48 new  | total: 8,468/10,000  ETA: 0:37:04
+16:13:18    [P1 587/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=7  
+16:13:41      → 18 cards  +16 new  | total: 8,484/10,000  ETA: 0:36:41
+16:13:42    [P1 588/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=8  
+16:14:02      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:36:45
+16:14:03    [P1 589/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=9  
+16:14:23      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:36:49
+16:14:24    [P1 590/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=10  
+16:14:47      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:36:53
+16:14:47    [P1 591/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=11  
+16:15:08      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:36:57
+16:15:08    [P1 592/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=12  
+16:15:31      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:01
+16:15:31    [P1 593/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=13  
+16:15:55      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:05
+16:15:56    [P1 594/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=14  
+16:16:18      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:09
+16:16:19    [P1 595/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=15  
+16:16:41      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:13
+16:16:42    [P1 596/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=16  
+16:17:05      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:18
+16:17:06    [P1 597/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=17  
+16:17:29      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:22
+16:17:30    [P1 598/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=18  
+16:17:47      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:25
+16:17:48    [P1 599/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=19  
+16:18:07      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:29
+16:18:08    🔄 Scheduled context rotation…
+16:18:13    [P1 600/800] 📄 https://www.amazon.fr/s?k=soin+cheveux&page=20  
+16:18:33      → 0 cards  +0 new  | total: 8,484/10,000  ETA: 0:37:33
+16:18:34    [P1 601/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=1  
+16:19:01      → 48 cards  +48 new  | total: 8,532/10,000  ETA: 0:36:15
+16:19:01    [P1 602/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=2  
+16:19:25      → 60 cards  +60 new  | total: 8,592/10,000  ETA: 0:34:35
+16:19:25    [P1 603/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=3  
+16:19:54      → 48 cards  +48 new  | total: 8,640/10,000  ETA: 0:33:18
+16:19:55    [P1 604/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=4  
+16:20:17      → 48 cards  +38 new  | total: 8,678/10,000  ETA: 0:32:17
+16:20:18    [P1 605/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=5  
+16:20:48      → 48 cards  +42 new  | total: 8,720/10,000  ETA: 0:31:11
+16:20:49    [P1 606/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=6  
+16:21:16      → 48 cards  +36 new  | total: 8,756/10,000  ETA: 0:30:15
+16:21:17    [P1 607/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=7  
+16:21:40      → 18 cards  +15 new  | total: 8,771/10,000  ETA: 0:29:53
+16:21:41    [P1 608/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=8  
+16:22:05      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:29:57
+16:22:06    [P1 609/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=9  
+16:22:27      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:00
+16:22:27    [P1 610/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=10  
+16:22:51      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:03
+16:22:52    [P1 611/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=11  
+16:23:12      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:06
+16:23:12    [P1 612/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=12  
+16:23:33      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:09
+16:23:34    [P1 613/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=13  
+16:23:55      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:12
+16:23:56    [P1 614/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=14  
+16:24:19      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:15
+16:24:19    [P1 615/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=15  
+16:24:42      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:19
+16:24:43    [P1 616/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=16  
+16:25:04      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:22
+16:25:05    [P1 617/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=17  
+16:25:25      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:25
+16:25:26    [P1 618/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=18  
+16:25:51      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:28
+16:25:52    [P1 619/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=19  
+16:26:15      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:32
+16:26:15    [P1 620/800] 📄 https://www.amazon.fr/s?k=chaussure+homme&page=20  
+16:26:38      → 0 cards  +0 new  | total: 8,771/10,000  ETA: 0:30:35
+16:26:39    [P1 621/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=1  
+16:27:12      → 48 cards  +47 new  | total: 8,818/10,000  ETA: 0:29:20
+16:27:13    [P1 622/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=2  
+16:27:40      → 48 cards  +48 new  | total: 8,866/10,000  ETA: 0:28:03
+16:27:40    [P1 623/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=3  
+16:28:10      → 48 cards  +47 new  | total: 8,913/10,000  ETA: 0:26:48
+16:28:11    [P1 624/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=4  
+16:28:38      → 48 cards  +44 new  | total: 8,957/10,000  ETA: 0:25:39
+16:28:39    🔄 Scheduled context rotation…
+16:28:43    [P1 625/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=5  
+16:29:06      → 48 cards  +33 new  | total: 8,990/10,000  ETA: 0:24:48
+16:29:07    [P1 626/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=6  
+16:29:32      → 48 cards  +40 new  | total: 9,030/10,000  ETA: 0:23:45
+16:29:32    [P1 627/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=7  
+16:29:57      → 18 cards  +17 new  | total: 9,047/10,000  ETA: 0:23:20
+16:29:58    [P1 628/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=8  
+16:30:21      → 0 cards  +0 new  | total: 9,047/10,000  ETA: 0:23:23
+16:30:22    [P1 629/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=9  
+16:30:46      → 0 cards  +0 new  | total: 9,047/10,000  ETA: 0:23:25
+16:30:47    [P1 630/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=10  
+16:31:11      → 0 cards  +0 new  | total: 9,047/10,000  ETA: 0:23:28
+16:31:12    [P1 631/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=11  
+16:31:33      → 0 cards  +0 new  | total: 9,047/10,000  ETA: 0:23:30
+16:31:34    [P1 632/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=12  
+16:31:57      → 0 cards  +0 new  | total: 9,047/10,000  ETA: 0:23:33
+16:31:58    [P1 633/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=13  
+16:32:24      → 12 cards  +8 new  | total: 9,055/10,000  ETA: 0:23:23
+16:32:24    [P1 634/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=14  
+16:32:50      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:25
+16:32:50    [P1 635/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=15  
+16:33:12      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:28
+16:33:12    [P1 636/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=16  
+16:33:34      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:30
+16:33:35    [P1 637/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=17  
+16:33:54      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:32
+16:33:54    [P1 638/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=18  
+16:34:19      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:35
+16:34:19    [P1 639/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=19  
+16:34:41      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:37
+16:34:42    [P1 640/800] 📄 https://www.amazon.fr/s?k=chaussure+femme&page=20  
+16:35:02      → 0 cards  +0 new  | total: 9,055/10,000  ETA: 0:23:39
+16:35:03    [P1 641/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=1  
+16:35:32      → 48 cards  +48 new  | total: 9,103/10,000  ETA: 0:22:23
+16:35:32    [P1 642/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=2  
+16:35:55      → 48 cards  +48 new  | total: 9,151/10,000  ETA: 0:21:06
+16:35:56    [P1 643/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=3  
+16:36:21      → 48 cards  +44 new  | total: 9,195/10,000  ETA: 0:19:57
+16:36:21    [P1 644/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=4  
+16:36:44      → 48 cards  +34 new  | total: 9,229/10,000  ETA: 0:19:04
+16:36:45    [P1 645/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=5  
+16:37:07      → 48 cards  +21 new  | total: 9,250/10,000  ETA: 0:18:33
+16:37:08    [P1 646/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=6  
+16:37:33      → 48 cards  +46 new  | total: 9,296/10,000  ETA: 0:17:21
+16:37:34    [P1 647/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=7  
+16:37:55      → 18 cards  +12 new  | total: 9,308/10,000  ETA: 0:17:04
+16:37:55    [P1 648/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=8  
+16:38:18      → 0 cards  +0 new  | total: 9,308/10,000  ETA: 0:17:05
+16:38:19    [P1 649/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=9  
+16:38:48      → 0 cards  +0 new  | total: 9,308/10,000  ETA: 0:17:08
+16:38:48    🔄 Scheduled context rotation…
+16:38:52    [P1 650/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=10  
+16:39:15      → 0 cards  +0 new  | total: 9,308/10,000  ETA: 0:17:10
+16:39:16    [P1 651/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=11  
+16:39:37      → 0 cards  +0 new  | total: 9,308/10,000  ETA: 0:17:11
+16:39:37    [P1 652/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=12  
+16:40:04      → 12 cards  +6 new  | total: 9,314/10,000  ETA: 0:17:04
+16:40:05    [P1 653/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=13  
+16:40:26      → 0 cards  +0 new  | total: 9,314/10,000  ETA: 0:17:05
+16:40:26    [P1 654/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=14  
+16:40:50      → 0 cards  +0 new  | total: 9,314/10,000  ETA: 0:17:07
+16:40:51    [P1 655/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=15  
+16:41:14      → 0 cards  +0 new  | total: 9,314/10,000  ETA: 0:17:09
+16:41:15    [P1 656/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=16  
+16:41:36      → 0 cards  +0 new  | total: 9,314/10,000  ETA: 0:17:10
+16:41:36    [P1 657/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=17  
+16:41:57      → 0 cards  +0 new  | total: 9,314/10,000  ETA: 0:17:12
+16:41:58    [P1 658/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=18  
+16:42:22      → 12 cards  +2 new  | total: 9,316/10,000  ETA: 0:17:11
+16:42:23    [P1 659/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=19  
+16:42:44      → 0 cards  +0 new  | total: 9,316/10,000  ETA: 0:17:12
+16:42:45    [P1 660/800] 📄 https://www.amazon.fr/s?k=sac+%C3%A0+main&page=20  
+16:43:04      → 0 cards  +0 new  | total: 9,316/10,000  ETA: 0:17:14
+16:43:05    [P1 661/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=1  
+16:43:33      → 48 cards  +48 new  | total: 9,364/10,000  ETA: 0:15:58
+16:43:33    [P1 662/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=2  
+16:43:59      → 48 cards  +48 new  | total: 9,412/10,000  ETA: 0:14:43
+16:44:00    [P1 663/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=3  
+16:44:25      → 48 cards  +48 new  | total: 9,460/10,000  ETA: 0:13:28
+16:44:26    [P1 664/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=4  
+16:44:50      → 48 cards  +48 new  | total: 9,508/10,000  ETA: 0:12:14
+16:44:50    [P1 665/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=5  
+16:45:17      → 48 cards  +48 new  | total: 9,556/10,000  ETA: 0:11:00
+16:45:17    [P1 666/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=6  
+16:45:41      → 48 cards  +47 new  | total: 9,603/10,000  ETA: 0:09:48
+16:45:42    [P1 667/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=7  
+16:46:06      → 18 cards  +16 new  | total: 9,619/10,000  ETA: 0:09:25
+16:46:06    [P1 668/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=8  
+16:46:24      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:25
+16:46:24    [P1 669/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=9  
+16:46:43      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:26
+16:46:43    [P1 670/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=10  
+16:47:03      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:27
+16:47:03    [P1 671/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=11  
+16:47:21      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:28
+16:47:21    [P1 672/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=12  
+16:47:41      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:28
+16:47:42    [P1 673/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=13  
+16:48:02      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:29
+16:48:03    [P1 674/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=14  
+16:48:21      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:30
+16:48:21    🔄 Scheduled context rotation…
+16:48:26    [P1 675/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=15  
+16:48:47      → 0 cards  +0 new  | total: 9,619/10,000  ETA: 0:09:31
+16:48:47    [P1 676/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=16  
+16:49:10      → 12 cards  +9 new  | total: 9,628/10,000  ETA: 0:09:18
+16:49:10    [P1 677/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=17  
+16:49:29      → 0 cards  +0 new  | total: 9,628/10,000  ETA: 0:09:19
+16:49:29    [P1 678/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=18  
+16:49:48      → 0 cards  +0 new  | total: 9,628/10,000  ETA: 0:09:19
+16:49:48    [P1 679/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=19  
+16:50:08      → 0 cards  +0 new  | total: 9,628/10,000  ETA: 0:09:20
+16:50:09    [P1 680/800] 📄 https://www.amazon.fr/s?k=v%C3%A9lo+%C3%A9lectrique&page=20  
+16:50:28      → 0 cards  +0 new  | total: 9,628/10,000  ETA: 0:09:21
+16:50:29    [P1 681/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=1  
+16:50:50      → 48 cards  +48 new  | total: 9,676/10,000  ETA: 0:08:07
+16:50:51    [P1 682/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=2  
+16:51:11      → 48 cards  +48 new  | total: 9,724/10,000  ETA: 0:06:53
+16:51:11    [P1 683/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=3  
+16:51:31      → 48 cards  +48 new  | total: 9,772/10,000  ETA: 0:05:40
+16:51:31    [P1 684/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=4  
+16:51:51      → 18 cards  +18 new  | total: 9,790/10,000  ETA: 0:05:13
+16:51:51    [P1 685/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=5  
+16:52:11      → 10 cards  +8 new  | total: 9,798/10,000  ETA: 0:05:01
+16:52:11    [P1 686/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=6  
+16:52:30      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:02
+16:52:31    [P1 687/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=7  
+16:52:51      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:02
+16:52:52    [P1 688/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=8  
+16:53:10      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:02
+16:53:10    [P1 689/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=9  
+16:53:28      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:03
+16:53:29    [P1 690/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=10  
+16:53:47      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:03
+16:53:47    [P1 691/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=11  
+16:54:04      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:03
+16:54:04    [P1 692/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=12  
+16:54:22      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:04
+16:54:23    [P1 693/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=13  
+16:54:41      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:04
+16:54:41    [P1 694/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=14  
+16:55:02      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:05
+16:55:03    [P1 695/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=15  
+16:55:22      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:05
+16:55:23    [P1 696/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=16  
+16:55:40      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:05
+16:55:40    [P1 697/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=17  
+16:56:00      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:06
+16:56:01    [P1 698/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=18  
+16:56:21      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:06
+16:56:22    [P1 699/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=19  
+16:56:42      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:07
+16:56:42    🔄 Scheduled context rotation…
+16:56:47    [P1 700/800] 📄 https://www.amazon.fr/s?k=tapis+roulant&page=20  
+16:57:07      → 0 cards  +0 new  | total: 9,798/10,000  ETA: 0:05:07
+16:57:07    [P1 701/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=1  
+16:57:37      → 48 cards  +44 new  | total: 9,842/10,000  ETA: 0:04:00
+16:57:37    [P1 702/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=2  
+16:58:09      → 60 cards  +53 new  | total: 9,895/10,000  ETA: 0:02:39
+16:58:09    [P1 703/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=3  
+16:58:32      → 48 cards  +43 new  | total: 9,938/10,000  ETA: 0:01:33
+16:58:33    [P1 704/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=4  
+16:58:55      → 48 cards  +24 new  | total: 9,962/10,000  ETA: 0:00:57
+16:58:55    [P1 705/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=5  
+16:59:21      → 48 cards  +28 new  | total: 9,990/10,000  ETA: 0:00:15
+16:59:22    [P1 706/800] 📄 https://www.amazon.fr/s?k=jouet+enfant&page=6  
+16:59:49      → 48 cards  +44 new  | total: 10,034/10,000  ETA: -1 day, 23:59:09
+16:59:51  
+🎉 Done! 10,034 products → c:\Users\HP\Desktop\projet atteif\amazon_data.json
+16:59:51  
+📊 Final stats:
+16:59:51     % discount : 2,462
+16:59:51     Flat deal  : 397
+16:59:51     No offer   : 7,175
+16:59:51  
+📦 Sample:
+16:59:51  [
+  {
+    "title": "XIAOMI Redmi Note 15 Pro+ 5G",
+    "price_initial": "499,90 €",
+    "price_offre": "379,99 €",
+    "seller": "",
+    "location": "Amazon.fr",
+    "category": "Smartphones",
+    "link": "https://www.amazon.fr/dp/B0G3TTPVPS",
+    "date": "2026-03-29",
+    "rating": "4.4",
+    "offre": [
+      {
+        "type_offre": "pourcentage",
+        "valeur_offre": "24%"
+      }
+    ]
+  },
+  {
+    "title": "Nothing Phone (3) – Handy mit 50 MP Triple-Kamera, 24h Silizium-Kohlenstoff Akku, 6,67\" 120Hz AMOLED Display, Glyph Matrix,16GB + 512GB – Schwarz",
+    "price_initial": "949,00 €",
+    "price_offre": "627,20 €",
+    "seller": "",
+    "location": "Amazon.fr",
+    "category": "Smartphones",
+    "link": "https://www.amazon.fr/dp/B0F6YCW6M8",
+    "date": "2026-03-29",
+    "rating": "4.5",
+    "offre": [
+      {
+        "type_offre": "pourcentage",
+        "valeur_offre": "34%"
+      }
+    ]
+  }
+]
