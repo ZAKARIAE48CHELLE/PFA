@@ -1,0 +1,23 @@
+# Artifacts
+artifacts/
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Logs
+logs/
+*.log
+
+# Data
+# data/ (uncomment if you want to ignore the data folder)

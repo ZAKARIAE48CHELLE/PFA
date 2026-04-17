@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarocDeals – Avito, Jumia & Amazon</title>
+  <meta name="description" content="Visualisez les annonces scrappées d'Avito, Jumia et Amazon : immobilier, voitures, téléphones, électronique et plus." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h1>Maroc<span class="brand-accent">Deals</span></h1>
+      </div>
+      <div class="header-meta" id="listingCount">Chargement…</div>
+    </div>
+  </header>
+
+  <!-- Source Switcher -->
+  <div class="source-bar">
+    <div class="source-inner">
+      <span class="source-label">Source :</span>
+      <div class="source-switcher" id="sourceSwitcher">
+        <button class="src-btn active" data-src="all" id="srcAll">
+          <span class="src-icon">🌐</span> Tous
+        </button>
+        <button class="src-btn" data-src="avito" id="srcAvito">
+          <img src="https://www.avito.ma/favicon.ico" class="favicon" onerror="this.style.display='none'" alt="" />
+          Avito
+        </button>
+        <button class="src-btn" data-src="jumia" id="srcJumia">
+          <img src="https://www.jumia.ma/favicon.ico" class="favicon" onerror="this.style.display='none'" alt="" />
+          Jumia
+        </button>
+        <button class="src-btn" data-src="amazon" id="srcAmazon">
+          <img src="https://www.amazon.fr/favicon.ico" class="favicon" onerror="this.style.display='none'" alt="" />
+          Amazon
+        </button>
+      </div>
+      <div class="source-stats" id="sourceStats"></div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <section class="controls">
+    <div class="controls-inner">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input id="searchInput" type="text" placeholder="Rechercher une annonce…" autocomplete="off" />
+      </div>
+      <div class="filter-group">
+        <select id="categoryFilter">
+          <option value="">Toutes catégories</option>
+        </select>
+        <select id="priceFilter">
+          <option value="">Prix (tous)</option>
+          <option value="stated">Prix indiqué</option>
+          <option value="unstated">Prix non indiqué</option>
+          <option value="offer">Avec offre/remise</option>
+        </select>
+        <select id="sortSelect">
+          <option value="default">Trier par défaut</option>
+          <option value="price-asc">Prix ↑</option>
+          <option value="price-desc">Prix ↓</option>
+          <option value="title-asc">Titre A→Z</option>
+          <option value="rating-desc">Note ↓</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid -->
+  <main class="grid-container" id="grid">
+    <div class="loader">
+      <div class="spinner"></div>
+      <p>Chargement des annonces…</p>
+    </div>
+  </main>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="32" cy="32" r="28"/><path d="M22 22l20 20M42 22L22 42"/>
+    </svg>
+    <p>Aucune annonce trouvée.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Données extraites de <a href="https://www.avito.ma" target="_blank" rel="noopener">avito.ma</a>, <a href="https://www.jumia.ma" target="_blank" rel="noopener">jumia.ma</a> &amp; <a href="https://www.amazon.fr" target="_blank" rel="noopener">amazon.fr</a> · PFA EMSI S8</p>
+  </footer>
+
+  <script src="viewer.js"></script>
+</body>
+</html>
