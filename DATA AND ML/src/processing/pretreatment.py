@@ -52,11 +52,13 @@ OUTPUT_DIR = DATA_DIR / "processed"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 RAW_FILES = {
-    "amazon"    : RAW_DIR / "amazon_full.json",
-    "cdiscount" : RAW_DIR / "cdiscount_full.json",
+    #"amazon"    : RAW_DIR / "amazon_full.json",
+    #"cdiscount" : RAW_DIR / "cdiscount_full.json",
     # "avito"     : RAW_DIR / "avito_full.json",
-    "jumia"     : RAW_DIR / "jumia_full.json",
-    "steam"     : RAW_DIR / "steam_products.json",
+    #"jumia"     : RAW_DIR / "jumia_full.json",
+    #"steam"     : RAW_DIR / "steam_products.json",
+    "jumia"     : RAW_DIR / "jumia_full2.json"
+
 }
 
 # Exchange rate: 1 EUR = X MAD  (update as needed)
