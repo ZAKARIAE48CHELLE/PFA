@@ -1,0 +1,75 @@
+<!-- List Produit — Marketplace Catalog -->
+<div class="buyer-wrapper animate-fade-in-up">
+  <!-- Page Header -->
+  <div class="buyer-header">
+    <div>
+      <h1 class="buyer-title">
+        <i class="bi bi-shop"></i>
+        Catalogue <span class="am-gradient-text">Marketplace</span>
+      </h1>
+      <p class="buyer-subtitle">Découvrez nos meilleurs produits et trouvez votre bonheur.</p>
+    </div>
+    <div class="buyer-header-stats">
+      <div class="stat-chip">
+        <i class="bi bi-box-seam"></i>
+        <span>{{ produits.length }} produit{{ produits.length > 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Product Grid -->
+    <div class="col-12">
+      <div class="row g-4">
+        <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let p of produits; let i = index">
+          <div class="product-card am-card" [style.animation-delay]="(i * 0.08) + 's'">
+            <div class="product-image">
+              <div class="product-category-badge">
+                <i class="bi bi-tag-fill"></i> {{ p.categorie || 'Général' }}
+              </div>
+              <img *ngIf="p.imageUrl" [src]="p.imageUrl" class="product-img-actual" [alt]="p.titre">
+              <div *ngIf="!p.imageUrl" class="product-icon">
+                <i class="bi bi-box-seam-fill"></i>
+              </div>
+            </div>
+
+            <div class="product-body">
+              <h5 class="product-name text-truncate" [title]="p.titre">{{ p.titre }}</h5>
+              <p class="product-desc">{{ p.description || 'Aucune description disponible.' }}</p>
+
+              <div class="product-price-row">
+                <div class="product-price">
+                  <span class="price-label">Prix</span>
+                  <span class="price-value">{{ p.prix }} €</span>
+                </div>
+                <div class="product-stock" *ngIf="p.stock !== undefined">
+                  <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
+                    {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="product-actions mt-3">
+                <button class="btn btn-primary btn-sm w-100 mb-2" (click)="addToCart(p)" [disabled]="p.stock === 0">
+                  <i class="bi bi-cart-plus"></i> Ajouter au panier
+                </button>
+                <a [routerLink]="['/produits', p.id]" class="btn btn-outline-primary btn-sm w-100">
+                  <i class="bi bi-eye"></i> Voir Détails
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="col-12" *ngIf="produits.length === 0">
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h4>Aucun produit disponible</h4>
+            <p>Le catalogue est vide pour le moment. Revenez plus tard !</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,362 @@
+package agents;
+
+import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.sourceforge.jFuzzyLogic.FIS;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * AgentNegociation — Version FINALE
+ *
+ * Représente le VENDEUR dans une négociation de prix.
+ * Utilise la logique floue (jFuzzyLogic) pour calculer les concessions.
+ *
+ * RÈGLES ABSOLUES (jamais violées) :
+ *   1. nouveauPrix >= prixMin  (plancher absolu)
+ *   2. nouveauPrix >= prixPropose  (vendeur ne descend jamais sous l'offre acheteur)
+ *   3. nouveauPrix <= prixActuel  (vendeur ne monte jamais son prix)
+ *   4. Si prixPropose == prixMin → accepter immédiatement
+ *   5. Si prixPropose < prixMin  → refuser, contre-proposer prixMin
+ *   6. Si roundActuel >= roundsMax → dernière offre = prixMin, clore
+ *
+ * RESPONSABILITÉ DU BRIDGE/CALLER :
+ *   - Passer le nouveauPrix du round N comme prixActuel du round N+1
+ *   - Ajouter prixPropose à historiqueOffres avant chaque appel
+ *   - Ne jamais appeler cet agent si isFinalOffer == true
+ *   - Ne jamais appeler si roundActuel > roundsMax
+ */
+public class AgentNegociation extends Agent {
+
+    private final ObjectMapper mapper = new ObjectMapper();
+    private FIS fis;
+
+    // -------------------------------------------------------------------------
+    // SETUP
+    // -------------------------------------------------------------------------
+
+    @Override
+    protected void setup() {
+        System.out.println("[AgentNegociation] Démarrage : " + getLocalName());
+        loadFuzzyEngine();
+
+        addBehaviour(new CyclicBehaviour() {
+            @Override
+            public void action() {
+                ACLMessage msg = receive();
+                if (msg != null) {
+                    try {
+                        Map<String, Object> input = mapper.readValue(msg.getContent(), Map.class);
+                        Map<String, Object> response = processNegotiation(input);
+
+                        ACLMessage reply = msg.createReply();
+                        reply.setPerformative(ACLMessage.INFORM);
+                        reply.setContent(mapper.writeValueAsString(response));
+                        send(reply);
+
+                    } catch (Exception e) {
+                        System.err.println("[AgentNegociation] Erreur traitement : " + e.getMessage());
+                        e.printStackTrace();
+                        try {
+                            ACLMessage reply = msg.createReply();
+                            reply.setPerformative(ACLMessage.FAILURE);
+                            reply.setContent("{\"error\":\"" + e.getMessage() + "\"}");
+                            send(reply);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                } else {
+                    block();
+                }
+            }
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // FUZZY ENGINE LOADING
+    // -------------------------------------------------------------------------
+
+    private void loadFuzzyEngine() {
+        System.out.println("[FCL] Chargement de negotiation.fcl...");
+        try {
+            InputStream stream = getClass().getResourceAsStream("/negotiation.fcl");
+            if (stream == null) {
+                System.err.println("[FCL ERROR] negotiation.fcl introuvable dans le classpath.");
+                return;
+            }
+            fis = FIS.load(stream, true);
+            if (fis == null) {
+                System.err.println("[FCL ERROR] Parsing échoué — fis est null.");
+            } else {
+                System.out.println("[FCL] Chargé avec succès.");
+            }
+        } catch (Exception e) {
+            System.err.println("[FCL ERROR] Exception : " + e.getMessage());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // CORE NEGOTIATION LOGIC
+    // -------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> processNegotiation(Map<String, Object> input) {
+
+        // --- Lecture des paramètres ---
+        String negociationId    = (String) input.get("negociationId");
+        double prixActuel       = toDouble(input.get("prixActuel"));
+        double prixMin          = toDouble(input.get("prixMin"));
+        double prixPropose      = toDouble(input.get("prixPropose"));
+        int    roundActuel      = toInt(input.get("roundActuel"));
+        int    roundsMax        = toInt(input.get("roundsMax"));
+        List<Number> historique = (List<Number>) input.get("historiqueOffres");
+
+        System.out.println("\n[AgentNegociation] ══════════════════════════════════");
+        System.out.println("[AgentNegociation] Round " + roundActuel + "/" + roundsMax);
+        System.out.println("[AgentNegociation] prixActuel=" + prixActuel
+                + " | prixMin=" + prixMin
+                + " | prixPropose=" + prixPropose);
+
+        // ── GARDE 0 : Configuration invalide ─────────────────────────────────
+        // prixMin doit être strictement inférieur à prixActuel
+        if (prixMin >= prixActuel) {
+            System.err.println("[GUARD 0] Configuration invalide : prixMin >= prixActuel");
+            return build(negociationId, prixActuel, 0, "INVALID_CONFIG", "STABLE", roundActuel, true);
+        }
+
+        // ── GARDE 1 : Dépassement de rounds ──────────────────────────────────
+        // Ne devrait jamais arriver si le bridge respecte sa responsabilité
+        if (roundActuel > roundsMax) {
+            System.err.println("[GUARD 1] roundActuel > roundsMax — forçage de clôture");
+            return build(negociationId, prixMin, prixActuel - prixMin, "TIMEOUT", "STABLE", roundActuel, true);
+        }
+
+        // ── GARDE 2 : Offre invalide (prix nul ou négatif) ───────────────────
+        if (prixPropose <= 0) {
+            System.err.println("[GUARD 2] prixPropose invalide : " + prixPropose);
+            return build(negociationId, prixActuel, 0, "INVALID", "STABLE", roundActuel, false);
+        }
+
+        // ── GARDE 3 & 4 : Offre sous ou au plancher (avec tolérance epsilon) ──
+        // Epsilon évite les boucles infinies dues au floating point
+        // Ex: 1150.01 != 1150.00 exactement → sans epsilon, boucle infinie
+        double epsilon = 0.05; // tolérance de 5 centimes
+
+        if (prixPropose < prixMin - epsilon) {
+            // Acheteur propose clairement sous le plancher → refuser, contre-proposer prixMin
+            System.out.println("[GUARD 3] prixPropose=" + prixPropose
+                    + " < prixMin=" + prixMin + " → contre-proposition au plancher");
+            double concession = prixActuel - prixMin;
+            return build(negociationId, prixMin, concession, "AGGRESSIVE", "DECLINING", roundActuel, false);
+        }
+
+        if (prixPropose <= prixMin + epsilon) {
+            // Acheteur est au plancher (± epsilon) → accepter immédiatement
+            // Couvre: prixPropose == prixMin ET prixPropose légèrement > prixMin
+            System.out.println("[GUARD 4] prixPropose=" + prixPropose
+                    + " <= prixMin+ε=" + (prixMin + epsilon) + " → acceptation au plancher");
+            return build(negociationId, prixMin, prixActuel - prixMin, "ACCEPTED_AT_FLOOR", "IMPROVING", roundActuel, true);
+        }
+
+        // ── GARDE 4b : Marge résiduelle trop faible → impossible de négocier ─
+        // Evite la convergence asymptotique vers prixMin à l'infini
+        if (prixActuel - prixMin <= epsilon) {
+            System.out.println("[GUARD 4b] marge résiduelle=" + (prixActuel - prixMin)
+                    + " < epsilon=" + epsilon + " → clôture forcée au plancher");
+            return build(negociationId, prixMin, 0, "FLOOR_REACHED", "STABLE", roundActuel, true);
+        }
+
+        // ── GARDE 5 : Acheteur propose >= prix actuel ─────────────────────────
+        // L'acheteur offre plus que notre prix actuel → on accepte
+        if (prixPropose >= prixActuel) {
+            System.out.println("[GUARD 5] prixPropose >= prixActuel → acceptation immédiate");
+            return build(negociationId, prixPropose, 0, "ACCEPTED", "IMPROVING", roundActuel, true);
+        }
+
+        // ── GARDE 6 : Dernier round ───────────────────────────────────────────
+        // On fait notre dernière offre = prixMin, prendre ou laisser
+        if (roundActuel >= roundsMax) {
+            System.out.println("[GUARD 6] Dernier round → offre finale au plancher : " + prixMin);
+            double concession = prixActuel - prixMin;
+            String behavior = deriveBehavior((prixActuel - prixPropose) / prixActuel * 100.0);
+            return build(negociationId, prixMin, concession, behavior, "FINAL", roundActuel, true);
+        }
+
+        // ── ÉTAPE 1 : Calcul des variables d'entrée fuzzy ────────────────────
+        double ecart       = (prixActuel - prixPropose) / prixActuel * 100.0;
+        double progression = (double) roundActuel / roundsMax;
+        double tendance    = computeTrend(historique, prixActuel);
+
+        String buyerBehavior = deriveBehavior(ecart);
+        String buyerTrend    = deriveTrend(tendance);
+
+        System.out.println("[FUZZY INPUT] ecart=" + round2(ecart)
+                + "% | progression=" + round2(progression)
+                + " | tendance=" + round2(tendance));
+        System.out.println("[FUZZY INPUT] buyerBehavior=" + buyerBehavior
+                + " | buyerTrend=" + buyerTrend);
+
+        // ── ÉTAPE 2 : Inférence fuzzy ─────────────────────────────────────────
+        double concessionRate = runFuzzyInference(ecart, progression, tendance);
+        System.out.println("[FUZZY OUTPUT] concessionRate=" + round2(concessionRate));
+
+        // ── ÉTAPE 3 : Calcul de la concession ────────────────────────────────
+        double marge     = prixActuel - prixMin;
+        double concession = concessionRate * marge;
+        double candidat   = prixActuel - concession;
+
+        System.out.println("[CALC] marge=" + round2(marge)
+                + " | concession=" + round2(concession)
+                + " | candidat=" + round2(candidat));
+
+        // ── ÉTAPE 4 : Protection vendeur ─────────────────────────────────────
+        // Si l'agent allait proposer moins que l'acheteur → rencontrer à mi-chemin
+        if (candidat <= prixPropose) {
+            System.out.println("[SELLER PROTECTION] candidat=" + round2(candidat)
+                    + " <= prixPropose=" + prixPropose + " → mi-chemin");
+            candidat = (prixActuel + prixPropose) / 2.0;
+        }
+
+        // ── ÉTAPE 5 : Clamp absolu (ordre impératif) ──────────────────────────
+        double nouveauPrix = candidat;
+
+        // Règle 1 : jamais sous prixMin (plancher absolu)
+        nouveauPrix = Math.max(prixMin, nouveauPrix);
+
+        // Règle 2 : jamais sous ce que l'acheteur a proposé
+        nouveauPrix = Math.max(prixPropose, nouveauPrix);
+
+        // Règle 3 : jamais au-dessus du prix actuel
+        nouveauPrix = Math.min(prixActuel, nouveauPrix);
+
+        System.out.println("[CLAMP] candidat=" + round2(candidat)
+                + " → nouveauPrix=" + round2(nouveauPrix));
+
+        // ── ÉTAPE 6 : Détection de blocage ───────────────────────────────────
+        // Si l'agent ne peut plus bouger → clore la négociation
+        boolean isFinalOffer = (nouveauPrix >= prixActuel);
+        if (isFinalOffer) {
+            System.out.println("[BLOCKED] Agent ne peut plus concéder → clôture forcée");
+        }
+
+        System.out.println("[RESULT] nouveauPrix=" + round2(nouveauPrix)
+                + " | isFinalOffer=" + isFinalOffer);
+        System.out.println("[AgentNegociation] ══════════════════════════════════\n");
+
+        return build(negociationId, nouveauPrix, prixActuel - nouveauPrix,
+                buyerBehavior, buyerTrend, roundActuel, isFinalOffer);
+    }
+
+    // -------------------------------------------------------------------------
+    // FUZZY INFERENCE
+    // -------------------------------------------------------------------------
+
+    private double runFuzzyInference(double ecart, double progression, double tendance) {
+        try {
+            if (fis != null) {
+                fis.setVariable("ecart", ecart);
+                fis.setVariable("progression", progression);
+                fis.setVariable("tendance", tendance);
+                fis.evaluate();
+
+                double rate = fis.getVariable("concessionRate").getValue();
+
+                if (Double.isNaN(rate) || rate < 0) {
+                    System.err.println("[FUZZY FALLBACK] valeur invalide : " + rate);
+                    return fallbackRate(ecart, progression);
+                }
+                return rate;
+            } else {
+                System.err.println("[FUZZY FALLBACK] FIS non chargé");
+                return fallbackRate(ecart, progression);
+            }
+        } catch (Exception e) {
+            System.err.println("[FUZZY ERROR] " + e.getMessage());
+            return fallbackRate(ecart, progression);
+        }
+    }
+
+    /**
+     * Fallback pur Java si le moteur fuzzy est indisponible.
+     * Reproduit la même logique que les règles FCL.
+     */
+    private double fallbackRate(double ecart, double progression) {
+        double rate;
+        if      (ecart > 45) rate = 0.02;  // acheteur très agressif → tenir ferme
+        else if (ecart > 30) rate = 0.06;  // agressif → petite concession
+        else if (ecart > 15) rate = 0.18;  // sérieux → concession moyenne
+        else if (ecart > 5)  rate = 0.32;  // proche → grande concession
+        else                 rate = 0.45;  // très proche → clore vite
+
+        // Boost si fin de négociation
+        if (progression > 0.7) rate = Math.min(0.5, rate + 0.1);
+
+        System.out.println("[FALLBACK RATE] ecart=" + round2(ecart)
+                + " progression=" + round2(progression) + " → rate=" + rate);
+        return rate;
+    }
+
+    // -------------------------------------------------------------------------
+    // HELPERS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Calcule la tendance de l'acheteur à partir de son historique d'offres.
+     * Valeur entre -1.0 (baisse) et +1.0 (hausse).
+     */
+    private double computeTrend(List<Number> historique, double prixActuel) {
+        if (historique == null || historique.size() < 2) return 0.0;
+        double last       = historique.get(historique.size() - 1).doubleValue();
+        double secondLast = historique.get(historique.size() - 2).doubleValue();
+        double delta      = (last - secondLast) / prixActuel;
+        return Math.max(-1.0, Math.min(1.0, delta));
+    }
+
+    /** Comportement acheteur basé sur l'écart en % */
+    private String deriveBehavior(double ecart) {
+        if (ecart > 30) return "AGGRESSIVE";
+        if (ecart >= 10) return "SERIOUS";
+        return "CLOSE";
+    }
+
+    /** Tendance acheteur basée sur la valeur calculée */
+    private String deriveTrend(double tendance) {
+        if (tendance > 0.05)  return "IMPROVING";
+        if (tendance < -0.05) return "DECLINING";
+        return "STABLE";
+    }
+
+    /** Arrondi à 2 décimales */
+    private double round2(double val) {
+        return Math.round(val * 100.0) / 100.0;
+    }
+
+    private double toDouble(Object o) {
+        return ((Number) o).doubleValue();
+    }
+
+    private int toInt(Object o) {
+        return ((Number) o).intValue();
+    }
+
+    /** Construit la réponse JSON finale */
+    private Map<String, Object> build(String id, double nouveauPrix, double concession,
+                                       String behavior, String trend,
+                                       int round, boolean finalOffer) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("negociationId", id);
+        res.put("nouveauPrix",   round2(nouveauPrix));
+        res.put("concession",    round2(concession));
+        res.put("buyerBehavior", behavior);
+        res.put("buyerTrend",    trend);
+        res.put("roundActuel",   round);
+        res.put("isFinalOffer",  finalOffer);
+        return res;
+    }
+}

@@ -1,0 +1,114 @@
+<div class="signup-wrapper">
+    <!-- Decorative background shapes matching Login -->
+    <div class="signup-bg-shape signup-bg-shape-1"></div>
+    <div class="signup-bg-shape signup-bg-shape-2"></div>
+    <div class="signup-bg-shape signup-bg-shape-3"></div>
+
+    <div class="signup-container animate-fade-in-up">
+        <!-- Left: Branding Panel (same as login) -->
+        <div class="signup-brand-panel d-none d-lg-flex">
+            <div class="signup-brand-content">
+                <div class="signup-brand-icon">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h1>Aura<strong>Market</strong></h1>
+                <p>Rejoignez la révolution de la négociation intelligente pilotée par des agents autonomes JADE.</p>
+                <div class="signup-brand-features">
+                    <div class="signup-feature">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Sécurité & Audit renforcés</span>
+                    </div>
+                    <div class="signup-feature">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span>Expérience fluide et rapide</span>
+                    </div>
+                    <div class="signup-feature">
+                        <i class="bi bi-people"></i>
+                        <span>Communauté de négoce active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Signup Form -->
+        <div class="signup-form-panel">
+            <div class="signup-form-wrapper">
+                <div class="signup-form-header">
+                    <div class="signup-mobile-logo d-lg-none">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <span>Aura<strong>Market</strong></span>
+                    </div>
+                    <h2>Créer un compte</h2>
+                    <p>Commencez votre aventure AuraMarket aujourd'hui</p>
+                </div>
+
+                <div class="signup-alert-error" *ngIf="error">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    {{ error }}
+                </div>
+
+                <form (ngSubmit)="onSignup()" class="signup-form">
+                    <div class="form-group">
+                        <label class="form-label" for="signup-email">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <input
+                            type="email"
+                            id="signup-email"
+                            class="form-control"
+                            [(ngModel)]="email"
+                            name="email"
+                            required
+                            placeholder="votre@email.com"
+                            [disabled]="isLoading">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="signup-password">
+                            <i class="bi bi-lock"></i> Mot de passe
+                        </label>
+                        <input
+                            type="password"
+                            id="signup-password"
+                            class="form-control"
+                            [(ngModel)]="password"
+                            name="password"
+                            required
+                            placeholder="••••••••"
+                            [disabled]="isLoading">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Je suis un :</label>
+                        <div class="role-selector">
+                            <label class="role-option" [class.active]="role === 'ACHETEUR'">
+                                <input type="radio" name="role" [(ngModel)]="role" value="ACHETEUR">
+                                <div class="role-card">
+                                    <i class="bi bi-bag"></i>
+                                    <span>Acheteur</span>
+                                </div>
+                            </label>
+                            <label class="role-option" [class.active]="role === 'VENDEUR'">
+                                <input type="radio" name="role" [(ngModel)]="role" value="VENDEUR">
+                                <div class="role-card">
+                                    <i class="bi bi-shop"></i>
+                                    <span>Vendeur</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary signup-submit-btn" [disabled]="isLoading">
+                        <span *ngIf="!isLoading">S'inscrire</span>
+                        <div *ngIf="isLoading" class="loader"></div>
+                        <i *ngIf="!isLoading" class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="signup-footer-link">
+                    <p>Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

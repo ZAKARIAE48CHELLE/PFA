@@ -1,0 +1,85 @@
+<div class="detail-container animate-fade-in">
+  <!-- Status Messages -->
+  <div *ngIf="statusMessage" class="alert fixed-top mx-auto mt-3 w-50 shadow-sm animate-fade-in" 
+       [class.alert-success]="statusType === 'success'" [class.alert-danger]="statusType === 'danger'"
+       style="z-index: 2000;">
+    <i class="bi" [class.bi-check-circle-fill]="statusType === 'success'" [class.bi-exclamation-triangle-fill]="statusType === 'danger'"></i>
+    {{ statusMessage }}
+  </div>
+
+  <div *ngIf="loading" class="loader-wrapper">
+    <div class="am-loader"></div>
+    <p>Chargement du produit...</p>
+  </div>
+
+  <div *ngIf="error" class="error-wrapper am-card">
+    <i class="bi bi-exclamation-circle"></i>
+    <h3>Oups !</h3>
+    <p>{{ error }}</p>
+    <a routerLink="/acheteur" class="btn btn-primary mt-3">Retour au catalogue</a>
+  </div>
+
+  <div *ngIf="!loading && !error && produit" class="product-layout">
+    <!-- Image Gallery Section -->
+    <div class="product-visuals">
+      <div class="main-image-card am-card">
+        <img [src]="produit.imageUrl || 'assets/images/placeholder.png'" [alt]="produit.titre" class="main-image">
+        <div class="image-overlay">
+          <span class="am-badge am-badge-accent">{{ produit.categorie }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Info Section -->
+    <div class="product-info animate-slide-in-right">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a routerLink="/acheteur">Catalogue</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ produit.titre }}</li>
+        </ol>
+      </nav>
+
+      <h1 class="product-title">{{ produit.titre }}</h1>
+      
+      <div class="price-section">
+        <span class="current-price">{{ produit.prix | number:'1.2-2' }} €</span>
+        <span *ngIf="produit.stock > 0" class="stock-status in-stock">
+          <i class="bi bi-check-circle-fill"></i> En stock ({{ produit.stock }})
+        </span>
+        <span *ngIf="produit.stock <= 0" class="stock-status out-of-stock">
+          <i class="bi bi-x-circle-fill"></i> Rupture de stock
+        </span>
+      </div>
+
+      <div class="product-description am-card">
+        <h5><i class="bi bi-info-circle"></i> Description</h5>
+        <p>{{ produit.description }}</p>
+      </div>
+
+      <div class="action-panel">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <button class="btn btn-primary w-100 btn-lg" [disabled]="produit.stock <= 0" (click)="addToCart()">
+              <i class="bi bi-cart-plus"></i> Ajouter au panier
+            </button>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-accent w-100 btn-lg" (click)="initiateNego()">
+              <i class="bi bi-robot"></i> Négocier avec l'IA
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-features am-card mt-4">
+        <h6><i class="bi bi-stars"></i> Pourquoi ce prix ?</h6>
+        <p class="small text-muted">Notre agent intelligent analyse le marché en temps réel pour vous proposer le meilleur rapport qualité-prix.</p>
+        <ul class="feature-list">
+          <li><i class="bi bi-shield-check"></i> Prix vérifié par l'agent</li>
+          <li><i class="bi bi-lightning"></i> Réponse immédiate aux offres</li>
+          <li><i class="bi bi-arrow-repeat"></i> Négociation dynamique</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

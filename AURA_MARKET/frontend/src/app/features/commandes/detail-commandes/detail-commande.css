@@ -1,0 +1,36 @@
+.header-card {
+    border-top: 5px solid var(--am-primary);
+}
+
+.product-mini-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.product-mini-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.summary-card {
+    position: sticky;
+    top: 2rem;
+}
+
+.payment-info {
+    border: 1px dashed #dee2e6;
+}
+
+@media print {
+    .btn, .breadcrumb, .summary-card button {
+        display: none !important;
+    }
+    .am-card {
+        box-shadow: none !important;
+        border: 1px solid #eee !important;
+    }
+}

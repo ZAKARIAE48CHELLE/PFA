@@ -1,0 +1,62 @@
+<!-- Marketplace Header -->
+<header class="am-header">
+  <div class="container-fluid px-4">
+    <nav class="am-nav">
+      <!-- Logo -->
+      <a class="am-logo" routerLink="/acheteur">
+        <i class="bi bi-lightning-charge-fill"></i>
+        <span>Aura<strong>Market</strong></span>
+      </a>
+
+      <!-- Center Nav (Role indicator / Links) -->
+      <div class="am-nav-center d-none d-md-flex">
+        <a routerLink="/acheteur" class="am-nav-link" routerLinkActive="active">Catalogue</a>
+        <a routerLink="/dashboard" class="am-nav-link" routerLinkActive="active"
+          *ngIf="authService.currentUserValue?.role === 'ACHETEUR'">Mes Négociations</a>
+        <a routerLink="/commandes" class="am-nav-link" routerLinkActive="active"
+          *ngIf="authService.currentUserValue?.role === 'ACHETEUR'">Mes Commandes</a>
+        
+        <a routerLink="/vendeur" class="am-nav-link" routerLinkActive="active"
+          *ngIf="authService.currentUserValue?.role === 'VENDEUR'">Espace Vendeur</a>
+        
+        <a routerLink="/superviseur" class="am-nav-link" routerLinkActive="active"
+          *ngIf="authService.currentUserValue?.role === 'SUPERVISEUR'">Supervision</a>
+
+        <span class="am-nav-role" *ngIf="authService.currentUserValue">
+          <i class="bi bi-person-circle"></i>
+          {{ getRoleLabel() }}
+        </span>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="am-nav-actions">
+        <!-- Cart is visible to everyone -->
+        <a routerLink="/cart" class="am-nav-cart">
+          <i class="bi bi-cart3"></i>
+          <span class="am-cart-badge" *ngIf="cartService.getItemCount > 0">{{ cartService.getItemCount }}</span>
+        </a>
+
+        <!-- User Info / Login -->
+        <ng-container *ngIf="authService.currentUserValue; else guestActions">
+          <button class="am-btn-logout" (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Déconnexion</span>
+          </button>
+        </ng-container>
+
+        <ng-template #guestActions>
+          <a routerLink="/login" class="btn btn-primary btn-sm px-4">
+            <i class="bi bi-person-fill"></i> Se connecter
+          </a>
+        </ng-template>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="am-main-authenticated">
+  <div class="container-fluid px-4">
+    <router-outlet></router-outlet>
+  </div>
+</main>

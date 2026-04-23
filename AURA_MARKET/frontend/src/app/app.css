@@ -1,0 +1,178 @@
+/* ============================================
+   App Component — Marketplace Header
+   ============================================ */
+
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+/* ---------- Header ---------- */
+.am-header {
+  background: var(--am-surface);
+  border-bottom: 1px solid var(--am-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.am-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+/* Logo */
+.am-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: var(--am-text);
+  text-decoration: none;
+  transition: var(--am-transition);
+}
+
+.am-logo i {
+  font-size: 1.5rem;
+  color: var(--am-primary);
+}
+
+.am-logo strong {
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--am-primary), var(--am-primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.am-logo:hover {
+  opacity: 0.8;
+}
+
+.am-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.am-nav-link {
+  color: var(--am-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  transition: var(--am-transition);
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.am-nav-link:hover {
+  color: var(--am-primary);
+}
+
+.am-nav-link.active {
+  color: var(--am-primary);
+  border-bottom-color: var(--am-primary);
+}
+
+.am-nav-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--am-primary);
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Right Actions */
+.am-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.am-user-email {
+  font-size: 0.875rem;
+  color: var(--am-text-secondary);
+}
+
+.am-btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1.5px solid var(--am-border);
+  border-radius: var(--am-radius);
+  color: var(--am-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--am-transition);
+}
+
+.am-btn-logout:hover {
+  background: var(--am-danger);
+  border-color: var(--am-danger);
+  color: #fff;
+}
+
+/* ---------- Main ---------- */
+.am-main-authenticated {
+  padding-top: 1.5rem;
+  padding-bottom: 3rem;
+  min-height: calc(100dvh - 64px);
+}
+
+.am-nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--am-surface-alt);
+  color: var(--am-text-secondary);
+  font-size: 1.25rem;
+  transition: var(--am-transition);
+  text-decoration: none;
+}
+
+.am-nav-cart:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--am-primary);
+  transform: translateY(-2px);
+}
+
+.am-cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--am-primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  animation: bounceIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}

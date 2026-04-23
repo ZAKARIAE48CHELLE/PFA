@@ -1,0 +1,133 @@
+<!-- Supervisor Dashboard — Audit Log -->
+<div class="supervisor-wrapper animate-fade-in-up">
+  <!-- Page Header -->
+  <div class="supervisor-header">
+    <div>
+      <h1 class="supervisor-title">
+        <i class="bi bi-shield-check"></i>
+        Tableau de Bord <span class="am-gradient-text">Superviseur</span>
+      </h1>
+      <p class="supervisor-subtitle">Journal d'audit du système multi-agents AuraMarket</p>
+    </div>
+    <div class="supervisor-header-stats">
+      <div class="stat-chip">
+        <i class="bi bi-journal-text"></i>
+        <span>{{ audits.length }} entrée{{ audits.length > 1 ? 's' : '' }}</span>
+      </div>
+      <div class="stat-chip" *ngIf="criticalCount > 0">
+        <i class="bi bi-exclamation-triangle-fill" style="color: var(--am-danger)"></i>
+        <span>{{ criticalCount }} critique{{ criticalCount > 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon info">
+          <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ getCountBySeverity('INFO') }}</span>
+          <span class="summary-label">Info</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon warning">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ getCountBySeverity('WARNING') }}</span>
+          <span class="summary-label">Warning</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon critical">
+          <i class="bi bi-x-octagon-fill"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ getCountBySeverity('CRITICAL') }}</span>
+          <span class="summary-label">Critical</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon total">
+          <i class="bi bi-layers-fill"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ audits.length }}</span>
+          <span class="summary-label">Total</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Table -->
+  <div class="audit-table-card am-card">
+    <div class="audit-table-header">
+      <h4><i class="bi bi-table"></i> Journal d'Audit</h4>
+      <button class="btn btn-outline-primary btn-sm" (click)="refreshAudits()">
+        <i class="bi bi-arrow-clockwise"></i> Actualiser
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="am-table">
+        <thead>
+          <tr>
+            <th>Agent Source</th>
+            <th>Type</th>
+            <th>Sévérité</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of audits">
+            <td>
+              <div class="agent-cell">
+                <div class="agent-cell-icon">
+                  <i class="bi bi-cpu"></i>
+                </div>
+                <span class="font-monospace">{{ a.agentSource }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="am-badge am-badge-primary">{{ a.type }}</span>
+            </td>
+            <td>
+              <span class="am-badge"
+                [class.am-badge-info]="a.severite === 'INFO'"
+                [class.am-badge-warning]="a.severite === 'WARNING'"
+                [class.am-badge-danger]="a.severite === 'CRITICAL'">
+                <i class="bi"
+                  [class.bi-info-circle]="a.severite === 'INFO'"
+                  [class.bi-exclamation-triangle]="a.severite === 'WARNING'"
+                  [class.bi-x-octagon]="a.severite === 'CRITICAL'">
+                </i>
+                {{ a.severite }}
+              </span>
+            </td>
+            <td>
+              <span class="audit-message">{{ a.message }}</span>
+            </td>
+          </tr>
+          <tr *ngIf="audits.length === 0">
+            <td colspan="4">
+              <div class="table-empty">
+                <i class="bi bi-journal-x"></i>
+                <p>Aucun audit enregistré dans le système.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

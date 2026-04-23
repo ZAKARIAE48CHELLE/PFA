@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/auth/**
+        - id: product-service
+          uri: http://product-service:8082
+          predicates:
+            - Path=/products/**, /offers/**, /commandes/**
+        - id: negotiation-service
+          uri: http://negotiation-service:8083
+          predicates:
+            - Path=/negotiations/**
+        - id: audit-service
+          uri: http://audit-service:8084
+          predicates:
+            - Path=/audits/**
+        - id: agent-service
+          uri: http://agents-bridge:8085
+          predicates:
+            - Path=/agent/**
