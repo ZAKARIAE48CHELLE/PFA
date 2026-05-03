@@ -1,0 +1,100 @@
+<div class="login-wrapper">
+  <!-- Decorative background shapes -->
+  <div class="login-bg-shape login-bg-shape-1"></div>
+  <div class="login-bg-shape login-bg-shape-2"></div>
+  <div class="login-bg-shape login-bg-shape-3"></div>
+
+  <div class="login-container animate-fade-in-up">
+    <!-- Left: Branding Panel -->
+    <div class="login-brand-panel d-none d-lg-flex">
+      <div class="login-brand-content">
+        <div class="login-brand-icon">
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+        <h1>Aura<strong>Market</strong></h1>
+        <p>Votre marketplace intelligente pilotée par des agents autonomes JADE.</p>
+        <div class="login-brand-features">
+          <div class="login-feature">
+            <i class="bi bi-robot"></i>
+            <span>Négociation autonome par IA</span>
+          </div>
+          <div class="login-feature">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Offres optimisées en temps réel</span>
+          </div>
+          <div class="login-feature">
+            <i class="bi bi-shield-check"></i>
+            <span>Supervision & audit complets</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Login Form -->
+    <div class="login-form-panel">
+      <div class="login-form-wrapper">
+        <div class="login-form-header">
+          <div class="login-mobile-logo d-lg-none">
+            <i class="bi bi-lightning-charge-fill"></i>
+            <span>Aura<strong>Market</strong></span>
+          </div>
+          <h2>Bienvenue</h2>
+          <p>Connectez-vous pour accéder à votre espace</p>
+        </div>
+
+        <div class="login-alert-error" *ngIf="error">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          {{ error }}
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-email">
+              <i class="bi bi-envelope"></i> Email
+            </label>
+            <input type="email" id="login-email" class="form-control" [(ngModel)]="email" name="email" required
+              placeholder="email@auramarket.com" autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">
+              <i class="bi bi-lock"></i> Mot de passe
+            </label>
+            <input type="password" id="login-password" class="form-control" [(ngModel)]="mdp" name="mdp" required
+              placeholder="••••••••" autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary login-submit-btn" id="login-submit">
+            <span>Se connecter</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </form>
+
+        <div class="login-test-accounts">
+          <div class="login-test-header">
+            <i class="bi bi-info-circle"></i>
+            <span>Comptes de démonstration</span>
+          </div>
+          <div class="login-test-list">
+            <button class="login-test-item" (click)="fillCredentials('admin@auramarket.com')">
+              <span class="login-test-role superviseur">SUP</span>
+              <span>admin&#64;auramarket.com</span>
+            </button>
+            <button class="login-test-item" (click)="fillCredentials('vendeur@auramarket.com')">
+              <span class="login-test-role vendeur">VND</span>
+              <span>vendeur&#64;auramarket.com</span>
+            </button>
+            <button class="login-test-item" (click)="fillCredentials('acheteur@auramarket.com')">
+              <span class="login-test-role acheteur">ACH</span>
+              <span>acheteur&#64;auramarket.com</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-signup-link">
+          <p>Pas encore de compte ? <a routerLink="/signup">S'inscrire</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

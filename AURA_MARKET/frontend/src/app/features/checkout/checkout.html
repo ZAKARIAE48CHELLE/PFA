@@ -1,0 +1,89 @@
+<div class="checkout-container animate-fade-in-up">
+  <div class="checkout-header mb-5">
+    <h1><i class="bi bi-shield-lock-fill"></i> Finaliser <span class="am-gradient-text">Commande</span></h1>
+    <p class="text-muted">Paiement sécurisé et rapide pour vos nouveaux trésors.</p>
+  </div>
+
+  <div *ngIf="!isSuccess; else successState" class="row g-4">
+    <!-- Left Column: Forms -->
+    <div class="col-lg-7">
+      <div class="am-card mb-4 shadow-sm">
+        <h5 class="mb-4"><i class="bi bi-truck"></i> Informations de livraison</h5>
+        <div class="mb-3">
+          <label class="form-label">Adresse de livraison</label>
+          <textarea class="form-control" [(ngModel)]="paymentData.address" rows="3" placeholder="Votre adresse complète..."></textarea>
+        </div>
+      </div>
+
+      <div class="am-card shadow-sm">
+        <h5 class="mb-4"><i class="bi bi-credit-card"></i> Détails de paiement</h5>
+        <form (ngSubmit)="processPayment()">
+          <div class="mb-3">
+            <label class="form-label">Nom sur la carte</label>
+            <input type="text" class="form-control" [(ngModel)]="paymentData.cardName" name="cardName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Numéro de carte</label>
+            <input type="text" class="form-control" [(ngModel)]="paymentData.cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" required>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Expiration (MM/YY)</label>
+              <input type="text" class="form-control" [(ngModel)]="paymentData.expiry" name="expiry" placeholder="MM/YY" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">CVV</label>
+              <input type="text" class="form-control" [(ngModel)]="paymentData.cvv" name="cvv" placeholder="123" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100 btn-lg py-3 mt-4" [disabled]="isProcessing">
+            <span *ngIf="!isProcessing">
+              Confirmer le paiement de {{ cartService.getTotalPrice }} €
+            </span>
+            <span *ngIf="isProcessing">
+              <span class="spinner-border spinner-border-sm me-2"></span> Traitement en cours...
+            </span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Summary -->
+    <div class="col-lg-5">
+      <div class="am-card order-summary-fixed shadow-md">
+        <h5 class="mb-4">Votre Commande</h5>
+        <div class="checkout-items mb-4">
+          <div *ngFor="let item of cartService.items()" class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="item-badge">{{ item.quantite }}</div>
+              <span>{{ item.produit.titre }}</span>
+            </div>
+            <span class="fw-bold">{{ item.produit.prix * item.quantite }} €</span>
+          </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between h5 mt-4">
+          <span>Total à payer</span>
+          <span class="am-gradient-text">{{ cartService.getTotalPrice }} €</span>
+        </div>
+        <p class="small text-muted mt-4">
+          <i class="bi bi-lock"></i> Vos données sont cryptées et sécurisées.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #successState>
+    <div class="success-state am-card text-center py-5 animate-scale-in">
+      <div class="success-icon mb-4">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h2 class="mb-3">Merci pour votre commande !</h2>
+      <p class="text-muted mb-4">Le paiement a été accepté avec succès. Votre colis sera expédié sous 24h.</p>
+      <div class="d-flex justify-content-center gap-3">
+        <a routerLink="/acheteur" class="btn btn-primary btn-lg">Retour au marché</a>
+      </div>
+    </div>
+  </ng-template>
+</div>

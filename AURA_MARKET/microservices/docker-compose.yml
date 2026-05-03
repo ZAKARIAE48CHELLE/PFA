@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: auramarket-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1708
+      # POSTGRES_DB is not used because we init 4 databases in init-db.sql
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: auramarket-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@auramarket.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: always
+
+  # We define the microservices here so we can run them via docker-compose later
+  # Currently configured to build from source
+  
+  api-gateway:
+    build: ./api-gateway
+    container_name: auramarket-api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - product-service
+      - negotiation-service
+      - audit-service
+
+  auth-service:
+    build: ./auth-service
+    container_name: auramarket-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auramarket_auth
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1708
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  product-service:
+    build: ./product-service
+    container_name: auramarket-product-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auramarket_product
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1708
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  negotiation-service:
+    build: ./negotiation-service
+    container_name: auramarket-negotiation-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auramarket_negotiation
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1708
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  audit-service:
+    build: ./audit-service
+    container_name: auramarket-audit-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auramarket_audit
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1708
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  agents-bridge:
+    build: ../agents
+    container_name: auramarket-agents
+    ports:
+      - "8085:8085"
+      - "1099:1099" # JADE platform port
+    environment:
+      - ML_API_URL=http://host.docker.internal:5000
+
+volumes:
+  postgres_data:

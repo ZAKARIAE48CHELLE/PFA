@@ -1,0 +1,183 @@
+/* ============================================
+   Seller Dashboard — Product Management
+   ============================================ */
+
+:host {
+  display: block;
+}
+
+.seller-wrapper {
+  padding-bottom: 2rem;
+}
+
+/* ---------- Header ---------- */
+.seller-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.seller-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.25rem;
+}
+
+.seller-title i {
+  color: var(--am-accent);
+}
+
+.seller-subtitle {
+  color: var(--am-text-secondary);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* ---------- Table Card ---------- */
+.seller-table-card {
+  overflow: hidden;
+}
+
+.seller-table-card:hover {
+  transform: none;
+}
+
+.seller-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--am-border-light);
+}
+
+.seller-table-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.0625rem;
+  margin: 0;
+}
+
+.seller-table-header h4 i {
+  color: var(--am-primary);
+}
+
+/* Product cell */
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.product-cell-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--am-radius);
+  background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--am-primary);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.product-cell strong {
+  display: block;
+  font-size: 0.9375rem;
+  color: var(--am-text);
+}
+
+.product-cell-cat {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--am-text-muted);
+  margin-top: 0.125rem;
+}
+
+.price-cell {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--am-text);
+}
+
+/* Table empty state */
+.table-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--am-text-muted);
+}
+
+.table-empty i {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+}
+
+.table-empty p {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* ---------- Action Buttons ---------- */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Modal ---------- */
+.seller-modal {
+  border: none;
+  border-radius: var(--am-radius-lg);
+  box-shadow: var(--am-shadow-xl);
+}
+
+.seller-modal .modal-header {
+  border-bottom: 1px solid var(--am-border-light);
+  padding: 1.25rem 1.5rem;
+}
+
+.seller-modal .modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.seller-modal .modal-title i {
+  color: var(--am-primary);
+}
+
+.seller-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.image-preview img {
+  max-height: 200px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: var(--am-radius-md);
+  box-shadow: var(--am-shadow-sm);
+}
+
+.image-upload-wrapper .form-control {
+  border: 2px dashed var(--am-primary-light);
+  padding: 0.5rem;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.image-upload-wrapper .form-control:focus {
+  border-color: var(--am-primary);
+  background: white;
+}

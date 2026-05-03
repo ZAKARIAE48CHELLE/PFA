@@ -1,0 +1,301 @@
+/* ============================================
+   AuraMarket — Global Design System
+   ============================================ */
+
+/* ---------- CSS Custom Properties ---------- */
+:root {
+  --am-primary: #6366f1;
+  --am-primary-light: #818cf8;
+  --am-primary-dark: #4f46e5;
+  --am-accent: #f59e0b;
+  --am-accent-light: #fbbf24;
+  --am-success: #10b981;
+  --am-danger: #ef4444;
+  --am-warning: #f59e0b;
+  --am-info: #3b82f6;
+
+  --am-bg: #f8fafc;
+  --am-surface: #ffffff;
+  --am-surface-alt: #f1f5f9;
+  --am-border: #e2e8f0;
+  --am-border-light: #f1f5f9;
+
+  --am-text: #1e293b;
+  --am-text-secondary: #64748b;
+  --am-text-muted: #94a3b8;
+
+  --am-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --am-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --am-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --am-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --am-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  --am-radius-sm: 0.375rem;
+  --am-radius: 0.5rem;
+  --am-radius-md: 0.75rem;
+  --am-radius-lg: 1rem;
+  --am-radius-xl: 1.25rem;
+
+  --am-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --am-transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Base Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--am-bg);
+  color: var(--am-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--am-text);
+  line-height: 1.2;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--am-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--am-text-muted);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--am-text-secondary);
+}
+
+/* ---------- Utility Classes ---------- */
+.am-gradient-text {
+  background: linear-gradient(135deg, var(--am-primary), var(--am-primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.am-card {
+  background: var(--am-surface);
+  border: 1px solid var(--am-border);
+  border-radius: var(--am-radius-lg);
+  box-shadow: var(--am-shadow-sm);
+  padding: 1.5rem;
+  transition: var(--am-transition-slow);
+}
+
+.am-card:hover {
+  box-shadow: var(--am-shadow-md);
+  transform: translateY(-2px);
+}
+
+.am-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.am-badge-primary {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--am-primary);
+}
+
+.am-badge-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--am-success);
+}
+
+.am-badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--am-warning);
+}
+
+.am-badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--am-danger);
+}
+
+.am-badge-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--am-info);
+}
+
+/* ---------- Button Overrides ---------- */
+.btn-primary {
+  background: linear-gradient(135deg, var(--am-primary), var(--am-primary-light));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--am-radius);
+  transition: var(--am-transition);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--am-primary-dark), var(--am-primary));
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-outline-primary {
+  color: var(--am-primary);
+  border: 1.5px solid var(--am-primary);
+  background: transparent;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--am-radius);
+  transition: var(--am-transition);
+}
+
+.btn-outline-primary:hover {
+  background: rgba(99, 102, 241, 0.05);
+  color: var(--am-primary-dark);
+  border-color: var(--am-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--am-accent), var(--am-accent-light));
+  border: none;
+  color: #1e293b;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--am-radius);
+  transition: var(--am-transition);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.btn-accent:hover {
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ---------- Form Controls ---------- */
+.form-control,
+.form-select {
+  border: 1.5px solid var(--am-border);
+  border-radius: var(--am-radius);
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  color: var(--am-text);
+  background-color: var(--am-surface);
+  transition: var(--am-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--am-primary-light);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--am-text);
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+}
+
+/* ---------- Table ---------- */
+.am-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.am-table thead th {
+  background: var(--am-surface-alt);
+  color: var(--am-text-secondary);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 1rem;
+  border-bottom: 2px solid var(--am-border);
+}
+
+.am-table tbody td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--am-border-light);
+  color: var(--am-text);
+  vertical-align: middle;
+}
+
+.am-table tbody tr {
+  transition: var(--am-transition);
+}
+
+.am-table tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.03);
+}
+
+.am-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}

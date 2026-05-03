@@ -1,0 +1,143 @@
+// ============================================================
+// negotiation.fcl — Moteur de logique floue pour AgentNegociation
+// Projet AuraMarket — Version FINALE
+// Place ce fichier dans : agents/src/main/resources/negotiation.fcl
+// ============================================================
+
+FUNCTION_BLOCK negotiation
+
+// ============================================================
+// VARIABLES D'ENTRÉE
+// ============================================================
+
+VAR_INPUT
+    ecart       : REAL;   // % écart entre prixActuel et prixPropose [0, 100]
+    progression : REAL;   // avancement dans les rounds [0.0, 1.0]
+    tendance    : REAL;   // tendance des offres acheteur [-1.0, 1.0]
+END_VAR
+
+// ============================================================
+// VARIABLE DE SORTIE
+// ============================================================
+
+VAR_OUTPUT
+    concessionRate : REAL; // % de la marge à céder [0.0, 0.5]
+END_VAR
+
+// ============================================================
+// FUZZIFICATION — ecart
+// Mesure à quel point l'offre acheteur est loin du prix vendeur
+// ============================================================
+
+FUZZIFY ecart
+    // Acheteur très proche du prix vendeur → facile à clore
+    TERM petit  := TRAPE 0   0   8   15;
+    // Acheteur sérieux mais pas encore là
+    TERM moyen  := TRIAN 10  20  35;
+    // Acheteur agressif, loin du prix vendeur
+    TERM grand  := TRAPE 30  45  100 100;
+END_FUZZIFY
+
+// ============================================================
+// FUZZIFICATION — progression
+// Mesure l'urgence de conclure selon les rounds restants
+// ============================================================
+
+FUZZIFY progression
+    // Début de négociation → pas d'urgence
+    TERM debut  := TRAPE 0.0  0.0  0.2  0.4;
+    // Mi-négociation → commencer à concéder
+    TERM milieu := TRIAN 0.3  0.5  0.7;
+    // Fin de négociation → urgence de clore
+    TERM fin    := TRAPE 0.6  0.8  1.0  1.0;
+END_FUZZIFY
+
+// ============================================================
+// FUZZIFICATION — tendance
+// Mesure si l'acheteur améliore ses offres ou non
+// ============================================================
+
+FUZZIFY tendance
+    // Acheteur baisse ses offres → mauvais signe
+    TERM baisse := TRAPE -1.0  -1.0  -0.1  0.0;
+    // Acheteur stable → neutre
+    TERM stable := TRIAN -0.05  0.0   0.05;
+    // Acheteur monte ses offres → bon signe
+    TERM hausse := TRAPE  0.0   0.1   1.0  1.0;
+END_FUZZIFY
+
+// ============================================================
+// DEFUZZIFICATION — concessionRate
+// Méthode centroïde pour une valeur continue et lisse
+// ============================================================
+
+DEFUZZIFY concessionRate
+    // Ne pas bouger — acheteur trop loin ou mauvaise foi
+    TERM nulle   := TRAPE 0.0   0.0   0.02  0.05;
+    // Petite concession — acheteur agressif mais montre intérêt
+    TERM faible  := TRIAN 0.03  0.08  0.15;
+    // Concession normale — acheteur sérieux
+    TERM moyenne := TRIAN 0.12  0.22  0.32;
+    // Grande concession — acheteur très proche ou fin de négo
+    TERM forte   := TRAPE 0.28  0.38  0.5   0.5;
+
+    METHOD : COG;       // Centre of Gravity — défuzzification standard
+    DEFAULT := 0.05;    // Valeur par défaut si aucune règle ne s'active
+END_DEFUZZIFY
+
+// ============================================================
+// RÈGLES FLOUES
+// Format : IF [conditions] THEN [sortie] WITH [poids]
+// ============================================================
+
+RULEBLOCK negotiation_rules
+    AND  : MIN;   // T-norme MIN pour le ET logique
+    ACT  : MIN;   // Activation par minimum
+    ACCU : MAX;   // Accumulation par maximum
+
+    // --- Acheteur AGRESSIF (écart grand) ---
+    // S'il baisse encore → on ne cède rien, il n'est pas sérieux
+    RULE 1  : IF ecart IS grand AND tendance IS baisse  THEN concessionRate IS nulle;
+
+    // S'il est stable → petite concession pour montrer bonne volonté
+    RULE 2  : IF ecart IS grand AND tendance IS stable  THEN concessionRate IS faible;
+
+    // S'il monte → il est sérieux malgré l'écart → petite concession
+    RULE 3  : IF ecart IS grand AND tendance IS hausse  THEN concessionRate IS faible;
+
+    // --- Acheteur SÉRIEUX (écart moyen) ---
+    // S'il baisse → méfiance, petite concession seulement
+    RULE 4  : IF ecart IS moyen AND tendance IS baisse  THEN concessionRate IS faible;
+
+    // S'il est stable → concession normale, négociation classique
+    RULE 5  : IF ecart IS moyen AND tendance IS stable  THEN concessionRate IS moyenne;
+
+    // S'il monte → encourager, concession normale
+    RULE 6  : IF ecart IS moyen AND tendance IS hausse  THEN concessionRate IS moyenne;
+
+    // --- Acheteur PROCHE (écart petit) ---
+    // S'il baisse après être si proche → mauvaise foi, concession modérée
+    RULE 7  : IF ecart IS petit AND tendance IS baisse  THEN concessionRate IS moyenne;
+
+    // S'il est stable et proche → grande concession pour clore
+    RULE 8  : IF ecart IS petit AND tendance IS stable  THEN concessionRate IS forte;
+
+    // S'il monte et proche → clore rapidement, grande concession
+    RULE 9  : IF ecart IS petit AND tendance IS hausse  THEN concessionRate IS forte;
+
+    // --- Règles temporelles (progression) ---
+    // Fin de négociation → urgence absolue de clore → grande concession
+    RULE 10 : IF progression IS fin                        THEN concessionRate IS forte;
+
+    // Début + acheteur agressif → ne pas paniquer, tenir ferme
+    RULE 11 : IF progression IS debut AND ecart IS grand   THEN concessionRate IS nulle;
+
+    // Milieu + acheteur sérieux → encourager avec concession normale
+    RULE 12 : IF progression IS milieu AND ecart IS moyen  THEN concessionRate IS moyenne;
+
+    // Début + acheteur proche → profiter pour clore tôt
+    RULE 13 : IF progression IS debut AND ecart IS petit   THEN concessionRate IS forte;
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

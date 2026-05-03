@@ -1,0 +1,206 @@
+.detail-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* Layout */
+.product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Visuals Section */
+.main-image-card {
+  position: relative;
+  padding: 0;
+  border-radius: var(--am-radius-lg);
+  overflow: hidden;
+  background: white;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.main-image-card:hover .main-image {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+/* Info Section */
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item a {
+  color: var(--am-primary);
+  text-decoration: none;
+}
+
+.product-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: var(--am-text);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.current-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--am-primary);
+  background: var(--am-primary-light);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--am-radius-md);
+}
+
+.stock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.in-stock { color: #10b981; }
+.out-of-stock { color: var(--am-danger); }
+
+.product-description {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.product-description h5 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--am-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-description p {
+  color: var(--am-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Action Panel */
+.action-panel {
+  margin-bottom: 2rem;
+}
+
+.btn-lg {
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  border-radius: var(--am-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-lg:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Agent Features */
+.agent-features {
+  padding: 1.5rem;
+  border: 1px dashed var(--am-primary-light);
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.agent-features h6 {
+  font-weight: 700;
+  color: var(--am-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.feature-list li {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--am-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-list i {
+  color: var(--am-primary);
+}
+
+/* Loader & Error */
+.loader-wrapper, .error-wrapper {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.am-loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--am-primary-light);
+  border-bottom-color: var(--am-primary);
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-wrapper i {
+  font-size: 4rem;
+  color: var(--am-danger);
+  margin-bottom: 1rem;
+}
