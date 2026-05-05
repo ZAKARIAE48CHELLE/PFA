@@ -21,6 +21,12 @@ export class DetailProduit implements OnInit {
   statusMessage = '';
   statusType: 'success' | 'danger' = 'success';
 
+  // For Comments
+  newCommentText: string = '';
+  newCommentRating: number = 3;
+  commentResult: any = null;
+  comments: any[] = [];
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productService = inject(ProductService);
@@ -49,12 +55,20 @@ export class DetailProduit implements OnInit {
       next: (p) => {
         this.produit = p;
         this.loading = false;
+        this.loadComments(id);
       },
       error: (err) => {
         this.error = 'Impossible de charger les détails du produit';
         this.loading = false;
         console.error(err);
       }
+    });
+  }
+
+  loadComments(id: string) {
+    this.productService.getComments(id).subscribe({
+      next: (data) => this.comments = data,
+      error: (err) => console.error('Error loading comments:', err)
     });
   }
 
@@ -91,6 +105,50 @@ export class DetailProduit implements OnInit {
       error: (err) => {
         console.error('Nego Error:', err);
         this.showStatus(err.error?.error || "Erreur lors de l'initiation.", 'danger');
+      }
+    });
+  }
+
+  submitComment() {
+    if (!this.newCommentText.trim()) return;
+    
+    this.statusMessage = 'Analyse du commentaire par l\'Agent Sécurité...';
+    this.statusType = 'success';
+    
+    const payload = {
+      type: 'COMMENTAIRE',
+      texte: this.newCommentText,
+      note: this.newCommentRating
+    };
+    
+    this.productService.verifierSecurite(payload).subscribe({
+      next: (res) => {
+        this.commentResult = res;
+        this.statusMessage = '';
+        if (res.statut === 'AUTHENTIQUE') {
+           const commentPayload = {
+             texte: this.newCommentText,
+             note: this.newCommentRating,
+             auteurId: this.authService.currentUserValue?.id || null
+           };
+           
+           this.productService.addComment(this.produit!.id, commentPayload).subscribe({
+             next: (savedComment) => {
+               this.comments.unshift(savedComment);
+               this.newCommentText = '';
+               this.newCommentRating = 3;
+               this.showStatus('Commentaire publié avec succès !');
+             },
+             error: (err) => {
+               this.showStatus('Erreur lors de la sauvegarde du commentaire', 'danger');
+             }
+           });
+        } else {
+           this.showStatus('Commentaire bloqué par l\'Agent Sécurité (Faux avis détecté)', 'danger');
+        }
+      },
+      error: (err) => {
+        this.showStatus("Erreur lors de l'analyse du commentaire par l'Agent", 'danger');
       }
     });
   }

@@ -1,102 +1,124 @@
 package agents;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.util.ArrayList;
-import java.util.List;
+import jade.lang.acl.MessageTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * AgentOffre: Generates intelligent initial offers based on logarithmic discount formulas
- * and market average analysis.
+ * Agent JADE responsable de la génération d'offres de prix via ML API.
  */
 public class AgentOffre extends Agent {
-    private final ObjectMapper mapper = new ObjectMapper();
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private String mlApiUrl = "http://localhost:5000";
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     protected void setup() {
-        System.out.println("AgentOffre [" + getAID().getLocalName() + "] is ready.");
+        Object[] args = getArguments();
+        if (args != null && args.length > 0 && args[0] != null) {
+            mlApiUrl = String.valueOf(args[0]);
+        }
+        System.out.println("[AgentOffre] Agent démarré : " + getLocalName());
+        System.out.println("[AgentOffre] ML API URL : " + mlApiUrl);
 
-        addBehaviour(new CyclicBehaviour(this) {
+        addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                ACLMessage msg = receive();
-                if (msg != null && msg.getPerformative() == ACLMessage.REQUEST) {
+                ACLMessage msg = receive(MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+                if (msg != null) {
                     try {
-                        JsonNode root = mapper.readTree(msg.getContent());
+                        JsonNode req = mapper.readTree(msg.getContent());
+
+                        ObjectNode payload = mapper.createObjectNode();
+                        double prixBase = req.has("prixBase") ? req.get("prixBase").asDouble() : (req.has("prixProduit") ? req.get("prixProduit").asDouble() : 0.0);
+                        payload.put("prixBase", prixBase);
                         
-                        String produitId = root.has("produitId") ? root.get("produitId").asText() : "unknown";
-                        double p = root.has("prixBase") ? root.get("prixBase").asDouble() : 0.0;
-                        double prixMin = root.has("prixMin") ? root.get("prixMin").asDouble() : 0.0;
-                        String catStr = root.has("categorie") ? root.get("categorie").asText().toLowerCase() : "";
-                        float r = root.has("noteVendeur") && root.get("noteVendeur").asDouble() > 0 
-                                  ? (float) root.get("noteVendeur").asDouble() : 3.5f;
-
-                        // 1. Determine Category Factor (Cf)
-                        double cf = 1.0; // Standard default
-                        if (catStr.contains("phone") || catStr.contains("tablet") || 
-                            catStr.contains("laptop") || catStr.contains("tv") || catStr.contains("electromenager")) {
-                            cf = 0.8; // High value / low margin
-                        } else if (catStr.contains("accessoire") || catStr.contains("audio") || 
-                                   catStr.contains("cable") || catStr.contains("coque") || 
-                                   catStr.contains("souris") || catStr.contains("casque")) {
-                            cf = 1.3; // High margin / accessories
-                        }
-
-                        // 2. Compute Base Discount (D)
-                        double logP = Math.log10(p + 1);
-                        double d = Math.min(50, Math.max(5, (10 + 4 * logP + 3 * (4.5 - r)) * cf));
+                        double prixMin = req.has("prixMin") ? req.get("prixMin").asDouble() : 0.0;
+                        payload.put("prixMin", prixMin);
                         
-                        double prixSuggere = p * (1 - d / 100);
-                        prixSuggere = Math.max(prixMin, prixSuggere);
+                        double noteVendeur = req.has("noteVendeur") ? req.get("noteVendeur").asDouble() : 4.0;
+                        payload.put("noteVendeur", noteVendeur);
+                        
+                        String categorie = resolveCategorie(req);
+                        payload.put("categorie", categorie);
 
-                        // 3. Market Analysis Factor
-                        double marketFactor = 1.0;
-                        if (root.has("similarPrices") && root.get("similarPrices").isArray() && root.get("similarPrices").size() > 0) {
-                            List<Double> similar = new ArrayList<>();
-                            for (JsonNode priceNode : root.get("similarPrices")) {
-                                similar.add(priceNode.asDouble());
-                            }
-                            double avgSimilar = similar.stream().mapToDouble(Double::doubleValue).average().orElse(p);
-                            marketFactor = avgSimilar / p;
-
-                            if (marketFactor < 0.9) {
-                                prixSuggere *= 0.95; // Market cheaper, lower more
-                            } else if (marketFactor > 1.1) {
-                                prixSuggere *= 1.03; // Market expensive, raise slightly
-                            }
-                            // Re-clamp after market adjustment
-                            prixSuggere = Math.max(prixMin, prixSuggere);
+                        ArrayNode similarPrices = mapper.createArrayNode();
+                        if (req.has("similarPrices") && req.get("similarPrices").isArray()) {
+                            similarPrices = (ArrayNode) req.get("similarPrices");
                         }
+                        payload.set("similarPrices", similarPrices);
 
-                        // 4. Build Response JSON
-                        ObjectNode response = mapper.createObjectNode();
-                        response.put("produitId", produitId);
-                        response.put("prixSuggere", Math.round(prixSuggere * 100.0) / 100.0);
-                        response.put("discountPercent", Math.round(d * 10.0) / 10.0);
-                        response.put("marketFactor", Math.round(marketFactor * 100.0) / 100.0);
-                        response.put("cf", cf);
+                        JsonNode response = postJson("/predict/price", payload);
+
+                        // If response needs produitId from old version
+                        if(req.has("produitId") && response instanceof ObjectNode) {
+                            ((ObjectNode)response).put("produitId", req.get("produitId").asText());
+                        }
 
                         ACLMessage reply = msg.createReply();
                         reply.setPerformative(ACLMessage.INFORM);
                         reply.setContent(mapper.writeValueAsString(response));
                         send(reply);
 
+                        System.out.println("[AgentOffre] Réponse ML /predict/price : " + response);
+
                     } catch (Exception e) {
-                        e.printStackTrace();
                         ACLMessage reply = msg.createReply();
                         reply.setPerformative(ACLMessage.FAILURE);
-                        reply.setContent("{\"error\":\"" + e.getMessage() + "\"}");
+                        reply.setContent("{\"error\": \"" + e.getMessage().replace("\"", "'") + "\"}");
                         send(reply);
+                        System.err.println("[AgentOffre] Erreur : " + e.getMessage());
                     }
                 } else {
                     block();
                 }
             }
         });
+    }
+
+    private String resolveCategorie(JsonNode req) {
+        if (req.hasNonNull("categorie") && !req.get("categorie").asText().isBlank()) {
+            return req.get("categorie").asText();
+        }
+        if (req.hasNonNull("nom") || req.hasNonNull("description")) {
+            ObjectNode classifyPayload = mapper.createObjectNode();
+            classifyPayload.put("nom", req.path("nom").asText(""));
+            classifyPayload.put("description", req.path("description").asText(""));
+            try {
+                JsonNode classifyResponse = postJson("/classify/category", classifyPayload);
+                if (classifyResponse.hasNonNull("categorie")) {
+                    return classifyResponse.get("categorie").asText("autre");
+                }
+            } catch (Exception e) {
+                System.err.println("[AgentOffre] Classification catégorie indisponible: " + e.getMessage());
+            }
+        }
+        return "autre";
+    }
+
+    private JsonNode postJson(String endpoint, JsonNode payload) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(payload), headers);
+        String responseBody = restTemplate.postForObject(mlApiUrl + endpoint, entity, String.class);
+        if (responseBody == null || responseBody.isBlank()) {
+            throw new RuntimeException("Réponse vide du service ML: " + endpoint);
+        }
+        return mapper.readTree(responseBody);
+    }
+
+    @Override
+    protected void takeDown() {
+        System.out.println("[AgentOffre] Agent arrêté : " + getLocalName());
     }
 }

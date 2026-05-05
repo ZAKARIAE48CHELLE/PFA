@@ -50,7 +50,7 @@ public class CommandeService {
                 .orElseThrow(() -> new RuntimeException("Offre non trouvée: " + offreId));
 
         if (offre.getStatut() == StatutOffre.VALIDEE) {
-            return offre; // Already validated, just return
+            return offre;
         }
 
         if (offre.getStatut() != StatutOffre.EN_ATTENTE) {
@@ -66,7 +66,6 @@ public class CommandeService {
 
     @Transactional
     public PaiementConfirmationDTO payerOffre(UUID offreId, PaiementRequestDTO request) {
-        // 1. Load & Validate Offre
         Offre offre = offreRepository.findById(offreId)
                 .orElseThrow(() -> new RuntimeException("Offre non trouvée"));
         
@@ -74,7 +73,6 @@ public class CommandeService {
             throw new IllegalStateException("L'offre doit être validée (statut actuel: " + offre.getStatut() + ")");
         }
 
-        // 2. Load Produit
         Produit produit = produitRepository.findById(offre.getProduitId())
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
 
@@ -84,8 +82,6 @@ public class CommandeService {
             throw new IllegalStateException("Désolé, ce produit est en rupture de stock.");
         }
 
-        // 3. GENERATE PAIEMENT
-        // ... (paiement logic) ...
         Paiement paiement = new Paiement();
         paiement.setMontant(request.getMontant());
         paiement.setMethode(request.getMethode());
@@ -94,7 +90,6 @@ public class CommandeService {
         paiement.setDateConfirmation(LocalDateTime.now());
         paiement = paiementRepository.save(paiement);
 
-        // 4. GENERATE COMMANDE
         Commande commande = new Commande();
         commande.setOffreId(offre.getId());
         commande.setAcheteurId(offre.getAcheteurId());
@@ -106,11 +101,9 @@ public class CommandeService {
         commande.setPaiementId(paiement.getId());
         commande = commandeRepository.save(commande);
 
-        // 5. Link Payment
         paiement.setCommandeId(commande.getId());
         paiementRepository.save(paiement);
 
-        // 6. Update Produit stock & status
         produit.setStock(produit.getStock() - 1);
         if (produit.getStock() <= 0) {
             produit.setStatut(StatutProduit.VENDU);

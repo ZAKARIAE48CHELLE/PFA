@@ -81,9 +81,13 @@ export class ProductService {
       prixBase: p.prix,
       prixMin: p.prixMin,
       categorie: p.categorie,
-      plateforme: 'amazon' // Default for now
+      plateforme: 'amazon'
     };
     return this.http.post<any>(`${this.apiUrl}/agent/offre/generer`, payload, { headers: this.getHeaders() });
+  }
+
+  verifierSecurite(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/agent/securite/verifier`, payload, { headers: this.getHeaders() });
   }
 
   accepterOffre(offreId: string): Observable<any> {
@@ -108,5 +112,13 @@ export class ProductService {
 
   getAllCommandes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/commandes`, { headers: this.getHeaders() });
+  }
+
+  getComments(produitId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/products/${produitId}/comments`, { headers: this.getHeaders() });
+  }
+
+  addComment(produitId: string, comment: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/products/${produitId}/comments`, comment, { headers: this.getHeaders() });
   }
 }

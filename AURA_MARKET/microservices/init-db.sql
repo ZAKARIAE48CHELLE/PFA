@@ -36,6 +36,15 @@ CREATE TABLE IF NOT EXISTS produits (
     vendeur_id UUID
 );
 
+CREATE TABLE IF NOT EXISTS commentaires (
+    id UUID PRIMARY KEY,
+    produit_id UUID,
+    texte TEXT,
+    note INT,
+    date_publication TIMESTAMP,
+    auteur_id UUID
+);
+
 -- Negotiation table schema
 \c auramarket_negotiation;
 

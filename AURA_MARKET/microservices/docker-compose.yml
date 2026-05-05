@@ -103,6 +103,8 @@ services:
     ports:
       - "8085:8085"
       - "1099:1099" # JADE platform port
+    environment:
+      - ML_API_URL=http://host.docker.internal:5000
 
 volumes:
   postgres_data:

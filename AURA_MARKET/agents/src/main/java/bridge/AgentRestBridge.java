@@ -43,14 +43,20 @@ public class AgentRestBridge {
             p.setParameter(Profile.GUI, "false");
             mainContainer = rt.createMainContainer(p);
 
+            // ML API URL from environment
+            String mlApiUrl = System.getenv("ML_API_URL");
+            if (mlApiUrl == null || mlApiUrl.isEmpty()) {
+                mlApiUrl = "http://localhost:5000";
+            }
+
             // 2. Deploy the 3 Agents with their logic
-            AgentController offerAgent = mainContainer.createNewAgent("AgentOffre", "agents.AgentOffre", null);
+            AgentController offerAgent = mainContainer.createNewAgent("AgentOffre", "agents.AgentOffre", new Object[]{mlApiUrl});
             offerAgent.start();
 
             AgentController negoAgent = mainContainer.createNewAgent("AgentNegociation", "agents.AgentNegociation", null);
             negoAgent.start();
 
-            AgentController securityAgent = mainContainer.createNewAgent("AgentSecurite", "agents.AgentSecurite", null);
+            AgentController securityAgent = mainContainer.createNewAgent("AgentSecurite", "agents.AgentSecurite", new Object[]{mlApiUrl});
             securityAgent.start();
 
             // 3. Init JadeGateway with JADE-specific properties
@@ -83,8 +89,6 @@ public class AgentRestBridge {
         
         if (prixMin <= 0 || (pActuel > 0 && prixMin >= pActuel)) {
             System.err.println("[Bridge WARNING] prixMin invalide (" + prixMin + ") pour prixActuel (" + pActuel + ")");
-            // On peut rejeter ici ou laisser l'agent gérer avec sa garde. 
-            // On choisit de logger et laisser l'agent renvoyer INVALID_CONFIG pour une trace claire.
         }
         
         // FIX 4: Override prixActuel if we have a tracked price for this negotiation
@@ -98,6 +102,7 @@ public class AgentRestBridge {
         ResponseEntity<?> response = contactAgent("AgentNegociation", ACLMessage.PROPOSE, request);
         
         if (response.getStatusCode() == HttpStatus.OK) {
+            @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) response.getBody();
             if (body != null && body.containsKey("nouveauPrix")) {
                 double nouveauPrix = ((Number) body.get("nouveauPrix")).doubleValue();
