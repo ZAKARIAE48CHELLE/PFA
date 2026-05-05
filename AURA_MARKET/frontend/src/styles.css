@@ -3,6 +3,7 @@
    ============================================ */
 
 /* ---------- CSS Custom Properties ---------- */
+@import 'flatpickr/dist/flatpickr.css';
 :root {
   --am-primary: #6366f1;
   --am-primary-light: #818cf8;

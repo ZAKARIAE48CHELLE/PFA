@@ -122,6 +122,9 @@
             [style.animation-delay]="(i * 40) + 'ms'">
             <a [routerLink]="['/produits', p.id]" class="mp-product-card">
               <div class="mp-img-wrapper">
+                <div class="product-badges">
+                  <span class="badge bg-danger animate-pulse" *ngIf="p.prixOffre">PROMO</span>
+                </div>
                 <button class="mp-wishlist-btn" (click)="$event.preventDefault()">
                   <i class="bi bi-heart"></i>
                 </button>
@@ -133,7 +136,13 @@
                 <h6 class="mp-title">{{ p.titre }}</h6>
                 <p class="mp-desc" *ngIf="viewMode === 'list'">{{ p.description }}</p>
                 <div class="mp-price-row">
-                  <span class="mp-price">{{ p.prix }} €</span>
+                  <ng-container *ngIf="p.prixOffre; else normalPrice">
+                    <span class="mp-price text-danger fw-bold">{{ p.prixOffre }} €</span>
+                    <span class="text-muted text-decoration-line-through ms-2 small">{{ p.prix }} €</span>
+                  </ng-container>
+                  <ng-template #normalPrice>
+                    <span class="mp-price">{{ p.prix }} €</span>
+                  </ng-template>
                 </div>
                 <div class="mp-stock-info">
                   <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">

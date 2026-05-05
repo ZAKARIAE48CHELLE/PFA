@@ -20,9 +20,12 @@ public class Offre {
     
     private LocalDateTime dateCreation;
     private LocalDateTime dateExpiration;
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
     private UUID produitId;
     private UUID acheteurId;
     private boolean agentGenere;
+    private double pourcentageDiscount;
 
     public enum StatutOffre { EN_ATTENTE, VALIDEE, REJETEE, EXPIREE }
 
@@ -47,10 +50,16 @@ public class Offre {
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
     public LocalDateTime getDateExpiration() { return dateExpiration; }
     public void setDateExpiration(LocalDateTime dateExpiration) { this.dateExpiration = dateExpiration; }
+    public LocalDateTime getDateDebut() { return dateDebut; }
+    public void setDateDebut(LocalDateTime dateDebut) { this.dateDebut = dateDebut; }
+    public LocalDateTime getDateFin() { return dateFin; }
+    public void setDateFin(LocalDateTime dateFin) { this.dateFin = dateFin; }
     public UUID getProduitId() { return produitId; }
     public void setProduitId(UUID produitId) { this.produitId = produitId; }
     public UUID getAcheteurId() { return acheteurId; }
     public void setAcheteurId(UUID acheteurId) { this.acheteurId = acheteurId; }
     public boolean isAgentGenere() { return agentGenere; }
     public void setAgentGenere(boolean agentGenere) { this.agentGenere = agentGenere; }
+    public double getPourcentageDiscount() { return pourcentageDiscount; }
+    public void setPourcentageDiscount(double pourcentageDiscount) { this.pourcentageDiscount = pourcentageDiscount; }
 }

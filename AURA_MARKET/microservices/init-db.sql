@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS produits (
     stock INTEGER DEFAULT 0,
     statut VARCHAR(50),
     date_publication TIMESTAMP,
-    vendeur_id UUID
+    vendeur_id UUID,
+    prix_offre DOUBLE PRECISION
 );
 
 CREATE TABLE IF NOT EXISTS commentaires (
@@ -43,6 +44,23 @@ CREATE TABLE IF NOT EXISTS commentaires (
     note INT,
     date_publication TIMESTAMP,
     auteur_id UUID
+);
+
+CREATE TABLE IF NOT EXISTS offres (
+    id UUID PRIMARY KEY,
+    titre VARCHAR(255),
+    description TEXT,
+    prix_propose DOUBLE PRECISION,
+    prix_final DOUBLE PRECISION,
+    statut VARCHAR(50),
+    date_creation TIMESTAMP,
+    date_expiration TIMESTAMP,
+    date_debut TIMESTAMP,
+    date_fin TIMESTAMP,
+    pourcentage_discount DOUBLE PRECISION DEFAULT 0.0,
+    produit_id UUID,
+    acheteur_id UUID,
+    agent_genere BOOLEAN DEFAULT FALSE
 );
 
 -- Negotiation table schema

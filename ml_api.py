@@ -85,7 +85,7 @@ def extract_manual_features(text, note):
     features['ratio_negatifs'] = count_in_list(text_str, NEGATIFS_AGRESSIFS)
     features['ratio_details'] = count_in_list(text_str, DETAILS_SPECIFIQUES)
     features['diversite_lexicale'] = len(set(text_str.lower().split())) / (nb_words + 1)
-    
+     
     features['note'] = float(note)
     features['note_vs_moyenne'] = float(note) - 3.5
     features['sentiment_score'] = get_sentiment(text_str)

@@ -73,6 +73,7 @@ public class ProductService {
             p.setCategorie(updated.getCategorie());
             p.setStock(updated.getStock());
             p.setImageUrl(updated.getImageUrl());
+            p.setPrixOffre(updated.getPrixOffre());
             Produit saved = produitRepository.save(p);
             logAudit("PRODUCT_UPDATE", "Produit mis à jour: " + saved.getTitre(), "INFO");
             return saved;
@@ -92,5 +93,24 @@ public class ProductService {
 
     public Offre createOffre(Offre offre) {
         return offreRepository.save(offre);
+    }
+
+    public List<Offre> getOffresByProduitId(UUID produitId) {
+        return offreRepository.findByProduitId(produitId);
+    }
+
+    public Offre updateOffre(UUID id, Offre updated) {
+        Offre existing = offreRepository.findById(id).orElseThrow(() -> new RuntimeException("Offre introuvable"));
+        existing.setPrixPropose(updated.getPrixPropose());
+        existing.setPrixFinal(updated.getPrixFinal());
+        existing.setDateDebut(updated.getDateDebut());
+        existing.setDateFin(updated.getDateFin());
+        existing.setStatut(updated.getStatut());
+        existing.setPourcentageDiscount(updated.getPourcentageDiscount());
+        return offreRepository.save(existing);
+    }
+
+    public void deleteOffre(UUID id) {
+        offreRepository.deleteById(id);
     }
 }

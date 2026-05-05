@@ -250,6 +250,12 @@ public class AgentNegociation extends Agent {
         return Math.max(-1.0, Math.min(1.0, (last - secondLast) / prixActuel));
     }
 
+    private String deriveTrend(double tendance) {
+        if (tendance > 0.01)  return "IMPROVING";
+        if (tendance < -0.01) return "DECLINING";
+        return "STABLE";
+    }
+
     private String deriveBehavior(double ecart) {
         if (ecart > 30)  return "AGGRESSIVE";
         if (ecart >= 10) return "SERIOUS";

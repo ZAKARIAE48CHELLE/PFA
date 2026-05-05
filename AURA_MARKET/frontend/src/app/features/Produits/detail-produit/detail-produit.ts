@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { ProductService, Produit } from '../../../core/services/product.service';
+import { ProductService, Produit, Offre } from '../../../core/services/product.service';
 import { NegotiationService } from '../../../core/services/negotiation.service';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class DetailProduit implements OnInit {
   produit?: Produit;
+  activeOffer?: Offre;
   loading = true;
   error = '';
   statusMessage = '';
@@ -56,6 +57,7 @@ export class DetailProduit implements OnInit {
         this.produit = p;
         this.loading = false;
         this.loadComments(id);
+        this.loadActiveOffer(id);
       },
       error: (err) => {
         this.error = 'Impossible de charger les détails du produit';
@@ -63,6 +65,30 @@ export class DetailProduit implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  loadActiveOffer(id: string) {
+    this.productService.getOffresByProduit(id).subscribe({
+      next: (offres) => {
+        // Prendre la plus récente qui est valide dans le temps
+        const valid = offres.filter(o => this.isOfferActive(o))
+                            .sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
+        if (valid.length > 0) {
+          this.activeOffer = valid[0];
+        }
+      }
+    });
+  }
+
+  isOfferActive(off: Offre): boolean {
+    if (off.statut !== 'VALIDEE') return false;
+    const now = new Date();
+    const start = off.dateDebut ? new Date(off.dateDebut) : null;
+    const end = off.dateFin ? new Date(off.dateFin) : null;
+
+    if (start && now < start) return false;
+    if (end && now > end) return false;
+    return true;
   }
 
   loadComments(id: string) {

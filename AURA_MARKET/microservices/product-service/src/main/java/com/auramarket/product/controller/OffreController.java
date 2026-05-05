@@ -24,4 +24,15 @@ public class OffreController {
     public ResponseEntity<Offre> createOffre(@RequestBody Offre offre) {
         return ResponseEntity.ok(productService.createOffre(offre));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Offre> updateOffre(@PathVariable java.util.UUID id, @RequestBody Offre offre) {
+        return ResponseEntity.ok(productService.updateOffre(id, offre));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOffre(@PathVariable java.util.UUID id) {
+        productService.deleteOffre(id);
+        return ResponseEntity.noContent().build();
+    }
 }

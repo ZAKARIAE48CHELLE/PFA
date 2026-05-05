@@ -1,357 +1,549 @@
 <!-- Seller Dashboard — Seller Central -->
 <div class="seller-wrapper animate-fade-in-up">
   <div class="container">
-  <!-- Page Header -->
-  <div class="seller-header">
-    <div>
-      <h1 class="seller-title">
-        <i class="bi bi-shop-window"></i>
-        Espace <span class="am-gradient-text">Vendeur</span>
-      </h1>
-      <p class="seller-subtitle">Bienvenue dans votre centre de gestion d'inventaire</p>
+    <!-- Page Header -->
+    <div class="seller-header">
+      <div>
+        <h1 class="seller-title">
+          <i class="bi bi-shop-window"></i>
+          Espace <span class="am-gradient-text">Vendeur</span>
+        </h1>
+        <p class="seller-subtitle">Bienvenue dans votre centre de gestion d'inventaire</p>
+      </div>
+      <div class="seller-header-actions" *ngIf="activeTab === 'inventory'">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
+          <i class="bi bi-plus-lg"></i> Nouveau Produit
+        </button>
+      </div>
     </div>
-    <div class="seller-header-actions" *ngIf="activeTab === 'inventory'">
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
-        <i class="bi bi-plus-lg"></i> Nouveau Produit
-      </button>
-    </div>
-  </div>
 
-  <!-- Dashboard Tabs -->
-  <ul class="nav nav-tabs am-tabs mb-4">
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'" style="cursor: pointer;">
-        <i class="bi bi-grid-1x2"></i> Tableau de bord
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'inventory'" (click)="activeTab = 'inventory'" style="cursor: pointer;">
-        <i class="bi bi-box-seam"></i> Mon Inventaire
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'" style="cursor: pointer;">
-        <i class="bi bi-receipt"></i> Mes Commandes
-      </a>
-    </li>
-  </ul>
+    <!-- Dashboard Tabs -->
+    <ul class="nav nav-tabs am-tabs mb-4">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'"
+          style="cursor: pointer;">
+          <i class="bi bi-grid-1x2"></i> Tableau de bord
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'inventory'" (click)="activeTab = 'inventory'"
+          style="cursor: pointer;">
+          <i class="bi bi-box-seam"></i> Mon Inventaire
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'"
+          style="cursor: pointer;">
+          <i class="bi bi-receipt"></i> Mes Commandes
+        </a>
+      </li>
+    </ul>
 
-  <!-- TAB: OVERVIEW -->
-  <div *ngIf="activeTab === 'overview'" class="animate-fade-in-up">
-  <!-- Performance Overview Cards -->
-  <div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-3">
-      <div class="summary-card am-card">
-        <div class="summary-icon info">
-          <i class="bi bi-box-seam"></i>
+    <!-- TAB: OVERVIEW -->
+    <div *ngIf="activeTab === 'overview'" class="animate-fade-in-up">
+      <!-- Performance Overview Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+          <div class="summary-card am-card">
+            <div class="summary-icon info">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="summary-data">
+              <span class="summary-value">{{ produits.length }}</span>
+              <span class="summary-label">Total Produits</span>
+            </div>
+          </div>
         </div>
-        <div class="summary-data">
-          <span class="summary-value">{{ produits.length }}</span>
-          <span class="summary-label">Total Produits</span>
+        <div class="col-sm-6 col-lg-3">
+          <div class="summary-card am-card">
+            <div class="summary-icon total" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+              <i class="bi bi-currency-euro"></i>
+            </div>
+            <div class="summary-data">
+              <span class="summary-value">{{ totalRevenue | number:'1.0-0' }}</span>
+              <span class="summary-label">Revenus (MAD)</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="summary-card am-card">
+            <div class="summary-icon warning">
+              <i class="bi bi-exclamation-circle"></i>
+            </div>
+            <div class="summary-data">
+              <span class="summary-value">{{ lowStockCount }}</span>
+              <span class="summary-label">Stock Faible (< 5)</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <div class="summary-card am-card">
+            <div class="summary-icon critical">
+              <i class="bi bi-cart-x"></i>
+            </div>
+            <div class="summary-data">
+              <span class="summary-value">{{ outOfStockCount }}</span>
+              <span class="summary-label">Produits Épuisés</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="summary-card am-card">
-        <div class="summary-icon total" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
-          <i class="bi bi-currency-euro"></i>
-        </div>
-        <div class="summary-data">
-          <span class="summary-value">{{ totalRevenue | number:'1.0-0' }}</span>
-          <span class="summary-label">Revenus (MAD)</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="summary-card am-card">
-        <div class="summary-icon warning">
-          <i class="bi bi-exclamation-circle"></i>
-        </div>
-        <div class="summary-data">
-          <span class="summary-value">{{ lowStockCount }}</span>
-          <span class="summary-label">Stock Faible (< 5)</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="summary-card am-card">
-        <div class="summary-icon critical">
-          <i class="bi bi-cart-x"></i>
-        </div>
-        <div class="summary-data">
-          <span class="summary-value">{{ outOfStockCount }}</span>
-          <span class="summary-label">Produits Épuisés</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Charts Row -->
-  <div class="row g-4 mb-4" *ngIf="produits.length > 0">
-    <div class="col-lg-4">
-      <div class="am-card chart-card">
-        <h5 class="chart-title"><i class="bi bi-pie-chart-fill"></i> Répartition par Catégorie</h5>
-        <div class="chart-container doughnut-container">
-          <canvas baseChart [data]="categoryChartData" [options]="categoryChartOptions" type="doughnut"></canvas>
+      <!-- Charts Row -->
+      <div class="row g-4 mb-4" *ngIf="produits.length > 0">
+        <div class="col-lg-4">
+          <div class="am-card chart-card">
+            <h5 class="chart-title"><i class="bi bi-pie-chart-fill"></i> Répartition par Catégorie</h5>
+            <div class="chart-container doughnut-container">
+              <canvas baseChart [data]="categoryChartData" [options]="categoryChartOptions" type="doughnut"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="am-card chart-card">
+            <h5 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Stock par Produit</h5>
+            <div class="chart-container bar-container">
+              <canvas baseChart [data]="stockChartData" [options]="stockChartOptions" type="bar"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="am-card chart-card">
+            <h5 class="chart-title"><i class="bi bi-trophy-fill" style="color: #3b82f6;"></i> Top Ventes</h5>
+            <div class="chart-container bar-container">
+              <canvas baseChart [data]="topProductsChartData" [options]="topProductsChartOptions" type="bar"></canvas>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="am-card chart-card">
-        <h5 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Stock par Produit</h5>
-        <div class="chart-container bar-container">
-          <canvas baseChart [data]="stockChartData" [options]="stockChartOptions" type="bar"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="am-card chart-card">
-        <h5 class="chart-title"><i class="bi bi-trophy-fill" style="color: #3b82f6;"></i> Top Ventes</h5>
-        <div class="chart-container bar-container">
-          <canvas baseChart [data]="topProductsChartData" [options]="topProductsChartOptions" type="bar"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div> <!-- END TAB OVERVIEW -->
+    </div> <!-- END TAB OVERVIEW -->
 
-  <!-- TAB: INVENTORY -->
-  <div *ngIf="activeTab === 'inventory'" class="animate-fade-in-up">
-    <!-- Products Table -->
-    <div class="seller-table-card am-card h-100">
+    <!-- TAB: INVENTORY -->
+    <div *ngIf="activeTab === 'inventory'" class="animate-fade-in-up">
+      <!-- Products Table -->
+      <div class="seller-table-card am-card h-100">
+        <div class="seller-table-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0"><i class="bi bi-list-ul"></i> Mon Inventaire</h4>
+          <div class="d-flex gap-2">
+            <div class="input-group input-group-sm" style="width: 200px;">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control border-start-0" placeholder="Filtrer par nom..."
+                [(ngModel)]="inventorySearchQuery">
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" (click)="loadProduits()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="am-table align-middle">
+            <thead>
+              <tr>
+                <th>Produit</th>
+                <th>Prix</th>
+                <th>Stock</th>
+                <th>Statut</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let p of filteredProduits | paginate: { id: 'seller-prod-pag', itemsPerPage: 10, currentPage: inventoryPage }">
+                <td>
+                  <div class="product-cell">
+                    <div class="product-cell-img">
+                      <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
+                      <i *ngIf="!p.imageUrl" class="bi bi-box-seam"></i>
+                    </div>
+                    <div>
+                      <strong>{{ p.titre }}</strong>
+                      <span class="product-cell-cat">{{ p.categorie }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="price-cell">
+                    <span class="fw-bold" [class.text-decoration-line-through]="p.prixOffre"
+                      [class.text-muted]="p.prixOffre">{{ p.prix }} MAD</span>
+                    <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre }} MAD</span>
+                    <span class="text-muted small d-block">Min: {{ p.prixMin }} MAD</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="am-badge" [class.am-badge-success]="p.stock >= 5"
+                    [class.am-badge-warning]="p.stock > 0 && p.stock < 5" [class.am-badge-danger]="p.stock <= 0">
+                    {{ p.stock }} en stock
+                  </span>
+                </td>
+                <td>
+                  <span class="am-badge am-badge-info">{{ p.statut || 'ACTIF' }}</span>
+                </td>
+                <td>
+                  <div class="action-buttons justify-content-end">
+                    <button class="btn btn-accent btn-sm" (click)="triggerAgent(p)" title="Demander offre IA">
+                      <i class="bi bi-robot"></i>
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(p)" data-bs-toggle="modal"
+                      data-bs-target="#editProductModal" title="Modifier">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="deleteProduct(p.id)" title="Supprimer">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="produits.length === 0">
+                <td colspan="5">
+                  <div class="table-empty">
+                    <i class="bi bi-inbox"></i>
+                    <p>Vous n'avez aucun produit dans votre inventaire. Créez-en un pour commencer à vendre !</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
+                      Ajouter un produit
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="d-flex justify-content-center mt-3" *ngIf="produits.length > 5">
+            <pagination-controls id="seller-prod-pag" (pageChange)="inventoryPage = $event" previousLabel="Préc."
+              nextLabel="Suiv."></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END TAB INVENTORY -->
+
+    <!-- TAB: ORDERS -->
+    <div *ngIf="activeTab === 'orders'" class="animate-fade-in-up">
+      <!-- Orders Table -->
+      <div class="seller-table-card am-card h-100">
         <div class="seller-table-header">
-          <h4><i class="bi bi-list-ul"></i> Mon Inventaire</h4>
-          <button class="btn btn-outline-secondary btn-sm" (click)="loadProduits()">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
+          <h4><i class="bi bi-receipt"></i> Commandes Client</h4>
         </div>
+        <div class="table-responsive">
+          <table class="am-table align-middle">
+            <thead>
+              <tr>
+                <th>Réf.</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let c of commandes | paginate: { id: 'seller-cmd-pag', itemsPerPage: 8, currentPage: pCommandes }">
+                <td><span class="fw-bold">{{ c.reference }}</span></td>
+                <td>{{ c.dateCommande | date:'shortDate' }}</td>
+                <td><span class="fw-bold text-success">{{ c.prixFinal }} MAD</span></td>
+                <td>
+                  <span class="am-badge" [class.am-badge-success]="c.statut === 'PAYEE'">{{ c.statut }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="commandes.length === 0">
+                <td colspan="4">
+                  <div class="table-empty py-3">
+                    <i class="bi bi-bag-x"></i>
+                    <p class="mb-0">Aucune commande pour le moment.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-    <div class="table-responsive">
-      <table class="am-table align-middle">
-        <thead>
-          <tr>
-            <th>Produit</th>
-            <th>Prix</th>
-            <th>Stock</th>
-            <th>Statut</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of produits | paginate: { id: 'seller-prod-pag', itemsPerPage: 5, currentPage: pProduits }">
-            <td>
-              <div class="product-cell">
-                <div class="product-cell-img">
-                  <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
-                  <i *ngIf="!p.imageUrl" class="bi bi-box-seam"></i>
-                </div>
-                <div>
-                  <strong>{{ p.titre }}</strong>
-                  <span class="product-cell-cat">{{ p.categorie }}</span>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="price-cell">
-                <span class="fw-bold">{{ p.prix }} MAD</span>
-                <span class="text-muted small d-block">Min: {{ p.prixMin }} MAD</span>
-              </div>
-            </td>
-            <td>
-              <span class="am-badge" [class.am-badge-success]="p.stock >= 5" [class.am-badge-warning]="p.stock > 0 && p.stock < 5" [class.am-badge-danger]="p.stock <= 0">
-                {{ p.stock }} en stock
-              </span>
-            </td>
-            <td>
-              <span class="am-badge am-badge-info">{{ p.statut || 'ACTIF' }}</span>
-            </td>
-            <td>
-              <div class="action-buttons justify-content-end">
-                <button class="btn btn-accent btn-sm" (click)="triggerAgent(p)" title="Demander offre IA">
-                  <i class="bi bi-robot"></i>
-                </button>
-                <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(p)" data-bs-toggle="modal" data-bs-target="#editProductModal" title="Modifier">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-outline-danger btn-sm" (click)="deleteProduct(p.id)" title="Supprimer">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="produits.length === 0">
-            <td colspan="5">
-              <div class="table-empty">
-                <i class="bi bi-inbox"></i>
-                <p>Vous n'avez aucun produit dans votre inventaire. Créez-en un pour commencer à vendre !</p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
-                  Ajouter un produit
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <div class="d-flex justify-content-center mt-3" *ngIf="produits.length > 5">
-        <pagination-controls id="seller-prod-pag" (pageChange)="pProduits = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
-      </div>
-    </div>
-  </div>
-  </div> <!-- END TAB INVENTORY -->
-  
-  <!-- TAB: ORDERS -->
-  <div *ngIf="activeTab === 'orders'" class="animate-fade-in-up">
-  <!-- Orders Table -->
-  <div class="seller-table-card am-card h-100">
-      <div class="seller-table-header">
-        <h4><i class="bi bi-receipt"></i> Commandes Client</h4>
-      </div>
-      <div class="table-responsive">
-        <table class="am-table align-middle">
-          <thead>
-            <tr>
-              <th>Réf.</th>
-              <th>Date</th>
-              <th>Montant</th>
-              <th>Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of commandes | paginate: { id: 'seller-cmd-pag', itemsPerPage: 8, currentPage: pCommandes }">
-              <td><span class="fw-bold">{{ c.reference }}</span></td>
-              <td>{{ c.dateCommande | date:'shortDate' }}</td>
-              <td><span class="fw-bold text-success">{{ c.prixFinal }} MAD</span></td>
-              <td>
-                <span class="am-badge" [class.am-badge-success]="c.statut === 'PAYEE'">{{ c.statut }}</span>
-              </td>
-            </tr>
-            <tr *ngIf="commandes.length === 0">
-              <td colspan="4">
-                <div class="table-empty py-3">
-                  <i class="bi bi-bag-x"></i>
-                  <p class="mb-0">Aucune commande pour le moment.</p>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="d-flex justify-content-center mt-3" *ngIf="commandes.length > 8">
-          <pagination-controls id="seller-cmd-pag" (pageChange)="pCommandes = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
+          <div class="d-flex justify-content-center mt-3" *ngIf="commandes.length > 8">
+            <pagination-controls id="seller-cmd-pag" (pageChange)="pCommandes = $event" previousLabel="Préc."
+              nextLabel="Suiv."></pagination-controls>
+          </div>
         </div>
       </div>
-    </div>
-  </div> <!-- END TAB ORDERS -->
+    </div> <!-- END TAB ORDERS -->
 
-  <!-- New Product Modal -->
-  <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content am-card">
-        <div class="modal-header border-0">
-          <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Ajouter un Produit</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body pt-0">
-          <form (ngSubmit)="onSubmit()" #pForm="ngForm">
-            <div class="row g-3">
-              <div class="col-md-8">
-                <label class="form-label">Titre du produit</label>
-                <input type="text" class="form-control" [(ngModel)]="newProd.titre" name="titre" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Catégorie</label>
-                <input type="text" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" [(ngModel)]="newProd.description" name="desc" rows="3"></textarea>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Prix Base (MAD)</label>
-                <input type="number" class="form-control" [(ngModel)]="newProd.prix" name="prix" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Prix Min (MAD)</label>
-                <input type="number" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Quantité (Stock)</label>
-                <input type="number" class="form-control" [(ngModel)]="newProd.stock" name="stock" required>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Image du Produit</label>
-                <input type="file" class="form-control" (change)="onFileSelected($event, 'new')" accept="image/*">
-                <div class="mt-2 text-center" *ngIf="newProd.imageUrl">
-                  <img [src]="newProd.imageUrl" alt="Preview" style="max-height: 150px; border-radius: var(--am-radius);">
+    <!-- New Product Modal -->
+    <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content am-card">
+          <div class="modal-header border-0">
+            <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Ajouter un Produit</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body pt-0">
+            <form (ngSubmit)="onSubmit()" #pForm="ngForm" *ngIf="!showAlternatives">
+              <div class="row g-3">
+                <div class="col-md-8">
+                  <label class="form-label">Titre du produit</label>
+                  <input type="text" class="form-control" [(ngModel)]="newProd.titre" name="titre" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Catégorie</label>
+                  <input type="text" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" [(ngModel)]="newProd.description" name="desc" rows="3"></textarea>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Prix Base (MAD)</label>
+                  <input type="number" class="form-control" [(ngModel)]="newProd.prix" name="prix" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Prix Min (MAD)</label>
+                  <input type="number" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Quantité (Stock)</label>
+                  <input type="number" class="form-control" [(ngModel)]="newProd.stock" name="stock" required>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label text-accent fw-bold"><i class="bi bi-tag-fill"></i> Prix Offre (Optionnel -
+                    MAD)</label>
+                  <input type="number" class="form-control" [(ngModel)]="newProd.prixOffre" name="prixOffre"
+                    placeholder="Prix promotionnel initial">
+                  <small class="text-muted"><i class="bi bi-shield-check"></i> L'Agent Sécurité vérifiera la validité de
+                    cette offre.</small>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Image du Produit</label>
+                  <input type="file" class="form-control" (change)="onFileSelected($event, 'new')" accept="image/*">
+                  <div class="mt-2 text-center" *ngIf="newProd.imageUrl">
+                    <img [src]="newProd.imageUrl" alt="Preview"
+                      style="max-height: 150px; border-radius: var(--am-radius);">
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
-              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!pForm.valid">
-                <i class="bi bi-check-lg"></i> Enregistrer le produit
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!pForm.valid">
+                  <i class="bi bi-check-lg"></i> Enregistrer le produit
+                </button>
+              </div>
+            </form>
+
+            <!-- Bloc Alternatives d'Offre (Agent Sécurité) -->
+            <div *ngIf="showAlternatives" class="alert alert-warning animate-fade-in-up mt-3">
+              <h5 class="alert-heading"><i class="bi bi-shield-exclamation"></i> Offre Non Acceptable</h5>
+              <p>{{ securityReason }}</p>
+              <hr>
+              <p class="mb-2"><strong>Propositions alternatives suggérées par l'IA :</strong></p>
+              <div class="d-flex gap-2 mb-3 flex-wrap">
+                <button *ngFor="let alt of alternativesOffre" type="button" class="btn btn-dark btn-sm"
+                  (click)="selectAlternative(alt)">
+                  <i class="bi bi-check2"></i> Appliquer {{ alt }} MAD
+                </button>
+              </div>
+              <button type="button" class="btn btn-outline-danger w-100" (click)="cancelAlternative()">
+                <i class="bi bi-x-lg"></i> Annuler et corriger
               </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Edit Product Modal -->
-  <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content am-card">
-        <div class="modal-header border-0">
-          <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Modifier le Produit</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body pt-0">
-          <form (ngSubmit)="onUpdate()" #editForm="ngForm">
-            <div class="row g-3">
-              <div class="col-md-8">
-                <label class="form-label">Titre</label>
-                <input type="text" class="form-control" [(ngModel)]="editProd.titre" name="editTitre" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Catégorie</label>
-                <input type="text" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" [(ngModel)]="editProd.description" name="editDesc" rows="3"></textarea>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Prix Base (MAD)</label>
-                <input type="number" class="form-control" [(ngModel)]="editProd.prix" name="editPrix" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Prix Min (MAD)</label>
-                <input type="number" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Quantité (Stock)</label>
-                <input type="number" class="form-control" [(ngModel)]="editProd.stock" name="editStock" required>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Image du Produit</label>
-                <input type="file" class="form-control" (change)="onFileSelected($event, 'edit')" accept="image/*">
-                <div class="mt-2 text-center" *ngIf="editProd.imageUrl">
-                  <img [src]="editProd.imageUrl" alt="Preview" style="max-height: 150px; border-radius: var(--am-radius);">
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content am-card">
+          <div class="modal-header border-0">
+            <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Modifier le Produit</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body pt-0">
+            <!-- Tabs inside Modal -->
+            <ul class="nav nav-pills am-tabs-sm mb-3">
+              <li class="nav-item">
+                <a class="nav-link" [class.active]="editModalTab === 'info'" (click)="editModalTab = 'info'"
+                  style="cursor: pointer;">
+                  <i class="bi bi-info-circle"></i> Informations
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" [class.active]="editModalTab === 'offers'" (click)="editModalTab = 'offers'"
+                  style="cursor: pointer;">
+                  <i class="bi bi-tag"></i> Historique des Offres
+                </a>
+              </li>
+            </ul>
+
+            <div [ngSwitch]="editModalTab">
+              <!-- TAB: INFO -->
+              <form *ngSwitchCase="'info'" (ngSubmit)="onUpdate()" #editForm="ngForm" class="animate-fade-in-up">
+                <div class="row g-3">
+                  <div class="col-md-8">
+                    <label class="form-label">Titre</label>
+                    <input type="text" class="form-control" [(ngModel)]="editProd.titre" name="editTitre" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Catégorie</label>
+                    <input type="text" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" [(ngModel)]="editProd.description" name="editDesc"
+                      rows="3"></textarea>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Prix Base (MAD)</label>
+                    <input type="number" class="form-control" [(ngModel)]="editProd.prix" name="editPrix" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Prix Min (MAD)</label>
+                    <input type="number" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin"
+                      required>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label">Quantité (Stock)</label>
+                    <input type="number" class="form-control" [(ngModel)]="editProd.stock" name="editStock" required>
+                  </div>
+                  <div class="col-md-12">
+                    <p class="text-muted small mb-0"><i class="bi bi-info-circle"></i> Gérez les promotions actives dans
+                      l'onglet <strong>Historique des Offres</strong>.</p>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Image du Produit</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event, 'edit')" accept="image/*">
+                    <div class="mt-2 text-center" *ngIf="editProd.imageUrl">
+                      <img [src]="editProd.imageUrl" alt="Preview"
+                        style="max-height: 150px; border-radius: var(--am-radius);">
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!editForm.valid">
+                    <i class="bi bi-check-lg"></i> Sauvegarder les modifications
+                  </button>
+                </div>
+              </form>
+
+              <!-- TAB: OFFERS -->
+              <div *ngSwitchCase="'offers'" class="animate-fade-in-up">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history"></i> Historique</h6>
+                  <button *ngIf="!isAddingOffer" type="button" class="btn btn-accent btn-sm" (click)="addNewOffer()">
+                    <i class="bi bi-plus-lg"></i> Nouvelle Offre
+                  </button>
+                </div>
+
+                <!-- Formulaire Ajout/Edit Offre avec Détection Agent -->
+                <div *ngIf="isAddingOffer" class="am-card p-3 mb-4 bg-light border-accent">
+                  <h6 class="mb-3">{{ isEditingOffer ? 'Modifier la promotion' : 'Ajouter une nouvelle promotion' }}
+                  </h6>
+                  <div *ngIf="!showAlternatives">
+                    <div class="row g-2 mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label small">Réduction (%)</label>
+                        <input type="number" class="form-control form-control-sm" [(ngModel)]="newOfferPercentage"
+                          name="newOfferPercentage" min="1" max="99" placeholder="Ex: 15">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label small">Prix calculé</label>
+                        <input type="text" class="form-control form-control-sm bg-light"
+                          [value]="editProd.prix && newOfferPercentage ? (editProd.prix * (1 - newOfferPercentage/100)).toFixed(2) + ' MAD' : '-'"
+                          disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label small">Début</label>
+                        <input type="text" class="form-control form-control-sm fp-start" [(ngModel)]="newOfferStart"
+                          name="newOfferStart" placeholder="Sélectionner la date de début">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label small">Fin</label>
+                        <input type="text" class="form-control form-control-sm fp-end" [(ngModel)]="newOfferEnd"
+                          name="newOfferEnd" placeholder="Sélectionner la date de fin">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label small">Statut</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="newOfferStatut" name="newOfferStatut">
+                          <option value="VALIDEE">ACTIVE (VALIDEE)</option>
+                          <option value="EXPIREE">INACTIVE (EXPIREE)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-primary btn-sm flex-grow-1" (click)="verifyAndAddOffer()">
+                        <i class="bi bi-shield-check"></i> {{ isEditingOffer ? 'Mettre à jour' : 'Valider & Détecter' }}
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm"
+                        (click)="cancelAddOffer()">Annuler</button>
+                    </div>
+                  </div>
+
+                  <!-- Alert Detection Agent -->
+                  <div *ngIf="showAlternatives" class="alert alert-warning animate-fade-in-up mt-2 mb-0">
+                    <h6 class="alert-heading small fw-bold"><i class="bi bi-shield-exclamation"></i> Détection Sécurité
+                    </h6>
+                    <p class="small mb-2">{{ securityReason }}</p>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                      <button *ngFor="let alt of alternativesOffre" type="button" class="btn btn-dark btn-xs"
+                        (click)="selectAlternativeForNewOffer(alt)">
+                        {{ alt }} MAD
+                      </button>
+                    </div>
+                    <button type="button" class="btn btn-link btn-sm text-danger p-0" (click)="cancelAddOffer()">Annuler
+                      tout</button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="am-table align-middle" style="font-size: 0.85rem;">
+                    <thead>
+                      <tr>
+                        <th>Dates</th>
+                        <th>Prix</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let off of productOffers[editProd.id!]">
+                        <td>
+                          <div class="d-flex flex-column">
+                            <span><i class="bi bi-calendar-event"></i> {{ off.dateDebut | date:'dd/MM/yyyy HH:mm'
+                              }}</span>
+                            <span class="text-muted"><i class="bi bi-calendar-x"></i> {{ (off.dateFin | date:'dd/MM/yyyy
+                              HH:mm') || 'Illimité' }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="fw-bold text-accent d-block">{{ off.prixPropose }} MAD</span>
+                          <span class="badge bg-danger small" *ngIf="off.pourcentageDiscount">-{{
+                            off.pourcentageDiscount | number:'1.0-0' }}%</span>
+                        </td>
+                        <td>
+                          <span class="am-badge" [class.am-badge-success]="isOfferActive(off)"
+                            [class.am-badge-secondary]="!isOfferActive(off)">
+                            {{ isOfferActive(off) ? 'ACTIVE' : 'INACTIVE' }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <div class="d-flex justify-content-end gap-1">
+                            <button type="button" class="btn btn-outline-primary btn-xs" (click)="editOffre(off)">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-xs" (click)="deleteOffre(off.id)">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr *ngIf="!productOffers[editProd.id!] || productOffers[editProd.id!].length === 0">
+                        <td colspan="4" class="text-center py-4 text-muted">
+                          <i class="bi bi-tag-x fs-1 d-block mb-2 opacity-50"></i>
+                          Aucune offre enregistrée pour ce produit.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
-              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!editForm.valid">
-                <i class="bi bi-check-lg"></i> Sauvegarder
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 </div>

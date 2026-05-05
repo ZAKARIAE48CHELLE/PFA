@@ -1,0 +1,224 @@
+<!-- Seller Dashboard -->
+<div class="seller-wrapper animate-fade-in-up">
+  <!-- Page Header -->
+  <div class="seller-header">
+    <div>
+      <h1 class="seller-title">
+        <i class="bi bi-bag-check-fill"></i>
+        Espace <span class="am-gradient-text">Vendeur</span>
+      </h1>
+      <p class="seller-subtitle">Gérez vos produits et demandez des offres à l'agent IA</p>
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" id="btn-new-product">
+      <i class="bi bi-plus-lg"></i> Nouveau Produit
+    </button>
+  </div>
+
+  <!-- Products Table -->
+  <div class="seller-table-card am-card">
+    <div class="seller-table-header">
+      <h4><i class="bi bi-list-ul"></i> Mes Produits</h4>
+      <span class="am-badge am-badge-primary">{{ produits.length }}</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="am-table">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Prix Base</th>
+            <th>Stock</th>
+            <th>Statut</th>
+            <th>Action Agent</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of produits">
+            <td>
+              <div class="product-cell">
+                <div class="product-cell-icon">
+                  <i class="bi bi-box-seam"></i>
+                </div>
+                <div>
+                  <strong>{{ p.titre }}</strong>
+                  <span class="product-cell-cat">{{ p.categorie }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="price-cell">{{ p.prix }} &euro;</span>
+            </td>
+            <td>
+              <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock <= 0">
+                {{ p.stock }}
+              </span>
+            </td>
+            <td>
+              <span class="am-badge am-badge-info">{{ p.statut || 'ACTIF' }}</span>
+            </td>
+            <td>
+              <button class="btn btn-accent btn-sm" (click)="triggerAgent(p)">
+                <i class="bi bi-robot"></i> Demander Offre
+              </button>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(p)" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                  <i class="bi bi-pencil-square"></i> Modifier
+                </button>
+                <button class="btn btn-outline-danger btn-sm" (click)="deleteProduct(p.id)">
+                  <i class="bi bi-trash"></i> Supprimer
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="produits.length === 0">
+            <td colspan="6">
+              <div class="table-empty">
+                <i class="bi bi-inbox"></i>
+                <p>Vous n'avez aucun produit. Cr&eacute;ez-en un !</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- New Product Modal -->
+  <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true" aria-labelledby="newProductModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content seller-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newProductModalLabel">
+            <i class="bi bi-plus-circle"></i> Ajouter un Produit
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer" id="closeNewProductModal"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmit()" #pForm="ngForm" *ngIf="!showAlternatives">
+            <div class="mb-3">
+              <label class="form-label" for="prod-titre">Titre</label>
+              <input type="text" id="prod-titre" class="form-control" [(ngModel)]="newProd.titre" name="titre" required placeholder="Nom du produit">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="prod-desc">Description</label>
+              <textarea id="prod-desc" class="form-control" [(ngModel)]="newProd.description" name="desc" rows="3" placeholder="D&eacute;crivez votre produit..."></textarea>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label" for="prod-prix">Prix Base (&euro;)</label>
+                <input type="number" id="prod-prix" class="form-control" [(ngModel)]="newProd.prix" name="prix" required placeholder="0.00">
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label" for="prod-prix-min">Prix Min (&euro;)</label>
+                <input type="number" id="prod-prix-min" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required placeholder="0.00">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="prod-prix-offre">Prix Offre (Optionnel) (&euro;)</label>
+              <input type="number" id="prod-prix-offre" class="form-control" [(ngModel)]="newProd.prixOffre" name="prixOffre" placeholder="ex: Prix remisé">
+              <small class="text-muted">L'Agent Sécurité vérifiera la validité de cette offre.</small>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label" for="prod-cat">Cat&eacute;gorie</label>
+                <input type="text" id="prod-cat" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required placeholder="ex: &Eacute;lectronique">
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label" for="prod-stock">Quantit&eacute; (Stock)</label>
+                <input type="number" id="prod-stock" class="form-control" [(ngModel)]="newProd.stock" name="stock" required placeholder="0">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Image du Produit</label>
+              <div class="image-upload-wrapper">
+                <input type="file" class="form-control" (change)="onFileSelected($event, 'new')" accept="image/*">
+                <div class="image-preview mt-2" *ngIf="newProd.imageUrl">
+                  <img [src]="newProd.imageUrl" alt="Preview" class="img-thumbnail">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2">
+              <i class="bi bi-check-lg"></i> Enregistrer
+            </button>
+          </form>
+
+          <!-- Bloc Alternatives d'Offre (Agent Sécurité) -->
+          <div *ngIf="showAlternatives" class="alert alert-warning animate-fade-in-up">
+            <h5><i class="bi bi-shield-exclamation"></i> Offre Non Acceptable</h5>
+            <p>{{ securityReason }}</p>
+            <p class="mb-2"><strong>Propositions alternatives :</strong></p>
+            <div class="d-flex gap-2 mb-3 flex-wrap">
+              <button *ngFor="let alt of alternativesOffre" type="button" class="btn btn-outline-dark btn-sm" (click)="selectAlternative(alt)">
+                Accepter {{ alt }} &euro;
+              </button>
+            </div>
+            <button type="button" class="btn btn-danger w-100" (click)="cancelAlternative()">
+              Annuler l'offre et corriger
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true" aria-labelledby="editProductModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content seller-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProductModalLabel">
+            <i class="bi bi-pencil-square"></i> Modifier le Produit
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onUpdate()" #editForm="ngForm">
+            <div class="mb-3">
+              <label class="form-label" for="edit-titre">Titre</label>
+              <input type="text" id="edit-titre" class="form-control" [(ngModel)]="editProd.titre" name="editTitre" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="edit-desc">Description</label>
+              <textarea id="edit-desc" class="form-control" [(ngModel)]="editProd.description" name="editDesc" rows="3"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label" for="edit-prix">Prix Base (&euro;)</label>
+                <input type="number" id="edit-prix" class="form-control" [(ngModel)]="editProd.prix" name="editPrix" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label" for="edit-prix-min">Prix Min (&euro;)</label>
+                <input type="number" id="edit-prix-min" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label" for="edit-cat">Cat&eacute;gorie</label>
+                <input type="text" id="edit-cat" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label" for="edit-stock">Quantit&eacute; (Stock)</label>
+                <input type="number" id="edit-stock" class="form-control" [(ngModel)]="editProd.stock" name="editStock" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Image du Produit</label>
+              <div class="image-upload-wrapper">
+                <input type="file" class="form-control" (change)="onFileSelected($event, 'edit')" accept="image/*">
+                <div class="image-preview mt-2" *ngIf="editProd.imageUrl">
+                  <img [src]="editProd.imageUrl" alt="Preview" class="img-thumbnail">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-2" data-bs-dismiss="modal">
+              <i class="bi bi-check-lg"></i> Sauvegarder
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

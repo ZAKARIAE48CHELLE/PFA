@@ -19,6 +19,7 @@ public class Produit {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
     private int stock;
+    private Double prixOffre;
     
     @Enumerated(EnumType.STRING)
     private StatutProduit statut;
@@ -55,4 +56,6 @@ public class Produit {
     public void setDatePublication(LocalDateTime datePublication) { this.datePublication = datePublication; }
     public UUID getVendeurId() { return vendeurId; }
     public void setVendeurId(UUID vendeurId) { this.vendeurId = vendeurId; }
+    public Double getPrixOffre() { return prixOffre; }
+    public void setPrixOffre(Double prixOffre) { this.prixOffre = prixOffre; }
 }

@@ -16,6 +16,7 @@ export interface Produit {
   statut: string;
   datePublication: string;
   vendeurId: string;
+  prixOffre?: number;
 }
 
 export interface Offre {
@@ -27,6 +28,9 @@ export interface Offre {
   statut: string;
   dateCreation: string;
   dateExpiration: string;
+  dateDebut?: string;
+  dateFin?: string;
+  pourcentageDiscount?: number;
   produitId: string;
   acheteurId: string;
   agentGenere: boolean;
@@ -72,6 +76,14 @@ export class ProductService {
 
   createOffre(offre: any): Observable<Offre> {
     return this.http.post<Offre>(`${this.apiUrl}/offers`, offre, { headers: this.getHeaders() });
+  }
+
+  updateOffre(id: string, offre: any): Observable<Offre> {
+    return this.http.put<Offre>(`${this.apiUrl}/offers/${id}`, offre, { headers: this.getHeaders() });
+  }
+
+  deleteOffre(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/offers/${id}`, { headers: this.getHeaders() });
   }
 
   genererOffreAgent(p: Produit): Observable<any> {
@@ -120,5 +132,9 @@ export class ProductService {
 
   addComment(produitId: string, comment: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/products/${produitId}/comments`, comment, { headers: this.getHeaders() });
+  }
+  
+  getOffresByProduit(produitId: string): Observable<Offre[]> {
+    return this.http.get<Offre[]>(`${this.apiUrl}/products/${produitId}/offers`, { headers: this.getHeaders() });
   }
 }

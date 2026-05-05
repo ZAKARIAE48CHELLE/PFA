@@ -1,5 +1,6 @@
 package com.auramarket.product.controller;
 
+import com.auramarket.product.entity.Offre;
 import com.auramarket.product.entity.Produit;
 import com.auramarket.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,10 @@ public class ProduitController {
     public ResponseEntity<Void> deleteProduit(@PathVariable UUID id) {
         productService.deleteProduit(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/offers")
+    public ResponseEntity<List<Offre>> getOffersByProduct(@PathVariable UUID id) {
+        return ResponseEntity.ok(productService.getOffresByProduitId(id));
     }
 }

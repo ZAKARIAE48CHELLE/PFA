@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductService, Produit } from '../../core/services/product.service';
+import { ProductService, Produit, Offre } from '../../core/services/product.service';
+import flatpickr from 'flatpickr';
+import { French } from 'flatpickr/dist/l10n/fr.js';
 import { AuthService } from '../../core/services/auth.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { BaseChartDirective } from 'ng2-charts';
@@ -21,8 +23,29 @@ export class SellerDashboardComponent implements OnInit {
   userId: string = '';
 
   newProd: Partial<Produit> = {};
-  editProd: Partial<Produit> = {};
+  editProd: Partial<Produit> & { id?: string } = {};
   selectedFile: File | null = null;
+
+  // For Agent Securite alternatives
+  showAlternatives: boolean = false;
+  securityReason: string = '';
+  alternativesOffre: number[] = [];
+  editModalTab: 'info' | 'offers' = 'info';
+
+  // For Adding new offer in modal
+  isAddingOffer: boolean = false;
+  isEditingOffer: boolean = false;
+  editingOfferId: string | null = null;
+  newOfferPrice: number | null = null;
+  newOfferPercentage: number | null = null;
+  newOfferStart: string = '';
+  newOfferEnd: string = '';
+  newOfferStatut: string = 'VALIDEE';
+
+  // Inventory Filtering & Pagination
+  inventorySearchQuery: string = '';
+  itemsPerPage: number = 10;
+  inventoryPage: number = 1;
 
   // KPIs
   totalStockValue = 0;
@@ -83,6 +106,12 @@ export class SellerDashboardComponent implements OnInit {
     }
   }
 
+  get filteredProduits(): Produit[] {
+    if (!this.inventorySearchQuery.trim()) return this.produits;
+    const q = this.inventorySearchQuery.toLowerCase();
+    return this.produits.filter(p => p.titre.toLowerCase().includes(q));
+  }
+
   loadProduits() {
     this.productService.getProduits().subscribe({
       next: p => {
@@ -90,6 +119,9 @@ export class SellerDashboardComponent implements OnInit {
         this.produits = p.filter(pr => pr.vendeurId === this.userId || !pr.vendeurId);
         this.computeKPIs();
         this.loadCommandes();
+        
+        // Charger les offres pour chaque produit
+        this.produits.forEach(prod => this.loadProductOffers(prod.id));
       },
       error: err => console.error('Erreur chargement produits:', err)
     });
@@ -168,13 +200,99 @@ export class SellerDashboardComponent implements OnInit {
 
   onSubmit() {
     if (!this.newProd.titre || !this.newProd.prix) return;
+
+    // Si une offre est renseignée, on demande à l'Agent Sécurité de l'analyser
+    if (this.newProd.prixOffre && this.newProd.prixOffre > 0) {
+      const payload = {
+        type: 'OFFRE',
+        prix: this.newProd.prixOffre,
+        prixBase: this.newProd.prix || 0,
+        categorie: this.newProd.categorie || 'autre',
+        rating: 4.5 // Default seller rating for now
+      };
+
+      this.productService.verifierSecurite(payload).subscribe({
+        next: (res) => {
+          if (res.isSuspect || res.statut === 'SUSPECT' || res.statut === 'NON ACCEPTABLE') {
+            this.showAlternatives = true;
+            this.securityReason = res.raison || 'Prix suspect détecté par l\'Agent Sécurité.';
+            this.alternativesOffre = res.alternatives || [];
+          } else {
+            this.proceedCreate();
+          }
+        },
+        error: (err) => {
+          console.error("Erreur sécurité:", err);
+          this.proceedCreate(); // Fallback
+        }
+      });
+    } else {
+      this.proceedCreate();
+    }
+  }
+
+  productOffers: { [key: string]: Offre[] } = {};
+
+  proceedCreate() {
     this.newProd.vendeurId = this.userId;
     this.newProd.statut = 'ACTIF';
     
     this.productService.createProduit(this.newProd).subscribe({
-      next: () => { this.loadProduits(); this.newProd = {}; },
+      next: (createdProd) => { 
+        // Si un prix offre a été spécifié, on crée aussi l'enregistrement dans la classe Offre
+        if (this.newProd.prixOffre && this.newProd.prixOffre > 0) {
+          const offrePayload = {
+            produitId: createdProd.id,
+            prixPropose: this.newProd.prixOffre,
+            prixFinal: this.newProd.prixOffre,
+            statut: 'VALIDEE', // Puisqu'elle a passé le filtre de l'agent sécu (ou bypassé)
+            titre: `Offre Spéciale: ${createdProd.titre}`,
+            description: `Promotion initiale sur ${createdProd.titre}`
+          };
+          this.productService.createOffre(offrePayload).subscribe({
+            next: () => {
+              this.loadProduits();
+              this.resetForm();
+            },
+            error: err => console.error("Erreur création offre:", err)
+          });
+        } else {
+          this.loadProduits(); 
+          this.resetForm();
+        }
+      },
       error: err => console.error(err)
     });
+  }
+
+  loadProductOffers(produitId: string) {
+    this.productService.getOffresByProduit(produitId).subscribe({
+      next: (offres) => {
+        // Trier du plus récent au plus ancien
+        this.productOffers[produitId] = offres.sort((a, b) => 
+          new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime()
+        );
+      },
+      error: (err) => console.error("Erreur chargement offres produit:", err)
+    });
+  }
+
+  selectAlternative(altPrix: number) {
+    this.newProd.prixOffre = altPrix;
+    this.showAlternatives = false;
+    this.proceedCreate();
+  }
+
+  cancelAlternative() {
+    this.showAlternatives = false;
+    this.newProd.prixOffre = undefined;
+  }
+
+  resetForm() {
+    this.newProd = {};
+    this.showAlternatives = false;
+    this.alternativesOffre = [];
+    this.securityReason = '';
   }
 
   openEditModal(p: Produit) {
@@ -184,9 +302,198 @@ export class SellerDashboardComponent implements OnInit {
   onUpdate() {
     if (!this.editProd.id) return;
     this.productService.updateProduit(this.editProd.id, this.editProd).subscribe({
-      next: () => { this.loadProduits(); this.editProd = {}; },
+      next: () => { 
+        this.loadProduits(); 
+        this.editProd = {}; 
+        this.editModalTab = 'info';
+      },
       error: err => console.error(err)
     });
+  }
+
+  addNewOffer() {
+    this.isAddingOffer = true;
+    this.isEditingOffer = false;
+    this.newOfferPrice = null;
+    this.newOfferStart = new Date().toISOString().slice(0, 16);
+    this.newOfferEnd = '';
+    this.newOfferStatut = 'VALIDEE';
+    this.showAlternatives = false;
+    setTimeout(() => this.initFlatpickr(), 50);
+  }
+
+  editOffre(off: Offre) {
+    this.isAddingOffer = true;
+    this.isEditingOffer = true;
+    this.editingOfferId = off.id;
+    this.newOfferPrice = off.prixPropose; // Keep for reference if needed
+    
+    if (off.pourcentageDiscount && off.pourcentageDiscount > 0) {
+      this.newOfferPercentage = off.pourcentageDiscount;
+    } else if (off.prixPropose && this.editProd.prix) {
+      this.newOfferPercentage = parseFloat((((this.editProd.prix - off.prixPropose) / this.editProd.prix) * 100).toFixed(2));
+    } else {
+      this.newOfferPercentage = null;
+    }
+    
+    this.newOfferStart = off.dateDebut ? off.dateDebut.slice(0, 16) : '';
+    this.newOfferEnd = off.dateFin ? off.dateFin.slice(0, 16) : '';
+    this.newOfferStatut = off.statut;
+    this.showAlternatives = false;
+    setTimeout(() => this.initFlatpickr(), 50);
+  }
+
+  initFlatpickr() {
+    const commonConfig: any = {
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: "Y-m-dTH:i",
+      locale: French
+    };
+
+    flatpickr(".fp-start", {
+      ...commonConfig,
+      defaultDate: this.newOfferStart,
+      onChange: (dates, dateStr) => this.newOfferStart = dateStr
+    });
+
+    flatpickr(".fp-end", {
+      ...commonConfig,
+      defaultDate: this.newOfferEnd,
+      onChange: (dates, dateStr) => this.newOfferEnd = dateStr
+    });
+  }
+
+  cancelAddOffer() {
+    this.isAddingOffer = false;
+    this.isEditingOffer = false;
+    this.editingOfferId = null;
+    this.showAlternatives = false;
+  }
+
+  verifyAndAddOffer() {
+    if (!this.newOfferPercentage || this.newOfferPercentage <= 0 || this.newOfferPercentage >= 100) {
+      alert("Veuillez saisir un pourcentage valide (entre 1 et 99).");
+      return;
+    }
+
+    const basePrice = this.editProd.prix || 0;
+    const calculatedPrice = basePrice * (1 - this.newOfferPercentage / 100);
+    
+    // EXIGENCE 1: Le prix proposé ne peut pas être inférieur au prixMin du produit
+    if (calculatedPrice < (this.editProd.prixMin || 0)) {
+      alert(`Erreur: La réduction de ${this.newOfferPercentage}% donne un prix de ${calculatedPrice.toFixed(2)} MAD, ce qui est inférieur au prix minimum autorisé (${this.editProd.prixMin} MAD).`);
+      return;
+    }
+
+    // Validation des dates
+    if (this.newOfferStart && this.newOfferEnd) {
+      if (new Date(this.newOfferEnd) <= new Date(this.newOfferStart)) {
+        alert("La date de fin doit être après la date de début.");
+        return;
+      }
+    }
+
+    const payload = {
+      type: 'OFFRE',
+      prix: calculatedPrice,
+      prixBase: basePrice,
+      categorie: this.editProd.categorie || 'autre',
+      rating: 4.5
+    };
+
+    this.productService.verifierSecurite(payload).subscribe({
+      next: (res) => {
+        if (res.isSuspect || res.statut === 'SUSPECT' || res.statut === 'NON ACCEPTABLE') {
+          this.showAlternatives = true;
+          this.securityReason = res.raison || 'Prix suspect détecté par l\'Agent Sécurité.';
+          this.alternativesOffre = res.alternatives || [];
+        } else {
+          this.submitOfferRecord(calculatedPrice, this.newOfferPercentage!);
+        }
+      },
+      error: (err) => {
+        console.error("Erreur sécurité:", err);
+        this.submitOfferRecord(calculatedPrice, this.newOfferPercentage!);
+      }
+    });
+  }
+
+  selectAlternativeForNewOffer(altPrice: number) {
+    const basePrice = this.editProd.prix || 0;
+    // Calculate new percentage based on alternative price
+    const newPercentage = ((basePrice - altPrice) / basePrice) * 100;
+    
+    this.newOfferPrice = altPrice;
+    this.newOfferPercentage = parseFloat(newPercentage.toFixed(2));
+    this.showAlternatives = false;
+    this.submitOfferRecord(altPrice, this.newOfferPercentage);
+  }
+
+  deleteOffre(id: string) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
+      this.productService.deleteOffre(id).subscribe({
+        next: () => {
+          if (this.editProd.id) this.loadProductOffers(this.editProd.id);
+        },
+        error: err => console.error("Erreur suppression offre:", err)
+      });
+    }
+  }
+
+  submitOfferRecord(prix: number, percentage: number) {
+    if (!this.editProd.id) return;
+    
+    const offrePayload = {
+      produitId: this.editProd.id,
+      prixPropose: prix,
+      prixFinal: prix,
+      pourcentageDiscount: percentage,
+      statut: this.newOfferStatut,
+      titre: `Offre: ${this.editProd.titre}`,
+      description: `Promotion gérée via dashboard`,
+      dateDebut: this.newOfferStart,
+      dateFin: this.newOfferEnd
+    };
+
+    if (this.isEditingOffer && this.editingOfferId) {
+      this.productService.updateOffre(this.editingOfferId, offrePayload).subscribe({
+        next: () => this.finalizeOfferSubmit(prix),
+        error: err => console.error("Erreur update offre:", err)
+      });
+    } else {
+      this.productService.createOffre(offrePayload).subscribe({
+        next: () => this.finalizeOfferSubmit(prix),
+        error: err => console.error("Erreur création offre:", err)
+      });
+    }
+  }
+
+  finalizeOfferSubmit(prix: number) {
+    // Mettre à jour aussi le prixOffre du produit pour la synchro si c'est l'offre active
+    this.editProd.prixOffre = prix;
+    this.productService.updateProduit(this.editProd.id!, this.editProd).subscribe(() => {
+      this.loadProduits();
+      this.isAddingOffer = false;
+      this.isEditingOffer = false;
+      this.editingOfferId = null;
+      this.showAlternatives = false;
+      if (this.editProd.id) this.loadProductOffers(this.editProd.id);
+    });
+  }
+
+  isOfferActive(off: Offre): boolean {
+    if (off.statut !== 'VALIDEE') return false;
+    
+    const now = new Date();
+    const start = off.dateDebut ? new Date(off.dateDebut) : null;
+    const end = off.dateFin ? new Date(off.dateFin) : null;
+
+    // EXIGENCE 3: Invalidation automatique si date de fin < date actuelle
+    if (start && now < start) return false;
+    if (end && now > end) return false;
+    
+    return true;
   }
 
   deleteProduct(id: string) {
@@ -200,7 +507,9 @@ export class SellerDashboardComponent implements OnInit {
 
   triggerAgent(p: Produit) {
     this.productService.genererOffreAgent(p).subscribe({
-      next: res => { alert("Agent de négociation déclenché avec succès!"); },
+      next: res => { 
+        alert(`L'Agent a généré une offre à ${res.prixSuggere} MAD (Remise: ${res.discountPercent}%)`); 
+      },
       error: err => console.error(err)
     });
   }
