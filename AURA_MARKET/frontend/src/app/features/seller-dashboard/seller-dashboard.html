@@ -1,44 +1,149 @@
-<!-- Seller Dashboard -->
+<!-- Seller Dashboard — Seller Central -->
 <div class="seller-wrapper animate-fade-in-up">
+  <div class="container">
   <!-- Page Header -->
   <div class="seller-header">
     <div>
       <h1 class="seller-title">
-        <i class="bi bi-bag-check-fill"></i>
+        <i class="bi bi-shop-window"></i>
         Espace <span class="am-gradient-text">Vendeur</span>
       </h1>
-      <p class="seller-subtitle">Gérez vos produits et demandez des offres à l'agent IA</p>
+      <p class="seller-subtitle">Bienvenue dans votre centre de gestion d'inventaire</p>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal" id="btn-new-product">
-      <i class="bi bi-plus-lg"></i> Nouveau Produit
-    </button>
+    <div class="seller-header-actions" *ngIf="activeTab === 'inventory'">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
+        <i class="bi bi-plus-lg"></i> Nouveau Produit
+      </button>
+    </div>
   </div>
 
-  <!-- Products Table -->
-  <div class="seller-table-card am-card">
-    <div class="seller-table-header">
-      <h4><i class="bi bi-list-ul"></i> Mes Produits</h4>
-      <span class="am-badge am-badge-primary">{{ produits.length }}</span>
+  <!-- Dashboard Tabs -->
+  <ul class="nav nav-tabs am-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'" style="cursor: pointer;">
+        <i class="bi bi-grid-1x2"></i> Tableau de bord
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'inventory'" (click)="activeTab = 'inventory'" style="cursor: pointer;">
+        <i class="bi bi-box-seam"></i> Mon Inventaire
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'" style="cursor: pointer;">
+        <i class="bi bi-receipt"></i> Mes Commandes
+      </a>
+    </li>
+  </ul>
+
+  <!-- TAB: OVERVIEW -->
+  <div *ngIf="activeTab === 'overview'" class="animate-fade-in-up">
+  <!-- Performance Overview Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon info">
+          <i class="bi bi-box-seam"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ produits.length }}</span>
+          <span class="summary-label">Total Produits</span>
+        </div>
+      </div>
     </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon total" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+          <i class="bi bi-currency-euro"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ totalRevenue | number:'1.0-0' }}</span>
+          <span class="summary-label">Revenus (MAD)</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon warning">
+          <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ lowStockCount }}</span>
+          <span class="summary-label">Stock Faible (< 5)</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="summary-card am-card">
+        <div class="summary-icon critical">
+          <i class="bi bi-cart-x"></i>
+        </div>
+        <div class="summary-data">
+          <span class="summary-value">{{ outOfStockCount }}</span>
+          <span class="summary-label">Produits Épuisés</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row g-4 mb-4" *ngIf="produits.length > 0">
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-pie-chart-fill"></i> Répartition par Catégorie</h5>
+        <div class="chart-container doughnut-container">
+          <canvas baseChart [data]="categoryChartData" [options]="categoryChartOptions" type="doughnut"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Stock par Produit</h5>
+        <div class="chart-container bar-container">
+          <canvas baseChart [data]="stockChartData" [options]="stockChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-trophy-fill" style="color: #3b82f6;"></i> Top Ventes</h5>
+        <div class="chart-container bar-container">
+          <canvas baseChart [data]="topProductsChartData" [options]="topProductsChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- END TAB OVERVIEW -->
+
+  <!-- TAB: INVENTORY -->
+  <div *ngIf="activeTab === 'inventory'" class="animate-fade-in-up">
+    <!-- Products Table -->
+    <div class="seller-table-card am-card h-100">
+        <div class="seller-table-header">
+          <h4><i class="bi bi-list-ul"></i> Mon Inventaire</h4>
+          <button class="btn btn-outline-secondary btn-sm" (click)="loadProduits()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
 
     <div class="table-responsive">
-      <table class="am-table">
+      <table class="am-table align-middle">
         <thead>
           <tr>
             <th>Produit</th>
-            <th>Prix Base</th>
+            <th>Prix</th>
             <th>Stock</th>
             <th>Statut</th>
-            <th>Action Agent</th>
-            <th>Actions</th>
+            <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of produits">
+          <tr *ngFor="let p of produits | paginate: { id: 'seller-prod-pag', itemsPerPage: 5, currentPage: pProduits }">
             <td>
               <div class="product-cell">
-                <div class="product-cell-icon">
-                  <i class="bi bi-box-seam"></i>
+                <div class="product-cell-img">
+                  <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
+                  <i *ngIf="!p.imageUrl" class="bi bi-box-seam"></i>
                 </div>
                 <div>
                   <strong>{{ p.titre }}</strong>
@@ -47,97 +152,147 @@
               </div>
             </td>
             <td>
-              <span class="price-cell">{{ p.prix }} &euro;</span>
+              <div class="price-cell">
+                <span class="fw-bold">{{ p.prix }} MAD</span>
+                <span class="text-muted small d-block">Min: {{ p.prixMin }} MAD</span>
+              </div>
             </td>
             <td>
-              <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock <= 0">
-                {{ p.stock }}
+              <span class="am-badge" [class.am-badge-success]="p.stock >= 5" [class.am-badge-warning]="p.stock > 0 && p.stock < 5" [class.am-badge-danger]="p.stock <= 0">
+                {{ p.stock }} en stock
               </span>
             </td>
             <td>
               <span class="am-badge am-badge-info">{{ p.statut || 'ACTIF' }}</span>
             </td>
             <td>
-              <button class="btn btn-accent btn-sm" (click)="triggerAgent(p)">
-                <i class="bi bi-robot"></i> Demander Offre
-              </button>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(p)" data-bs-toggle="modal" data-bs-target="#editProductModal">
-                  <i class="bi bi-pencil-square"></i> Modifier
+              <div class="action-buttons justify-content-end">
+                <button class="btn btn-accent btn-sm" (click)="triggerAgent(p)" title="Demander offre IA">
+                  <i class="bi bi-robot"></i>
                 </button>
-                <button class="btn btn-outline-danger btn-sm" (click)="deleteProduct(p.id)">
-                  <i class="bi bi-trash"></i> Supprimer
+                <button class="btn btn-outline-primary btn-sm" (click)="openEditModal(p)" data-bs-toggle="modal" data-bs-target="#editProductModal" title="Modifier">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-outline-danger btn-sm" (click)="deleteProduct(p.id)" title="Supprimer">
+                  <i class="bi bi-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr *ngIf="produits.length === 0">
-            <td colspan="6">
+            <td colspan="5">
               <div class="table-empty">
                 <i class="bi bi-inbox"></i>
-                <p>Vous n'avez aucun produit. Cr&eacute;ez-en un !</p>
+                <p>Vous n'avez aucun produit dans votre inventaire. Créez-en un pour commencer à vendre !</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
+                  Ajouter un produit
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
+      
+      <div class="d-flex justify-content-center mt-3" *ngIf="produits.length > 5">
+        <pagination-controls id="seller-prod-pag" (pageChange)="pProduits = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
+      </div>
     </div>
   </div>
+  </div> <!-- END TAB INVENTORY -->
+  
+  <!-- TAB: ORDERS -->
+  <div *ngIf="activeTab === 'orders'" class="animate-fade-in-up">
+  <!-- Orders Table -->
+  <div class="seller-table-card am-card h-100">
+      <div class="seller-table-header">
+        <h4><i class="bi bi-receipt"></i> Commandes Client</h4>
+      </div>
+      <div class="table-responsive">
+        <table class="am-table align-middle">
+          <thead>
+            <tr>
+              <th>Réf.</th>
+              <th>Date</th>
+              <th>Montant</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of commandes | paginate: { id: 'seller-cmd-pag', itemsPerPage: 8, currentPage: pCommandes }">
+              <td><span class="fw-bold">{{ c.reference }}</span></td>
+              <td>{{ c.dateCommande | date:'shortDate' }}</td>
+              <td><span class="fw-bold text-success">{{ c.prixFinal }} MAD</span></td>
+              <td>
+                <span class="am-badge" [class.am-badge-success]="c.statut === 'PAYEE'">{{ c.statut }}</span>
+              </td>
+            </tr>
+            <tr *ngIf="commandes.length === 0">
+              <td colspan="4">
+                <div class="table-empty py-3">
+                  <i class="bi bi-bag-x"></i>
+                  <p class="mb-0">Aucune commande pour le moment.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-center mt-3" *ngIf="commandes.length > 8">
+          <pagination-controls id="seller-cmd-pag" (pageChange)="pCommandes = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div> <!-- END TAB ORDERS -->
 
   <!-- New Product Modal -->
-  <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true" aria-labelledby="newProductModalLabel">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content seller-modal">
-        <div class="modal-header">
-          <h5 class="modal-title" id="newProductModalLabel">
-            <i class="bi bi-plus-circle"></i> Ajouter un Produit
-          </h5>
+  <div class="modal fade" id="newProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content am-card">
+        <div class="modal-header border-0">
+          <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Ajouter un Produit</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body pt-0">
           <form (ngSubmit)="onSubmit()" #pForm="ngForm">
-            <div class="mb-3">
-              <label class="form-label" for="prod-titre">Titre</label>
-              <input type="text" id="prod-titre" class="form-control" [(ngModel)]="newProd.titre" name="titre" required placeholder="Nom du produit">
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="prod-desc">Description</label>
-              <textarea id="prod-desc" class="form-control" [(ngModel)]="newProd.description" name="desc" rows="3" placeholder="D&eacute;crivez votre produit..."></textarea>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label" for="prod-prix">Prix Base (&euro;)</label>
-                <input type="number" id="prod-prix" class="form-control" [(ngModel)]="newProd.prix" name="prix" required placeholder="0.00">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label">Titre du produit</label>
+                <input type="text" class="form-control" [(ngModel)]="newProd.titre" name="titre" required>
               </div>
-              <div class="col-6 mb-3">
-                <label class="form-label" for="prod-prix-min">Prix Min (&euro;)</label>
-                <input type="number" id="prod-prix-min" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required placeholder="0.00">
+              <div class="col-md-4">
+                <label class="form-label">Catégorie</label>
+                <input type="text" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label" for="prod-cat">Cat&eacute;gorie</label>
-                <input type="text" id="prod-cat" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required placeholder="ex: &Eacute;lectronique">
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" [(ngModel)]="newProd.description" name="desc" rows="3"></textarea>
               </div>
-              <div class="col-6 mb-3">
-                <label class="form-label" for="prod-stock">Quantit&eacute; (Stock)</label>
-                <input type="number" id="prod-stock" class="form-control" [(ngModel)]="newProd.stock" name="stock" required placeholder="0">
+              <div class="col-md-4">
+                <label class="form-label">Prix Base (MAD)</label>
+                <input type="number" class="form-control" [(ngModel)]="newProd.prix" name="prix" required>
               </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Image du Produit</label>
-              <div class="image-upload-wrapper">
+              <div class="col-md-4">
+                <label class="form-label">Prix Min (MAD)</label>
+                <input type="number" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Quantité (Stock)</label>
+                <input type="number" class="form-control" [(ngModel)]="newProd.stock" name="stock" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Image du Produit</label>
                 <input type="file" class="form-control" (change)="onFileSelected($event, 'new')" accept="image/*">
-                <div class="image-preview mt-2" *ngIf="newProd.imageUrl">
-                  <img [src]="newProd.imageUrl" alt="Preview" class="img-thumbnail">
+                <div class="mt-2 text-center" *ngIf="newProd.imageUrl">
+                  <img [src]="newProd.imageUrl" alt="Preview" style="max-height: 150px; border-radius: var(--am-radius);">
                 </div>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 mt-2" data-bs-dismiss="modal">
-              <i class="bi bi-check-lg"></i> Enregistrer
-            </button>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!pForm.valid">
+                <i class="bi bi-check-lg"></i> Enregistrer le produit
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -145,60 +300,58 @@
   </div>
 
   <!-- Edit Product Modal -->
-  <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true" aria-labelledby="editProductModalLabel">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content seller-modal">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editProductModalLabel">
-            <i class="bi bi-pencil-square"></i> Modifier le Produit
-          </h5>
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content am-card">
+        <div class="modal-header border-0">
+          <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Modifier le Produit</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body pt-0">
           <form (ngSubmit)="onUpdate()" #editForm="ngForm">
-            <div class="mb-3">
-              <label class="form-label" for="edit-titre">Titre</label>
-              <input type="text" id="edit-titre" class="form-control" [(ngModel)]="editProd.titre" name="editTitre" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="edit-desc">Description</label>
-              <textarea id="edit-desc" class="form-control" [(ngModel)]="editProd.description" name="editDesc" rows="3"></textarea>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label" for="edit-prix">Prix Base (&euro;)</label>
-                <input type="number" id="edit-prix" class="form-control" [(ngModel)]="editProd.prix" name="editPrix" required>
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label">Titre</label>
+                <input type="text" class="form-control" [(ngModel)]="editProd.titre" name="editTitre" required>
               </div>
-              <div class="col-6 mb-3">
-                <label class="form-label" for="edit-prix-min">Prix Min (&euro;)</label>
-                <input type="number" id="edit-prix-min" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin" required>
+              <div class="col-md-4">
+                <label class="form-label">Catégorie</label>
+                <input type="text" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label" for="edit-cat">Cat&eacute;gorie</label>
-                <input type="text" id="edit-cat" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" [(ngModel)]="editProd.description" name="editDesc" rows="3"></textarea>
               </div>
-              <div class="col-6 mb-3">
-                <label class="form-label" for="edit-stock">Quantit&eacute; (Stock)</label>
-                <input type="number" id="edit-stock" class="form-control" [(ngModel)]="editProd.stock" name="editStock" required>
+              <div class="col-md-4">
+                <label class="form-label">Prix Base (MAD)</label>
+                <input type="number" class="form-control" [(ngModel)]="editProd.prix" name="editPrix" required>
               </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Image du Produit</label>
-              <div class="image-upload-wrapper">
+              <div class="col-md-4">
+                <label class="form-label">Prix Min (MAD)</label>
+                <input type="number" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Quantité (Stock)</label>
+                <input type="number" class="form-control" [(ngModel)]="editProd.stock" name="editStock" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Image du Produit</label>
                 <input type="file" class="form-control" (change)="onFileSelected($event, 'edit')" accept="image/*">
-                <div class="image-preview mt-2" *ngIf="editProd.imageUrl">
-                  <img [src]="editProd.imageUrl" alt="Preview" class="img-thumbnail">
+                <div class="mt-2 text-center" *ngIf="editProd.imageUrl">
+                  <img [src]="editProd.imageUrl" alt="Preview" style="max-height: 150px; border-radius: var(--am-radius);">
                 </div>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 mt-2" data-bs-dismiss="modal">
-              <i class="bi bi-check-lg"></i> Sauvegarder
-            </button>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="!editForm.valid">
+                <i class="bi bi-check-lg"></i> Sauvegarder
+              </button>
+            </div>
           </form>
         </div>
       </div>
     </div>
+  </div>
   </div>
 </div>

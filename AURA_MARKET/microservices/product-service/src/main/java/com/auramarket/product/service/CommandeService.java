@@ -138,6 +138,12 @@ public class CommandeService {
                 .collect(Collectors.toList());
     }
 
+    public List<CommandeDTO> getAllCommandes() {
+        return commandeRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     private String generateReference(String prefix) {
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         int randomPart = random.nextInt(1000000);

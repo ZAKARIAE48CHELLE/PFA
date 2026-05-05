@@ -1,0 +1,168 @@
+<!-- ==========================================
+     AuraMarket — Homepage
+     ========================================== -->
+
+<!-- Hero Carousel -->
+<section class="hero-section">
+  <div class="hero-carousel">
+    <div class="hero-slide" *ngFor="let slide of heroSlides; let i = index" [class.active]="i === currentSlide"
+      [style.background]="slide.gradient">
+      <div class="container">
+        <div class="hero-content">
+          <i class="bi {{slide.icon}} hero-icon"></i>
+          <h1 class="hero-title">{{ slide.title }}</h1>
+          <p class="hero-subtitle">{{ slide.subtitle }}</p>
+          <a routerLink="/list-produit" class="btn btn-light btn-lg hero-cta">
+            {{ slide.cta }} <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Dots -->
+    <div class="hero-dots">
+      <button *ngFor="let slide of heroSlides; let i = index" class="hero-dot" [class.active]="i === currentSlide"
+        (click)="goToSlide(i)"></button>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Strip -->
+<section class="benefits-strip">
+  <div class="container">
+    <div class="benefits-row">
+      <div class="benefit-item">
+        <i class="bi bi-truck"></i>
+        <div>
+          <strong>Livraison Rapide</strong>
+          <span>Gratuite dès 500 €</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <i class="bi bi-shield-check"></i>
+        <div>
+          <strong>Paiement Sécurisé</strong>
+          <span>Transactions protégées</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <i class="bi bi-robot"></i>
+        <div>
+          <strong>IA de Négociation</strong>
+          <span>Meilleurs prix garantis</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <i class="bi bi-headset"></i>
+        <div>
+          <strong>Support 24/7</strong>
+          <span>Assistance en continu</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="section-categories">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="am-section-title"><i class="bi bi-grid-3x3-gap-fill"></i> Parcourir par Catégorie</h2>
+    </div>
+    <div class="category-grid">
+      <a *ngFor="let cat of categoryList" routerLink="/list-produit" [queryParams]="{category: cat.name}"
+        class="category-card">
+        <div class="category-icon" [style.background]="cat.color + '15'" [style.color]="cat.color">
+          <i class="bi {{cat.icon}}"></i>
+        </div>
+        <span class="category-name">{{ cat.name }}</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Flash Deals -->
+<section class="section-deals" *ngIf="flashDeals.length > 0">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="am-section-title"><i class="bi bi-stars"></i> Nos Meilleures Offres</h2>
+      <a routerLink="/list-produit" class="am-view-all">Voir tout <i class="bi bi-chevron-right"></i></a>
+    </div>
+
+    <div class="row g-3 mt-2">
+      <div class="col-6 col-md-3" *ngFor="let p of flashDeals">
+        <a [routerLink]="['/produits', p.id]" class="mp-product-card">
+          <div class="mp-img-wrapper">
+            <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
+            <i *ngIf="!p.imageUrl" class="bi bi-box-seam-fill mp-img-placeholder"></i>
+          </div>
+          <div class="mp-body">
+            <span class="mp-category">{{ p.categorie || 'Général' }}</span>
+            <h6 class="mp-title">{{ p.titre }}</h6>
+            <div class="mp-price-row">
+              <span class="mp-price">{{ p.prix }} €</span>
+            </div>
+            <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
+              {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}
+            </span>
+            <button class="mp-add-btn mt-2" (click)="$event.preventDefault(); addToCart(p)" [disabled]="p.stock === 0">
+              <i class="bi bi-cart-plus"></i> Ajouter
+            </button>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section-featured">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="am-section-title"><i class="bi bi-fire"></i> Produits Populaires</h2>
+      <a routerLink="/list-produit" class="am-view-all">Voir tout <i class="bi bi-chevron-right"></i></a>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-lg-3" *ngFor="let p of featuredProduits; let i = index">
+        <a [routerLink]="['/produits', p.id]" class="mp-product-card" [style.animation-delay]="(i*60)+'ms'">
+          <div class="mp-img-wrapper">
+            <button class="mp-wishlist-btn" (click)="$event.preventDefault()">
+              <i class="bi bi-heart"></i>
+            </button>
+            <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
+            <i *ngIf="!p.imageUrl" class="bi bi-box-seam-fill mp-img-placeholder"></i>
+          </div>
+          <div class="mp-body">
+            <span class="mp-category">{{ p.categorie || 'Général' }}</span>
+            <h6 class="mp-title">{{ p.titre }}</h6>
+            <div class="mp-price-row">
+              <span class="mp-price">{{ p.prix }} €</span>
+            </div>
+            <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
+              {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}
+            </span>
+            <button class="mp-add-btn mt-2" (click)="$event.preventDefault(); addToCart(p)" [disabled]="p.stock === 0">
+              <i class="bi bi-cart-plus"></i> Ajouter au panier
+            </button>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter / CTA -->
+<section class="section-newsletter">
+  <div class="container">
+    <div class="newsletter-card">
+      <div class="newsletter-content">
+        <i class="bi bi-envelope-paper-heart"></i>
+        <h3>Restez Informé des Meilleures Offres</h3>
+        <p>Inscrivez-vous à notre newsletter et recevez des offres exclusives</p>
+        <div class="newsletter-form">
+          <input type="email" class="form-control" placeholder="Votre adresse email...">
+          <button class="btn btn-accent">S'inscrire</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -13,7 +13,7 @@ export const authGuard = (route: any, state: any) => {
 };
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/list-produit', pathMatch: 'full' },
+  { path: '', loadComponent: () => import('./features/home/home').then(m => m.HomeComponent) },
   { path: 'login', loadComponent: () => import('./features/login/login').then(m => m.LoginComponent) },
   { path: 'signup', loadComponent: () => import('./features/signup/signup').then(m => m.SignupComponent) },
   {
@@ -58,5 +58,5 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/commandes/detail-commandes/detail-commande').then(m => m.DetailCommandeComponent)
   },
-  { path: '**', redirectTo: '/list-produit' }
+  { path: '**', redirectTo: '' }
 ];

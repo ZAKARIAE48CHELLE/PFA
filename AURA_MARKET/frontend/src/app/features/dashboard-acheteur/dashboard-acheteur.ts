@@ -99,7 +99,12 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
           .filter(m => m.sender === 'ACHETEUR')
           .map(m => m.price);
         
-        this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory).subscribe({
+        // 2. Get the real prixMin from the product database
+        const produit = this.getProduitForNego(this.selectedNego!.produitId);
+        const prixMin = produit?.prixMin || this.selectedNego!.prixInitial * 0.6;
+        console.log('[Dashboard] prixMin from product:', prixMin, '| produit:', produit?.titre);
+
+        this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory, prixMin).subscribe({
           next: (res) => {
             // 3. Save Agent Message
             const agentMsg: MessageNegociation = {

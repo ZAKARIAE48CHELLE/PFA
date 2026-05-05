@@ -114,6 +114,7 @@ public class AgentNegociation extends Agent {
         int    roundActuel      = toInt(input.get("roundActuel"));
         int    roundsMax        = toInt(input.get("roundsMax"));
         List<Number> historique = (List<Number>) input.get("historiqueOffres");
+        double epsilon = 0.05;
 
         System.out.println("\n[AgentNegociation] ══════════════════════════════════");
         System.out.println("[AgentNegociation] Round " + roundActuel + "/" + roundsMax);
@@ -121,8 +122,8 @@ public class AgentNegociation extends Agent {
                 + " | prixMin=" + prixMin + " | prixPropose=" + prixPropose);
 
         // ── GARDE 0 : Config invalide ─────────────────────────────────────────
-        if (prixMin >= prixActuel) {
-            System.err.println("[GUARD 0] prixMin >= prixActuel — config invalide");
+        if (prixMin <= 0 || prixMin >= prixActuel - epsilon) {
+            System.err.println("[GUARD 0b] prixMin invalide : " + prixMin);
             return build(negociationId, prixActuel, 0, "INVALID_CONFIG", "STABLE", roundActuel, true);
         }
 
@@ -139,10 +140,10 @@ public class AgentNegociation extends Agent {
         }
 
         // ── GARDE 3 : Sous le plancher ────────────────────────────────────────
-        double epsilon = 0.05;
         if (prixPropose < prixMin - epsilon) {
-            System.out.println("[GUARD 3] Sous plancher → contre-proposition prixMin=" + prixMin);
-            return build(negociationId, prixMin, prixActuel - prixMin, "AGGRESSIVE", "DECLINING", roundActuel, false);
+            System.out.println("[GUARD 3] Sous plancher → contre-proposition ferme prixMin=" + prixMin);
+            // On reste sur prixMin, on laisse l'acheteur continuer jusqu'à roundsMax
+            return build(negociationId, prixMin, prixActuel - prixMin, "AGGRESSIVE_BUYER", "DECLINING", roundActuel, (roundActuel >= roundsMax));
         }
 
         // ── GARDE 4 : Au plancher (avec epsilon) ──────────────────────────────
@@ -153,8 +154,8 @@ public class AgentNegociation extends Agent {
 
         // ── GARDE 4b : Marge résiduelle nulle ────────────────────────────────
         if (prixActuel - prixMin <= epsilon) {
-            System.out.println("[GUARD 4b] Marge résiduelle nulle → clôture");
-            return build(negociationId, prixMin, 0, "FLOOR_REACHED", "STABLE", roundActuel, true);
+            System.out.println("[GUARD 4b] Marge résiduelle nulle → attente acheteur sur prixMin=" + prixMin);
+            return build(negociationId, prixMin, 0, "FLOOR_REACHED", "STABLE", roundActuel, (roundActuel >= roundsMax));
         }
 
         // ── GARDE 5 : Acheteur au-dessus du prix actuel ──────────────────────
@@ -235,6 +236,7 @@ public class AgentNegociation extends Agent {
         if (candidat <= prixPropose) {
             System.out.println("[SELLER PROTECTION] candidat sous prixPropose → mi-chemin");
             candidat = (prixActuel + prixPropose) / 2.0;
+            candidat = Math.max(prixMin, candidat);
         }
 
         // ── ÉTAPE 7 : Clamp absolu ────────────────────────────────────────────

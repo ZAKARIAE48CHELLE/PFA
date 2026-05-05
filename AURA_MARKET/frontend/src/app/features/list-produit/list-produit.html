@@ -1,75 +1,166 @@
-<!-- List Produit — Marketplace Catalog -->
-<div class="buyer-wrapper animate-fade-in-up">
-  <!-- Page Header -->
-  <div class="buyer-header">
-    <div>
-      <h1 class="buyer-title">
-        <i class="bi bi-shop"></i>
-        Catalogue <span class="am-gradient-text">Marketplace</span>
-      </h1>
-      <p class="buyer-subtitle">Découvrez nos meilleurs produits et trouvez votre bonheur.</p>
-    </div>
-    <div class="buyer-header-stats">
-      <div class="stat-chip">
-        <i class="bi bi-box-seam"></i>
-        <span>{{ produits.length }} produit{{ produits.length > 1 ? 's' : '' }}</span>
-      </div>
-    </div>
-  </div>
+<!-- ==========================================
+     Catalog Page — Filters + Product Grid
+     ========================================== -->
+<div class="catalog-wrapper">
+  <div class="container-fluid px-4">
 
-  <div class="row g-4">
-    <!-- Product Grid -->
-    <div class="col-12">
-      <div class="row g-4">
-        <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let p of produits; let i = index">
-          <div class="product-card am-card" [style.animation-delay]="(i * 0.08) + 's'">
-            <div class="product-image">
-              <div class="product-category-badge">
-                <i class="bi bi-tag-fill"></i> {{ p.categorie || 'Général' }}
-              </div>
-              <img *ngIf="p.imageUrl" [src]="p.imageUrl" class="product-img-actual" [alt]="p.titre">
-              <div *ngIf="!p.imageUrl" class="product-icon">
-                <i class="bi bi-box-seam-fill"></i>
-              </div>
+    <!-- Breadcrumb -->
+    <nav class="catalog-breadcrumb">
+      <a routerLink="/">Accueil</a>
+      <i class="bi bi-chevron-right"></i>
+      <span>Catalogue</span>
+    </nav>
+
+    <div class="row g-4">
+
+      <!-- ===== SIDEBAR FILTERS ===== -->
+      <aside class="col-lg-3 col-md-4">
+        <div class="filter-panel">
+          <div class="filter-header">
+            <h5><i class="bi bi-funnel"></i> Filtres</h5>
+            <button class="filter-reset" (click)="resetFilters()" *ngIf="activeFilterCount > 0">
+              <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="filter-group">
+            <label class="filter-label">Rechercher</label>
+            <div class="filter-search">
+              <i class="bi bi-search"></i>
+              <input type="text" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Nom, marque..."
+                class="form-control form-control-sm">
             </div>
+          </div>
 
-            <div class="product-body">
-              <h5 class="product-name text-truncate" [title]="p.titre">{{ p.titre }}</h5>
-              <p class="product-desc">{{ p.description || 'Aucune description disponible.' }}</p>
+          <!-- Categories -->
+          <div class="filter-group">
+            <label class="filter-label">Catégories</label>
+            <div class="filter-checkboxes">
+              <label *ngFor="let cat of categories" class="filter-checkbox">
+                <input type="checkbox" [checked]="selectedCategories.has(cat)" (change)="toggleCategory(cat)">
+                <span class="checkmark"></span>
+                <span class="filter-checkbox-label">{{ cat }}</span>
+                <!-- count omitted for simplicity -->
+              </label>
+            </div>
+          </div>
 
-              <div class="product-price-row">
-                <div class="product-price">
-                  <span class="price-label">Prix</span>
-                  <span class="price-value">{{ p.prix }} €</span>
+          <!-- Price Range -->
+          <div class="filter-group">
+            <label class="filter-label">Prix ( €)</label>
+            <div class="filter-price-range">
+              <input type="number" [(ngModel)]="priceMin" (input)="applyFilters()" class="form-control form-control-sm"
+                placeholder="Min">
+              <span class="price-separator">—</span>
+              <input type="number" [(ngModel)]="priceMax" (input)="applyFilters()" class="form-control form-control-sm"
+                placeholder="Max">
+            </div>
+          </div>
+
+          <!-- Stock -->
+          <div class="filter-group">
+            <label class="filter-toggle">
+              <input type="checkbox" [(ngModel)]="inStockOnly" (change)="applyFilters()">
+              <span class="toggle-slider"></span>
+              <span>En stock uniquement</span>
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ===== PRODUCT GRID ===== -->
+      <div class="col-lg-9 col-md-8">
+
+        <!-- Toolbar -->
+        <div class="catalog-toolbar">
+          <div class="toolbar-info">
+            <span class="results-count">
+              <strong>{{ produits.length }}</strong> produit{{ produits.length > 1 ? 's' : '' }} trouvé{{
+              produits.length > 1 ? 's' : '' }}
+            </span>
+          </div>
+          <div class="toolbar-actions">
+            <select [(ngModel)]="sortBy" (change)="applyFilters()" class="form-select form-select-sm sort-select">
+              <option value="default">Trier par : Pertinence</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="name-asc">Nom A → Z</option>
+              <option value="newest">Plus récent</option>
+            </select>
+            <div class="view-toggle">
+              <button [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+              </button>
+              <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
+                <i class="bi bi-list-ul"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Filters -->
+        <div class="active-filters" *ngIf="activeFilterCount > 0">
+          <span class="active-filter-chip" *ngIf="searchQuery.trim()">
+            <i class="bi bi-search"></i> « {{ searchQuery }} »
+            <button (click)="searchQuery = ''; applyFilters()"><i class="bi bi-x"></i></button>
+          </span>
+          <span class="active-filter-chip" *ngFor="let cat of selectedCategories">
+            {{ cat }}
+            <button (click)="toggleCategory(cat)"><i class="bi bi-x"></i></button>
+          </span>
+          <span class="active-filter-chip" *ngIf="inStockOnly">
+            En stock
+            <button (click)="inStockOnly = false; applyFilters()"><i class="bi bi-x"></i></button>
+          </span>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" [class.list-view]="viewMode === 'list'">
+          <div *ngFor="let p of produits | paginate: { id: 'catalog-pagination', itemsPerPage: 12, currentPage: page }; let i = index"
+               class="product-grid-item"
+            [style.animation-delay]="(i * 40) + 'ms'">
+            <a [routerLink]="['/produits', p.id]" class="mp-product-card">
+              <div class="mp-img-wrapper">
+                <button class="mp-wishlist-btn" (click)="$event.preventDefault()">
+                  <i class="bi bi-heart"></i>
+                </button>
+                <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
+                <i *ngIf="!p.imageUrl" class="bi bi-box-seam-fill mp-img-placeholder"></i>
+              </div>
+              <div class="mp-body">
+                <span class="mp-category">{{ p.categorie || 'Général' }}</span>
+                <h6 class="mp-title">{{ p.titre }}</h6>
+                <p class="mp-desc" *ngIf="viewMode === 'list'">{{ p.description }}</p>
+                <div class="mp-price-row">
+                  <span class="mp-price">{{ p.prix }} €</span>
                 </div>
-                <div class="product-stock" *ngIf="p.stock !== undefined">
+                <div class="mp-stock-info">
                   <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
                     {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}
                   </span>
                 </div>
-              </div>
-
-              <div class="product-actions mt-3">
-                <button class="btn btn-primary btn-sm w-100 mb-2" (click)="addToCart(p)" [disabled]="p.stock === 0">
+                <button class="mp-add-btn" (click)="$event.preventDefault(); addToCart(p)" [disabled]="p.stock === 0">
                   <i class="bi bi-cart-plus"></i> Ajouter au panier
                 </button>
-                <a [routerLink]="['/produits', p.id]" class="btn btn-outline-primary btn-sm w-100">
-                  <i class="bi bi-eye"></i> Voir Détails
-                </a>
               </div>
-            </div>
+            </a>
           </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4" *ngIf="produits.length > 12">
+          <pagination-controls id="catalog-pagination" (pageChange)="page = $event" previousLabel="Précédent" nextLabel="Suivant"></pagination-controls>
         </div>
 
         <!-- Empty State -->
-        <div class="col-12" *ngIf="produits.length === 0">
-          <div class="empty-state">
-            <i class="bi bi-inbox"></i>
-            <h4>Aucun produit disponible</h4>
-            <p>Le catalogue est vide pour le moment. Revenez plus tard !</p>
-          </div>
+        <div class="empty-state" *ngIf="produits.length === 0">
+          <i class="bi bi-search"></i>
+          <h4>Aucun produit trouvé</h4>
+          <p>Essayez d'ajuster vos filtres ou votre recherche.</p>
+          <button class="btn btn-outline-primary btn-sm" (click)="resetFilters()">Réinitialiser les filtres</button>
         </div>
       </div>
+
     </div>
   </div>
 </div>

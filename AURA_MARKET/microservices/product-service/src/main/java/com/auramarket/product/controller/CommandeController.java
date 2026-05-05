@@ -64,4 +64,9 @@ public class CommandeController {
     public ResponseEntity<List<CommandeDTO>> getCommandesByVendeur(@PathVariable UUID vendeurId) {
         return ResponseEntity.ok(commandeService.getCommandesByVendeur(vendeurId));
     }
+
+    @GetMapping("/commandes")
+    public ResponseEntity<List<CommandeDTO>> getAllCommandes() {
+        return ResponseEntity.ok(commandeService.getAllCommandes());
+    }
 }

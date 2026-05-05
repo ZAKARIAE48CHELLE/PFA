@@ -1,5 +1,6 @@
-<!-- Supervisor Dashboard — Audit Log -->
+<!-- Supervisor Dashboard — Command Center -->
 <div class="supervisor-wrapper animate-fade-in-up">
+  <div class="container">
   <!-- Page Header -->
   <div class="supervisor-header">
     <div>
@@ -7,22 +8,44 @@
         <i class="bi bi-shield-check"></i>
         Tableau de Bord <span class="am-gradient-text">Superviseur</span>
       </h1>
-      <p class="supervisor-subtitle">Journal d'audit du système multi-agents AuraMarket</p>
+      <p class="supervisor-subtitle">Centre de commandement et journal d'audit du système multi-agents AuraMarket</p>
     </div>
-    <div class="supervisor-header-stats">
-      <div class="stat-chip">
-        <i class="bi bi-journal-text"></i>
-        <span>{{ audits.length }} entrée{{ audits.length > 1 ? 's' : '' }}</span>
-      </div>
-      <div class="stat-chip" *ngIf="criticalCount > 0">
-        <i class="bi bi-exclamation-triangle-fill" style="color: var(--am-danger)"></i>
-        <span>{{ criticalCount }} critique{{ criticalCount > 1 ? 's' : '' }}</span>
-      </div>
+    <div class="supervisor-header-actions">
+      <button class="btn btn-primary" (click)="refreshData()">
+        <i class="bi bi-arrow-clockwise"></i> Actualiser les données
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard Tabs -->
+  <ul class="nav nav-tabs am-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'" style="cursor: pointer;">
+        <i class="bi bi-grid-1x2"></i> Vue d'ensemble
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'audit'" (click)="activeTab = 'audit'" style="cursor: pointer;">
+        <i class="bi bi-list-check"></i> Journal d'Audit
+      </a>
+    </li>
+  </ul>
+
+  <!-- TAB: OVERVIEW -->
+  <div *ngIf="activeTab === 'overview'" class="animate-fade-in-up">
+    <!-- System Health Banner -->
+    <div class="health-banner" [class.healthy]="criticalCount === 0" [class.critical]="criticalCount > 0">
+    <div class="health-icon">
+      <i class="bi" [class.bi-check-circle-fill]="criticalCount === 0" [class.bi-exclamation-triangle-fill]="criticalCount > 0"></i>
+    </div>
+    <div class="health-content">
+      <h4 class="m-0">{{ criticalCount === 0 ? 'Système Stable' : 'Attention Requise' }}</h4>
+      <p class="m-0">{{ criticalCount === 0 ? 'Tous les agents fonctionnent normalement. Aucun problème critique détecté.' : 'Des événements critiques ont été détectés dans le journal d\'audit.' }}</p>
     </div>
   </div>
 
   <!-- Summary Cards -->
-  <div class="row g-3 mb-4">
+  <div class="row g-3 mb-4 mt-1">
     <div class="col-sm-6 col-lg-3">
       <div class="summary-card am-card">
         <div class="summary-icon info">
@@ -58,24 +81,52 @@
     </div>
     <div class="col-sm-6 col-lg-3">
       <div class="summary-card am-card">
-        <div class="summary-icon total">
-          <i class="bi bi-layers-fill"></i>
+        <div class="summary-icon total" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+          <i class="bi bi-currency-euro"></i>
         </div>
         <div class="summary-data">
-          <span class="summary-value">{{ audits.length }}</span>
-          <span class="summary-label">Total</span>
+          <span class="summary-value">{{ totalSales | number:'1.0-0' }}</span>
+          <span class="summary-label">Revenus Totaux (MAD)</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Audit Table -->
-  <div class="audit-table-card am-card">
+  <!-- Charts Row -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-pie-chart-fill"></i> Audits par Sévérité</h5>
+        <div class="chart-container doughnut-container">
+          <canvas baseChart [data]="severityChartData" [options]="severityChartOptions" type="doughnut"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-bar-chart-fill"></i> Activité par Agent</h5>
+        <div class="chart-container bar-container">
+          <canvas baseChart [data]="agentChartData" [options]="agentChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="am-card chart-card">
+        <h5 class="chart-title"><i class="bi bi-trophy-fill" style="color: #f59e0b;"></i> Top Vendeurs (Revenus)</h5>
+        <div class="chart-container bar-container">
+          <canvas baseChart [data]="topSellersChartData" [options]="topSellersChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- END TAB OVERVIEW -->
+
+  <!-- TAB: AUDIT -->
+  <div *ngIf="activeTab === 'audit'" class="animate-fade-in-up">
+    <!-- Audit Table -->
+    <div class="audit-table-card am-card">
     <div class="audit-table-header">
-      <h4><i class="bi bi-table"></i> Journal d'Audit</h4>
-      <button class="btn btn-outline-primary btn-sm" (click)="refreshAudits()">
-        <i class="bi bi-arrow-clockwise"></i> Actualiser
-      </button>
+      <h4><i class="bi bi-table"></i> Journal d'Audit Détaillé</h4>
     </div>
 
     <div class="table-responsive">
@@ -89,7 +140,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let a of audits">
+          <tr *ngFor="let a of audits | paginate: { id: 'supervisor-audit-pag', itemsPerPage: 10, currentPage: p }">
             <td>
               <div class="agent-cell">
                 <div class="agent-cell-icon">
@@ -121,13 +172,20 @@
           <tr *ngIf="audits.length === 0">
             <td colspan="4">
               <div class="table-empty">
-                <i class="bi bi-journal-x"></i>
-                <p>Aucun audit enregistré dans le système.</p>
+                <i class="bi bi-shield-slash"></i>
+                <p>Aucun journal d'audit disponible.</p>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="d-flex justify-content-center mt-3" *ngIf="audits.length > 10">
+      <pagination-controls id="supervisor-audit-pag" (pageChange)="p = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
+    </div>
+  </div>
+  </div> <!-- END TAB AUDIT -->
+
   </div>
 </div>

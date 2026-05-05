@@ -1,52 +1,84 @@
-<!-- Marketplace Header -->
+<!-- ==========================================
+     AuraMarket — App Shell (Header + Footer)
+     ========================================== -->
+
+<!-- Top Utility Bar -->
+<div class="am-topbar">
+  <div class="container-fluid px-4">
+    <div class="topbar-inner">
+      <span><i class="bi bi-truck"></i> Livraison gratuite dès 500 €</span>
+      <div class="topbar-right">
+        <a href="#"><i class="bi bi-question-circle"></i> Aide</a>
+        <span class="topbar-divider">|</span>
+        <a href="#"><i class="bi bi-geo-alt"></i> Maroc</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Header -->
 <header class="am-header">
   <div class="container-fluid px-4">
     <nav class="am-nav">
       <!-- Logo -->
-      <a class="am-logo" routerLink="/acheteur">
+      <a class="am-logo" routerLink="/">
         <i class="bi bi-lightning-charge-fill"></i>
         <span>Aura<strong>Market</strong></span>
       </a>
 
-      <!-- Center Nav (Role indicator / Links) -->
-      <div class="am-nav-center d-none d-md-flex">
-        <a routerLink="/acheteur" class="am-nav-link" routerLinkActive="active">Catalogue</a>
-        <a routerLink="/dashboard" class="am-nav-link" routerLinkActive="active"
-          *ngIf="authService.currentUserValue?.role === 'ACHETEUR'">Mes Négociations</a>
-        <a routerLink="/commandes" class="am-nav-link" routerLinkActive="active"
-          *ngIf="authService.currentUserValue?.role === 'ACHETEUR'">Mes Commandes</a>
-        
-        <a routerLink="/vendeur" class="am-nav-link" routerLinkActive="active"
-          *ngIf="authService.currentUserValue?.role === 'VENDEUR'">Espace Vendeur</a>
-        
-        <a routerLink="/superviseur" class="am-nav-link" routerLinkActive="active"
-          *ngIf="authService.currentUserValue?.role === 'SUPERVISEUR'">Supervision</a>
-
-        <span class="am-nav-role" *ngIf="authService.currentUserValue">
-          <i class="bi bi-person-circle"></i>
-          {{ getRoleLabel() }}
-        </span>
+      <!-- Search Bar (center) -->
+      <div class="am-search-bar d-none d-md-flex">
+        <input type="text" class="am-search-input" placeholder="Rechercher un produit, une marque..."
+          [(ngModel)]="searchQuery" (keydown.enter)="onSearch()" />
+        <button class="am-search-btn" (click)="onSearch()">
+          <i class="bi bi-search"></i>
+        </button>
       </div>
 
       <!-- Right Actions -->
       <div class="am-nav-actions">
-        <!-- Cart is visible to everyone -->
-        <a routerLink="/cart" class="am-nav-cart">
+        <!-- Cart -->
+        <a routerLink="/cart" class="am-nav-icon-btn" title="Panier">
           <i class="bi bi-cart3"></i>
           <span class="am-cart-badge" *ngIf="cartService.getItemCount > 0">{{ cartService.getItemCount }}</span>
         </a>
 
-        <!-- User Info / Login -->
+        <!-- Account -->
         <ng-container *ngIf="authService.currentUserValue; else guestActions">
-          <button class="am-btn-logout" (click)="logout()">
-            <i class="bi bi-box-arrow-right"></i>
-            <span class="d-none d-sm-inline">Déconnexion</span>
-          </button>
+          <div class="am-user-menu">
+            <button class="am-nav-icon-btn" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end am-dropdown">
+              <li class="dropdown-header">
+                <strong>Mon Compte</strong>
+                <span class="am-badge am-badge-primary">{{ getRoleLabel() }}</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" routerLink="/commandes"><i class="bi bi-bag"></i> Mes Commandes</a></li>
+              <li *ngIf="authService.currentUserValue.role === 'ACHETEUR'">
+                <a class="dropdown-item" routerLink="/dashboard"><i class="bi bi-chat-dots"></i> Mes Négociations</a>
+              </li>
+              <li *ngIf="authService.currentUserValue.role === 'VENDEUR'">
+                <a class="dropdown-item" routerLink="/vendeur"><i class="bi bi-shop-window"></i> Espace Vendeur</a>
+              </li>
+              <li *ngIf="authService.currentUserValue.role === 'SUPERVISEUR'">
+                <a class="dropdown-item" routerLink="/superviseur"><i class="bi bi-shield-check"></i> Supervision</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger" (click)="logout()" style="cursor:pointer"><i
+                    class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+            </ul>
+          </div>
         </ng-container>
 
         <ng-template #guestActions>
-          <a routerLink="/login" class="btn btn-primary btn-sm px-4">
-            <i class="bi bi-person-fill"></i> Se connecter
+          <a routerLink="/login" class="btn btn-primary btn-sm am-login-btn">
+            <i class="bi bi-person-fill"></i> <span class="d-none d-sm-inline">Connexion</span>
           </a>
         </ng-template>
       </div>
@@ -54,9 +86,104 @@
   </div>
 </header>
 
-<!-- Main Content -->
-<main class="am-main-authenticated">
+<!-- Category Bar -->
+<nav class="am-category-bar d-none d-md-block">
   <div class="container-fluid px-4">
-    <router-outlet></router-outlet>
+    <div class="category-bar-inner">
+      <a routerLink="/" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="bi bi-house-door"></i> Accueil
+      </a>
+      <a routerLink="/list-produit" class="cat-link" [class.active]="router.url.includes('/list-produit') && !router.url.includes('category=')">
+        <i class="bi bi-grid-3x3-gap"></i> Catalogue
+      </a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Électronique'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Électronique</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Mode'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mode</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Maison'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Maison & Jardin</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Sport'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sport</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Beauté'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Beauté</a>
+
+      <a *ngIf="authService.currentUserValue?.role === 'VENDEUR'" routerLink="/vendeur"
+        class="cat-link cat-link-special" routerLinkActive="active">
+        <i class="bi bi-shop-window"></i> Espace Vendeur
+      </a>
+      <a *ngIf="authService.currentUserValue?.role === 'SUPERVISEUR'" routerLink="/superviseur"
+        class="cat-link cat-link-special" routerLinkActive="active">
+        <i class="bi bi-shield-check"></i> Supervision
+      </a>
+    </div>
   </div>
+</nav>
+
+<!-- Main Content -->
+<main class="am-main">
+  <router-outlet></router-outlet>
 </main>
+
+<!-- Footer -->
+<footer class="am-footer">
+  <div class="container">
+    <div class="row g-4">
+      <!-- About -->
+      <div class="col-lg-4 col-md-6">
+        <div class="footer-brand">
+          <i class="bi bi-lightning-charge-fill"></i>
+          <span>Aura<strong>Market</strong></span>
+        </div>
+        <p class="footer-desc">
+          La marketplace intelligente pilotée par des agents IA pour vous offrir les meilleurs prix et une expérience
+          d'achat unique.
+        </p>
+        <div class="footer-socials">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-twitter-x"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="footer-title">Navigation</h6>
+        <ul class="footer-links">
+          <li><a routerLink="/">Accueil</a></li>
+          <li><a routerLink="/list-produit">Catalogue</a></li>
+          <li><a routerLink="/cart">Panier</a></li>
+          <li><a routerLink="/commandes">Commandes</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="col-lg-2 col-md-6 col-6">
+        <h6 class="footer-title">Service Client</h6>
+        <ul class="footer-links">
+          <li><a href="#">Centre d'aide</a></li>
+          <li><a href="#">Livraison</a></li>
+          <li><a href="#">Retours</a></li>
+          <li><a href="#">Nous contacter</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-lg-4 col-md-6">
+        <h6 class="footer-title">Contact</h6>
+        <ul class="footer-contact">
+          <li><i class="bi bi-geo-alt"></i> EMSI, Casablanca, Maroc</li>
+          <li><i class="bi bi-envelope"></i> contact&#64;auramarket.ma</li>
+          <li><i class="bi bi-telephone"></i> +212 5XX-XXXXXX</li>
+        </ul>
+        <div class="footer-payment mt-3">
+          <span class="payment-label">Paiements acceptés :</span>
+          <div class="payment-icons">
+            <i class="bi bi-credit-card-2-front"></i>
+            <i class="bi bi-paypal"></i>
+            <i class="bi bi-cash-stack"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 AuraMarket — Projet PFA EMSI. Tous droits réservés.</p>
+    </div>
+  </div>
+</footer>

@@ -74,11 +74,25 @@ public class AgentRestBridge {
     public ResponseEntity<?> ajusterNego(@RequestBody Map<String, Object> request) {
         String negoId = (String) request.get("negociationId");
         
+        // --- VALIDATION & LOGGING prixMin ---
+        Object pMin = request.get("prixMin");
+        double prixMin = (pMin instanceof Number) ? ((Number) pMin).doubleValue() : 0.0;
+        double pActuel = (request.get("prixActuel") instanceof Number) ? ((Number) request.get("prixActuel")).doubleValue() : 0.0;
+        
+        System.out.println("[Bridge] Nego " + negoId + " | prixMin source: " + prixMin);
+        
+        if (prixMin <= 0 || (pActuel > 0 && prixMin >= pActuel)) {
+            System.err.println("[Bridge WARNING] prixMin invalide (" + prixMin + ") pour prixActuel (" + pActuel + ")");
+            // On peut rejeter ici ou laisser l'agent gérer avec sa garde. 
+            // On choisit de logger et laisser l'agent renvoyer INVALID_CONFIG pour une trace claire.
+        }
+        
         // FIX 4: Override prixActuel if we have a tracked price for this negotiation
         if (negoId != null && prixActuelMap.containsKey(negoId)) {
             double lastPrice = prixActuelMap.get(negoId);
             System.out.println("[Bridge] Overriding prixActuel for " + negoId + ": " + lastPrice);
             request.put("prixActuel", lastPrice);
+            pActuel = lastPrice; // sync for local check
         }
 
         ResponseEntity<?> response = contactAgent("AgentNegociation", ACLMessage.PROPOSE, request);

@@ -101,4 +101,12 @@ export class ProductService {
   getCommandesByAcheteur(acheteurId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/commandes/acheteur/${acheteurId}`, { headers: this.getHeaders() });
   }
+
+  getCommandesByVendeur(vendeurId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/commandes/vendeur/${vendeurId}`, { headers: this.getHeaders() });
+  }
+
+  getAllCommandes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/commandes`, { headers: this.getHeaders() });
+  }
 }

@@ -1,183 +1,85 @@
-/* ============================================
-   Seller Dashboard — Product Management
-   ============================================ */
+/* Seller Dashboard CSS */
+.seller-wrapper { padding: 2rem 0; }
 
-:host {
-  display: block;
-}
-
-.seller-wrapper {
-  padding-bottom: 2rem;
-}
-
-/* ---------- Header ---------- */
 .seller-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: center;
   margin-bottom: 2rem;
 }
-
 .seller-title {
   font-family: 'Outfit', sans-serif;
   font-size: 1.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  margin-bottom: 0.25rem;
-}
-
-.seller-title i {
-  color: var(--am-accent);
-}
-
-.seller-subtitle {
-  color: var(--am-text-secondary);
-  font-size: 0.9375rem;
-  margin: 0;
-}
-
-/* ---------- Table Card ---------- */
-.seller-table-card {
-  overflow: hidden;
-}
-
-.seller-table-card:hover {
-  transform: none;
-}
-
-.seller-table-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--am-border-light);
-}
-
-.seller-table-header h4 {
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.0625rem;
-  margin: 0;
 }
+.seller-title i { color: var(--am-primary); }
+.seller-subtitle { color: var(--am-text-muted); margin: 0; }
 
-.seller-table-header h4 i {
-  color: var(--am-primary);
-}
-
-/* Product cell */
-.product-cell {
+/* Summary Cards (Shared with Supervisor) */
+.summary-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 1.5rem;
+  height: 100%;
 }
-
-.product-cell-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--am-radius);
-  background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+.summary-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--am-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--am-primary);
-  font-size: 1.125rem;
-  flex-shrink: 0;
+  font-size: 1.5rem;
 }
+.summary-icon.info { background: rgba(59, 130, 246, 0.15); color: var(--am-info); }
+.summary-icon.warning { background: rgba(245, 158, 11, 0.15); color: var(--am-warning); }
+.summary-icon.critical { background: rgba(239, 68, 68, 0.15); color: var(--am-danger); }
+.summary-icon.total { background: rgba(99, 102, 241, 0.15); color: var(--am-primary); }
+.summary-data { display: flex; flex-direction: column; }
+.summary-value { font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 700; line-height: 1.2; color: var(--am-text); }
+.summary-label { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--am-text-muted); }
 
-.product-cell strong {
-  display: block;
-  font-size: 0.9375rem;
-  color: var(--am-text);
+/* Charts */
+.chart-card { padding: 1.5rem; height: 100%; }
+.chart-title { font-family: 'Outfit', sans-serif; font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.chart-title i { color: var(--am-primary-light); }
+.chart-container { position: relative; width: 100%; }
+.doughnut-container { height: 260px; }
+.bar-container { height: 260px; }
+
+/* Table */
+.seller-table-card { padding: 1.5rem; }
+.seller-table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.seller-table-header h4 { font-family: 'Outfit', sans-serif; font-size: 1.125rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+.seller-table-header h4 i { color: var(--am-primary); }
+
+.product-cell { display: flex; align-items: center; gap: 0.75rem; }
+.product-cell-img { 
+  width: 48px; 
+  height: 48px; 
+  border-radius: var(--am-radius-sm); 
+  background: var(--am-surface-alt); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  overflow: hidden;
 }
+.product-cell-img img { width: 100%; height: 100%; object-fit: cover; }
+.product-cell-img i { font-size: 1.5rem; color: var(--am-text-muted); }
+.product-cell-cat { display: block; font-size: 0.75rem; color: var(--am-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
-.product-cell-cat {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--am-text-muted);
-  margin-top: 0.125rem;
-}
+.action-buttons { display: flex; gap: 0.5rem; }
+.table-empty { text-align: center; padding: 3rem 1rem; color: var(--am-text-muted); }
+.table-empty i { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; opacity: 0.5; }
 
-.price-cell {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--am-text);
-}
+/* Modals */
+.modal-content.am-card { padding: 0; overflow: hidden; }
 
-/* Table empty state */
-.table-empty {
-  text-align: center;
-  padding: 3rem 2rem;
-  color: var(--am-text-muted);
-}
-
-.table-empty i {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 0.75rem;
-  opacity: 0.4;
-}
-
-.table-empty p {
-  margin: 0;
-  font-size: 0.9375rem;
-}
-
-/* ---------- Action Buttons ---------- */
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-/* ---------- Modal ---------- */
-.seller-modal {
-  border: none;
-  border-radius: var(--am-radius-lg);
-  box-shadow: var(--am-shadow-xl);
-}
-
-.seller-modal .modal-header {
-  border-bottom: 1px solid var(--am-border-light);
-  padding: 1.25rem 1.5rem;
-}
-
-.seller-modal .modal-title {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.seller-modal .modal-title i {
-  color: var(--am-primary);
-}
-
-.seller-modal .modal-body {
-  padding: 1.5rem;
-}
-
-.image-preview img {
-  max-height: 200px;
-  width: auto;
-  display: block;
-  margin: 0 auto;
-  border-radius: var(--am-radius-md);
-  box-shadow: var(--am-shadow-sm);
-}
-
-.image-upload-wrapper .form-control {
-  border: 2px dashed var(--am-primary-light);
-  padding: 0.5rem;
-  background: rgba(99, 102, 241, 0.05);
-}
-
-.image-upload-wrapper .form-control:focus {
-  border-color: var(--am-primary);
-  background: white;
+@media (max-width: 768px) {
+  .seller-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }

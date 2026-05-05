@@ -54,16 +54,17 @@ export class NegotiationService {
     return this.http.post<MessageNegociation>(`${this.apiUrl}/messages`, message, { headers: this.getHeaders() });
   }
 
-  ajusterNegociation(nego: Negociation, prixPropose: number, history: number[]): Observable<any> {
+  ajusterNegociation(nego: Negociation, prixPropose: number, history: number[], prixMin: number): Observable<any> {
     const payload = {
       negociationId: nego.id,
-      prixActuel: nego.prixFinal, // This should be the current seller price
-      prixMin: (nego.prixInitial || nego.prixFinal) * 0.6, // Floor at 60% of original price
+      prixActuel: nego.prixFinal,
+      prixMin: prixMin, // Real prixMin from the product database
       prixPropose: prixPropose,
-      roundActuel: (nego.rounds || 0) + 1, // We are asking for the NEXT round's response
-      roundsMax: 5, // Hard cap at 5 rounds for quick negotiations
+      roundActuel: (nego.rounds || 0) + 1,
+      roundsMax: 5,
       historiqueOffres: history
     };
+    console.log('[NegotiationService] Payload envoyé:', JSON.stringify(payload));
     return this.http.post<any>(`${API_CONFIG.baseUrl}/agent/nego/ajuster`, payload, { headers: this.getHeaders() });
   }
 
