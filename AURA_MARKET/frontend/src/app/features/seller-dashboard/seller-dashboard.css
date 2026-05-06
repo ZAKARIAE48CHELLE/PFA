@@ -145,3 +145,16 @@
 .border-accent {
   border: 1px solid var(--am-accent-light) !important;
 }
+
+.price-cell {
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+.product-cell strong {
+  display: block;
+  max-width: 450px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}

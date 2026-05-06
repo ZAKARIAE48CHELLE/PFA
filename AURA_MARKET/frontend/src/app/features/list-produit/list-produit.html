@@ -137,11 +137,11 @@
                 <p class="mp-desc" *ngIf="viewMode === 'list'">{{ p.description }}</p>
                 <div class="mp-price-row">
                   <ng-container *ngIf="p.prixOffre; else normalPrice">
-                    <span class="mp-price text-danger fw-bold">{{ p.prixOffre }} €</span>
-                    <span class="text-muted text-decoration-line-through ms-2 small">{{ p.prix }} €</span>
+                    <span class="mp-price text-danger fw-bold">{{ p.prixOffre | number:'1.2-2' }} MAD</span>
+                    <span class="text-muted text-decoration-line-through ms-2 small">{{ p.prix | number:'1.2-2' }} MAD</span>
                   </ng-container>
                   <ng-template #normalPrice>
-                    <span class="mp-price">{{ p.prix }} €</span>
+                    <span class="mp-price">{{ p.prix | number:'1.2-2' }} MAD</span>
                   </ng-template>
                 </div>
                 <div class="mp-stock-info">

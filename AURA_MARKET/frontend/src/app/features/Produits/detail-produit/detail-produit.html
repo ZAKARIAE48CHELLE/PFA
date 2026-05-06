@@ -47,8 +47,8 @@
       <div class="price-section animate-slide-in-right" style="animation-delay: 100ms;">
         <ng-container *ngIf="activeOffer; else normalPrice">
           <div class="price-row">
-            <span class="current-price text-danger">{{ activeOffer.prixPropose | number:'1.2-2' }} €</span>
-            <span class="original-price">{{ produit.prix | number:'1.2-2' }} €</span>
+            <span class="current-price text-danger">{{ activeOffer.prixPropose | number:'1.2-2' }} MAD</span>
+            <span class="original-price">{{ produit.prix | number:'1.2-2' }} MAD</span>
           </div>
           <div class="offer-validity mt-2 p-2 bg-white rounded border-start border-danger border-4 shadow-sm">
             <small class="text-muted d-block"><i class="bi bi-calendar-check"></i> Promotion valable du {{ activeOffer.dateDebut | date:'dd/MM/yyyy HH:mm' }} au {{ (activeOffer.dateFin | date:'dd/MM/yyyy HH:mm') || 'épuisement des stocks' }}</small>
@@ -56,7 +56,7 @@
         </ng-container>
         <ng-template #normalPrice>
           <div class="price-row">
-            <span class="current-price">{{ produit.prix | number:'1.2-2' }} €</span>
+            <span class="current-price">{{ produit.prix | number:'1.2-2' }} MAD</span>
           </div>
         </ng-template>
 

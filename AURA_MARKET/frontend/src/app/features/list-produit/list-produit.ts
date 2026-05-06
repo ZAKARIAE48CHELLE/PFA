@@ -6,6 +6,8 @@ import { CartService } from '../../core/services/cart.service';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 
+import { forkJoin } from 'rxjs';
+
 @Component({
   selector: 'app-list-produit',
   standalone: true,
@@ -36,23 +38,38 @@ export class ListProduitComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   ngOnInit() {
-    this.productService.getProduits().subscribe(p => {
-      this.allProduits = p;
-      this.categories = [...new Set(p.map(pr => pr.categorie).filter(Boolean))];
+    this.route.queryParams.subscribe(params => {
+      const category = params['category'];
+      if (category) {
+        this.selectedCategories.clear();
+        this.selectedCategories.add(category);
+      } else {
+        this.selectedCategories.clear();
+      }
+      
+      if (params['search']) {
+        this.searchQuery = params['search'];
+      } else {
+        this.searchQuery = '';
+      }
 
-      // Check for query params (category from nav, search from header)
-      this.route.queryParams.subscribe(params => {
-        if (params['category']) {
-          this.selectedCategories.clear();
-          this.selectedCategories.add(params['category']);
-        }
-        if (params['search']) {
-          this.searchQuery = params['search'];
-        }
+      forkJoin({
+        produits: this.productService.getProduits(category),
+        offres: this.productService.getOffres()
+      }).subscribe(({ produits, offres }) => {
+        this.offres = offres;
+        this.allProduits = produits.map(p => {
+          if (p.id) {
+            const activeOffer = this.getActiveOffer(p.id);
+            p.prixOffre = activeOffer ? activeOffer.prixFinal : undefined;
+          }
+          return p;
+        });
+        
+        this.categories = ['Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
         this.applyFilters();
       });
     });
-    this.productService.getOffres().subscribe(o => this.offres = o);
   }
 
   addToCart(produit: Produit) {
@@ -130,6 +147,24 @@ export class ListProduitComponent implements OnInit {
   }
 
   getActiveOffer(produitId: string): Offre | undefined {
-    return this.offres.find(o => o.produitId === produitId);
+    const activeOffers = this.offres.filter(o => o.produitId === produitId && this.isOfferActive(o));
+    if (activeOffers.length > 0) {
+      activeOffers.sort((a, b) => new Date(b.dateDebut || 0).getTime() - new Date(a.dateDebut || 0).getTime());
+      return activeOffers[0];
+    }
+    return undefined;
+  }
+
+  isOfferActive(off: Offre): boolean {
+    if (off.statut !== 'VALIDEE') return false;
+    
+    const now = new Date();
+    const start = off.dateDebut ? new Date(off.dateDebut) : null;
+    const end = off.dateFin ? new Date(off.dateFin) : null;
+
+    if (start && now < start) return false;
+    if (end && now > end) return false;
+    
+    return true;
   }
 }

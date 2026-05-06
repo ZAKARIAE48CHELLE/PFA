@@ -94,9 +94,19 @@ export class SellerDashboardComponent implements OnInit {
 
   commandes: any[] = [];
   totalRevenue = 0;
+  totalProductsCount = 0;
   activeTab: 'overview' | 'inventory' | 'orders' = 'overview';
   pProduits: number = 1;
   pCommandes: number = 1;
+
+  selectedCategory = 'Tous';
+  categoriesList = ['Tous', 'Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
+
+  changeCategory(cat: string) {
+    this.selectedCategory = cat;
+    this.inventoryPage = 1;
+    this.loadProduits();
+  }
 
   ngOnInit() {
     const user = this.authService.currentUserValue;
@@ -107,13 +117,20 @@ export class SellerDashboardComponent implements OnInit {
   }
 
   get filteredProduits(): Produit[] {
-    if (!this.inventorySearchQuery.trim()) return this.produits;
-    const q = this.inventorySearchQuery.toLowerCase();
-    return this.produits.filter(p => p.titre.toLowerCase().includes(q));
+    let list = this.produits;
+    if (this.selectedCategory && this.selectedCategory !== 'Tous') {
+      list = list.filter(p => p.categorie === this.selectedCategory);
+    }
+    if (this.inventorySearchQuery && this.inventorySearchQuery.trim()) {
+      const q = this.inventorySearchQuery.toLowerCase();
+      list = list.filter(p => p.titre && p.titre.toLowerCase().includes(q));
+    }
+    return list;
   }
 
   loadProduits() {
-    this.productService.getProduits().subscribe({
+    const catParam = this.selectedCategory === 'Tous' ? undefined : this.selectedCategory;
+    this.productService.getProduits(catParam).subscribe({
       next: p => {
         // Mock filtering by seller since API might return all
         this.produits = p.filter(pr => pr.vendeurId === this.userId || !pr.vendeurId);
@@ -145,16 +162,20 @@ export class SellerDashboardComponent implements OnInit {
   }
 
   updateCharts() {
-    // Category Chart
-    const cats: { [key: string]: number } = {};
-    this.produits.forEach(p => {
-      const c = p.categorie || 'Autre';
-      cats[c] = (cats[c] || 0) + 1;
+    this.productService.getCategoryStats().subscribe({
+      next: stats => {
+        this.totalProductsCount = Object.values(stats).reduce((acc, val) => acc + val, 0);
+        this.categoryChartData = {
+          labels: Object.keys(stats),
+          datasets: [{ 
+            data: Object.values(stats), 
+            backgroundColor: ['#6366f1', '#f97316', '#10b981', '#f43f5e', '#8b5cf6', '#a855f7', '#ec4899', '#06b6d4', '#eab308'], 
+            hoverOffset: 4 
+          }]
+        };
+      },
+      error: err => console.error('Error loading category stats:', err)
     });
-    this.categoryChartData = {
-      labels: Object.keys(cats),
-      datasets: [{ data: Object.values(cats), backgroundColor: ['#6366f1', '#f97316', '#10b981', '#f43f5e', '#8b5cf6'], hoverOffset: 4 }]
-    };
 
     // Stock Chart
     const activeProducts = this.produits.filter(p => p.stock > 0);
@@ -272,6 +293,13 @@ export class SellerDashboardComponent implements OnInit {
         this.productOffers[produitId] = offres.sort((a, b) => 
           new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime()
         );
+
+        // Dynamically assign active offer's prixFinal to p.prixOffre for display
+        const prod = this.produits.find(p => p.id === produitId);
+        if (prod) {
+          const activeOffer = offres.find(o => this.isOfferActive(o));
+          prod.prixOffre = activeOffer ? activeOffer.prixFinal : undefined;
+        }
       },
       error: (err) => console.error("Erreur chargement offres produit:", err)
     });

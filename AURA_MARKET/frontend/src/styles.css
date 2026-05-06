@@ -258,12 +258,19 @@ img { max-width: 100%; height: auto; }
   overflow: hidden;
 }
 .mp-product-card .mp-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
   transition: transform 0.4s ease;
 }
 .mp-product-card:hover .mp-img-wrapper img { transform: scale(1.08); }
+.mp-product-card .product-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
 .mp-product-card .mp-img-placeholder {
   font-size: 3.5rem;
   color: #ddd;

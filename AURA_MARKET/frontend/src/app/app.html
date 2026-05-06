@@ -96,11 +96,14 @@
       <a routerLink="/list-produit" class="cat-link" [class.active]="router.url.includes('/list-produit') && !router.url.includes('category=')">
         <i class="bi bi-grid-3x3-gap"></i> Catalogue
       </a>
-      <a routerLink="/list-produit" [queryParams]="{category: 'Électronique'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Électronique</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Smartphones'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Smartphones</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Informatique'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Informatique</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Gaming'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Gaming</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Électroménager'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Électroménager</a>
       <a routerLink="/list-produit" [queryParams]="{category: 'Mode'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mode</a>
-      <a routerLink="/list-produit" [queryParams]="{category: 'Maison'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Maison & Jardin</a>
-      <a routerLink="/list-produit" [queryParams]="{category: 'Sport'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sport</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Maison'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Maison</a>
       <a routerLink="/list-produit" [queryParams]="{category: 'Beauté'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Beauté</a>
+      <a routerLink="/list-produit" [queryParams]="{category: 'Sport'}" class="cat-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Sport</a>
 
       <a *ngIf="authService.currentUserValue?.role === 'VENDEUR'" routerLink="/vendeur"
         class="cat-link cat-link-special" routerLinkActive="active">

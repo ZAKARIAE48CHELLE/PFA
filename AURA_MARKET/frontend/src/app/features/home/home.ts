@@ -1,7 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ProductService, Produit } from '../../core/services/product.service';
+import { forkJoin } from 'rxjs';
+import { ProductService, Produit, Offre } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class HomeComponent implements OnInit {
   flashDeals: Produit[] = [];
   categories: string[] = [];
   currentSlide = 0;
+  offres: Offre[] = [];
 
   private productService = inject(ProductService);
   private cartService = inject(CartService);
@@ -38,7 +40,7 @@ export class HomeComponent implements OnInit {
     },
     {
       title: 'Livraison Rapide & Sécurisée',
-      subtitle: 'Livraison gratuite dès 500  €. Paiement 100% sécurisé.',
+      subtitle: 'Livraison gratuite dès 500 MAD. Paiement 100% sécurisé.',
       cta: 'Acheter',
       gradient: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
       icon: 'bi-truck'
@@ -46,26 +48,62 @@ export class HomeComponent implements OnInit {
   ];
 
   categoryList = [
-    { name: 'Électronique', icon: 'bi-cpu', color: '#6366f1' },
-    { name: 'Mode', icon: 'bi-handbag', color: '#ec4899' },
-    { name: 'Maison', icon: 'bi-house-heart', color: '#f97316' },
-    { name: 'Sport', icon: 'bi-dribbble', color: '#10b981' },
-    { name: 'Beauté', icon: 'bi-flower1', color: '#f43f5e' },
-    { name: 'Livres', icon: 'bi-book', color: '#8b5cf6' },
-    { name: 'Auto', icon: 'bi-car-front', color: '#0ea5e9' },
-    { name: 'Alimentation', icon: 'bi-cup-hot', color: '#f59e0b' }
+    { name: 'Smartphones', icon: 'bi-phone', color: '#0ea5e9' },
+    { name: 'Informatique', icon: 'bi-laptop', color: '#6366f1' },
+    { name: 'Gaming', icon: 'bi-controller', color: '#ec4899' },
+    { name: 'Électroménager', icon: 'bi-tools', color: '#f97316' },
+    { name: 'Mode', icon: 'bi-handbag', color: '#f43f5e' },
+    { name: 'Maison', icon: 'bi-house-heart', color: '#8b5cf6' },
+    { name: 'Beauté', icon: 'bi-flower1', color: '#10b981' },
+    { name: 'Sport', icon: 'bi-dribbble', color: '#f59e0b' }
   ];
 
   private slideInterval: any;
 
   ngOnInit() {
-    this.productService.getProduits().subscribe(p => {
-      this.produits = p;
-      this.featuredProduits = p.slice(0, 8);
-      this.flashDeals = p.filter(pr => pr.prix > 50).slice(0, 4);
-      this.categories = [...new Set(p.map(pr => pr.categorie).filter(Boolean))];
+    forkJoin({
+      produits: this.productService.getProduits(),
+      offres: this.productService.getOffres()
+    }).subscribe(({ produits, offres }) => {
+      this.offres = offres;
+      this.produits = produits.map(p => {
+        if (p.id) {
+          const activeOffer = this.getActiveOffer(p.id);
+          p.prixOffre = activeOffer ? activeOffer.prixFinal : undefined;
+        }
+        return p;
+      });
+      
+      this.featuredProduits = this.produits.slice(0, 8);
+      this.flashDeals = this.produits.filter(pr => pr.prixOffre != null).slice(0, 4);
+      if (this.flashDeals.length === 0) {
+          this.flashDeals = this.produits.filter(pr => pr.prix > 50).slice(0, 4);
+      }
+      this.categories = [...new Set(this.produits.map(pr => pr.categorie).filter(Boolean))];
     });
     this.startSlider();
+  }
+
+  getActiveOffer(produitId: string): Offre | undefined {
+    const activeOffers = this.offres.filter(o => o.produitId === produitId && this.isOfferActive(o));
+    if (activeOffers.length > 0) {
+      activeOffers.sort((a, b) => new Date(b.dateDebut || 0).getTime() - new Date(a.dateDebut || 0).getTime());
+      return activeOffers[0];
+    }
+    return undefined;
+  }
+
+  isOfferActive(off: Offre): boolean {
+    if (off.statut !== 'VALIDEE') return false;
+    
+    const now = new Date();
+    const start = off.dateDebut ? new Date(off.dateDebut) : null;
+    const end = off.dateFin ? new Date(off.dateFin) : null;
+
+    if (start && now < start) return false;
+    if (end && now > end) return false;
+    
+    return true;
   }
 
   ngOnDestroy() {

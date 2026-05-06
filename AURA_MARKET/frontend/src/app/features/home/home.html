@@ -92,6 +92,7 @@
       <div class="col-6 col-md-3" *ngFor="let p of flashDeals">
         <a [routerLink]="['/produits', p.id]" class="mp-product-card">
           <div class="mp-img-wrapper">
+            <span class="badge bg-danger animate-pulse" *ngIf="p.prixOffre" style="position: absolute; top: 10px; left: 10px; z-index: 10;">PROMO</span>
             <img *ngIf="p.imageUrl" [src]="p.imageUrl" [alt]="p.titre">
             <i *ngIf="!p.imageUrl" class="bi bi-box-seam-fill mp-img-placeholder"></i>
           </div>
@@ -99,7 +100,13 @@
             <span class="mp-category">{{ p.categorie || 'Général' }}</span>
             <h6 class="mp-title">{{ p.titre }}</h6>
             <div class="mp-price-row">
-              <span class="mp-price">{{ p.prix }} €</span>
+              <ng-container *ngIf="p.prixOffre; else normalPrice">
+                <span class="mp-price text-danger fw-bold">{{ p.prixOffre | number:'1.2-2' }} MAD</span>
+                <span class="text-muted text-decoration-line-through ms-2 small">{{ p.prix | number:'1.2-2' }} MAD</span>
+              </ng-container>
+              <ng-template #normalPrice>
+                <span class="mp-price">{{ p.prix | number:'1.2-2' }} MAD</span>
+              </ng-template>
             </div>
             <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
               {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}
@@ -125,6 +132,7 @@
       <div class="col-6 col-md-4 col-lg-3" *ngFor="let p of featuredProduits; let i = index">
         <a [routerLink]="['/produits', p.id]" class="mp-product-card" [style.animation-delay]="(i*60)+'ms'">
           <div class="mp-img-wrapper">
+            <span class="badge bg-danger animate-pulse" *ngIf="p.prixOffre" style="position: absolute; top: 10px; left: 10px; z-index: 10;">PROMO</span>
             <button class="mp-wishlist-btn" (click)="$event.preventDefault()">
               <i class="bi bi-heart"></i>
             </button>
@@ -135,7 +143,13 @@
             <span class="mp-category">{{ p.categorie || 'Général' }}</span>
             <h6 class="mp-title">{{ p.titre }}</h6>
             <div class="mp-price-row">
-              <span class="mp-price">{{ p.prix }} €</span>
+              <ng-container *ngIf="p.prixOffre; else normalPriceFeatured">
+                <span class="mp-price text-danger fw-bold">{{ p.prixOffre | number:'1.2-2' }} MAD</span>
+                <span class="text-muted text-decoration-line-through ms-2 small">{{ p.prix | number:'1.2-2' }} MAD</span>
+              </ng-container>
+              <ng-template #normalPriceFeatured>
+                <span class="mp-price">{{ p.prix | number:'1.2-2' }} MAD</span>
+              </ng-template>
             </div>
             <span class="am-badge" [class.am-badge-success]="p.stock > 0" [class.am-badge-danger]="p.stock === 0">
               {{ p.stock > 0 ? 'En stock' : 'Épuisé' }}

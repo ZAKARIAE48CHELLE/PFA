@@ -51,8 +51,16 @@ export class ProductService {
     });
   }
 
-  getProduits(): Observable<Produit[]> {
-    return this.http.get<Produit[]>(`${this.apiUrl}/products`, { headers: this.getHeaders() });
+  getProduits(category?: string): Observable<Produit[]> {
+    let url = `${this.apiUrl}/products`;
+    if (category) {
+      url += `?category=${encodeURIComponent(category)}`;
+    }
+    return this.http.get<Produit[]>(url, { headers: this.getHeaders() });
+  }
+
+  getCategoryStats(): Observable<{ [key: string]: number }> {
+    return this.http.get<{ [key: string]: number }>(`${this.apiUrl}/products/stats/categories`, { headers: this.getHeaders() });
   }
   getProduitById(id: string): Observable<Produit> {
     return this.http.get<Produit>(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() });

@@ -7,6 +7,8 @@ import com.auramarket.product.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +44,16 @@ public class ProductService {
     }
 
     public List<Produit> getAllProduits() {
-        return produitRepository.findAll();
+        return getAllProduits(null);
+    }
+
+    public List<Produit> getAllProduits(String category) {
+        if (category != null && !category.trim().isEmpty()) {
+            PageRequest pageRequest = PageRequest.of(0, 1000, Sort.by(Sort.Direction.DESC, "datePublication"));
+            return produitRepository.findByCategorie(category, pageRequest);
+        }
+        PageRequest pageRequest = PageRequest.of(0, 1000);
+        return produitRepository.findAll(pageRequest).getContent();
     }
 
     public Produit createProduit(Produit produit) {
@@ -112,5 +123,16 @@ public class ProductService {
 
     public void deleteOffre(UUID id) {
         offreRepository.deleteById(id);
+    }
+
+    public Map<String, Long> getProductsCountByCategory() {
+        List<Object[]> results = produitRepository.countProductsByCategory();
+        Map<String, Long> map = new HashMap<>();
+        for (Object[] row : results) {
+            if (row[0] != null) {
+                map.put((String) row[0], (Long) row[1]);
+            }
+        }
+        return map;
     }
 }

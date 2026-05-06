@@ -49,7 +49,7 @@
               <i class="bi bi-box-seam"></i>
             </div>
             <div class="summary-data">
-              <span class="summary-value">{{ produits.length }}</span>
+              <span class="summary-value">{{ totalProductsCount || produits.length }}</span>
               <span class="summary-label">Total Produits</span>
             </div>
           </div>
@@ -136,15 +136,28 @@
           </div>
         </div>
 
+        <!-- Category Sub-Tabs / Sub-Pills -->
+        <div class="px-4 pb-3">
+          <div class="d-flex flex-wrap gap-2">
+            <button *ngFor="let cat of categoriesList" 
+                    class="btn btn-sm" 
+                    [class.btn-primary]="selectedCategory === cat" 
+                    [class.btn-outline-secondary]="selectedCategory !== cat"
+                    (click)="changeCategory(cat)">
+              {{ cat }}
+            </button>
+          </div>
+        </div>
+
         <div class="table-responsive">
           <table class="am-table align-middle">
             <thead>
               <tr>
-                <th>Produit</th>
-                <th>Prix</th>
-                <th>Stock</th>
-                <th>Statut</th>
-                <th class="text-end">Actions</th>
+                <th style="width: 45%;">Produit</th>
+                <th style="width: 20%;">Prix</th>
+                <th style="width: 15%;">Stock</th>
+                <th style="width: 10%;">Statut</th>
+                <th class="text-end" style="width: 10%;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -165,9 +178,9 @@
                 <td>
                   <div class="price-cell">
                     <span class="fw-bold" [class.text-decoration-line-through]="p.prixOffre"
-                      [class.text-muted]="p.prixOffre">{{ p.prix }} MAD</span>
-                    <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre }} MAD</span>
-                    <span class="text-muted small d-block">Min: {{ p.prixMin }} MAD</span>
+                      [class.text-muted]="p.prixOffre">{{ p.prix | number:'1.2-2' }} MAD</span>
+                    <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre | number:'1.2-2' }} MAD</span>
+                    <span class="text-muted small d-block">Min: {{ p.prixMin | number:'1.2-2' }} MAD</span>
                   </div>
                 </td>
                 <td>
@@ -279,7 +292,10 @@
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">Catégorie</label>
-                  <input type="text" class="form-control" [(ngModel)]="newProd.categorie" name="cat" required>
+                  <select class="form-select" [(ngModel)]="newProd.categorie" name="cat" required>
+                    <option value="" disabled selected>Choisir...</option>
+                    <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}</option>
+                  </select>
                 </div>
                 <div class="col-12">
                   <label class="form-label">Description</label>
@@ -378,7 +394,10 @@
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Catégorie</label>
-                    <input type="text" class="form-control" [(ngModel)]="editProd.categorie" name="editCat" required>
+                    <select class="form-select" [(ngModel)]="editProd.categorie" name="editCat" required>
+                      <option value="" disabled selected>Choisir...</option>
+                      <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}</option>
+                    </select>
                   </div>
                   <div class="col-12">
                     <label class="form-label">Description</label>
