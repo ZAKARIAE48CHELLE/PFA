@@ -39,7 +39,7 @@
           
           <button type="submit" class="btn btn-primary w-100 btn-lg py-3 mt-4" [disabled]="isProcessing">
             <span *ngIf="!isProcessing">
-              Confirmer le paiement de {{ cartService.getTotalPrice }} €
+              Confirmer le paiement de {{ cartService.getTotalPrice }} MAD
             </span>
             <span *ngIf="isProcessing">
               <span class="spinner-border spinner-border-sm me-2"></span> Traitement en cours...
@@ -59,13 +59,13 @@
               <div class="item-badge">{{ item.quantite }}</div>
               <span>{{ item.produit.titre }}</span>
             </div>
-            <span class="fw-bold">{{ item.produit.prix * item.quantite }} €</span>
+            <span class="fw-bold">{{ item.produit.prix * item.quantite }} MAD</span>
           </div>
         </div>
         <hr>
         <div class="d-flex justify-content-between h5 mt-4">
           <span>Total à payer</span>
-          <span class="am-gradient-text">{{ cartService.getTotalPrice }} €</span>
+          <span class="am-gradient-text">{{ cartService.getTotalPrice }} MAD</span>
         </div>
         <p class="small text-muted mt-4">
           <i class="bi bi-lock"></i> Vos données sont cryptées et sécurisées.

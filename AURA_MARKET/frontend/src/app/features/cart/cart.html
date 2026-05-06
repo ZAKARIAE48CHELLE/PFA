@@ -32,7 +32,7 @@
                     </div>
                   </div>
                 </td>
-                <td>{{ item.produit.prix }} €</td>
+                <td>{{ item.produit.prix }} MAD</td>
                 <td>
                   <div class="quantity-control">
                     <button (click)="updateQuantity(item.produit.id, -1)" class="btn-qty"><i class="bi bi-dash"></i></button>
@@ -40,7 +40,7 @@
                     <button (click)="updateQuantity(item.produit.id, 1,item.produit)" class="btn-qty"><i class="bi bi-plus"></i></button>
                   </div>
                 </td>
-                <td class="fw-bold">{{ item.produit.prix * item.quantite }} €</td>
+                <td class="fw-bold">{{ item.produit.prix * item.quantite }} MAD</td>
                 <td>
                   <button (click)="removeItem(item.produit.id)" class="btn btn-link text-danger p-0">
                     <i class="bi bi-trash"></i>
@@ -63,7 +63,7 @@
         <h5 class="mb-4">Résumé de la commande</h5>
         <div class="d-flex justify-content-between mb-2">
           <span>Sous-total</span>
-          <span>{{ cartService.getTotalPrice }} €</span>
+          <span>{{ cartService.getTotalPrice }} MAD</span>
         </div>
         <div class="d-flex justify-content-between mb-2">
           <span>Livraison</span>
@@ -72,7 +72,7 @@
         <hr class="my-3">
         <div class="d-flex justify-content-between mb-4">
           <span class="h5">Total</span>
-          <span class="h5 am-gradient-text">{{ cartService.getTotalPrice }} €</span>
+          <span class="h5 am-gradient-text">{{ cartService.getTotalPrice }} MAD</span>
         </div>
         <button routerLink="/checkout" class="btn btn-primary w-100 btn-lg py-3">
           Passer au paiement <i class="bi bi-arrow-right"></i>

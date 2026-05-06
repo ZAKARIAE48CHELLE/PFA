@@ -1,36 +1,225 @@
-.header-card {
-    border-top: 5px solid var(--am-primary);
+.invoice-sheet {
+    max-width: 850px;
+    background: #ffffff;
+    border-radius: var(--am-radius);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
 }
 
-.product-mini-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
+.invoice-top-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--am-gradient);
+}
+
+.invoice-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(99, 102, 241, 0.02);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+}
+
+.invoice-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.brand-pill {
+    background: var(--am-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.brand-text {
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -0.5px;
+    color: #1e293b;
+}
+
+.invoice-title {
+    letter-spacing: 1px;
+    color: #1e293b;
+}
+
+.small-header {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.item-thumbnail {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
     overflow: hidden;
     background: #f8f9fa;
+    flex-shrink: 0;
+    border: 1px solid #e2e8f0;
 }
 
-.product-mini-img img {
+.item-thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.summary-card {
-    position: sticky;
-    top: 2rem;
+.am-invoice-table {
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.payment-info {
-    border: 1px dashed #dee2e6;
+.am-invoice-table thead th {
+    background: #1e293b;
+    color: #f8fafc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 8px;
+    border-bottom: none;
 }
 
+.am-invoice-table tbody td {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.back-btn, .print-action-btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+/* ============================================================
+   PRINT STYLES — These control the PDF output via window.print()
+   "Save as PDF" from the browser print dialog.
+   ============================================================ */
 @media print {
-    .btn, .breadcrumb, .summary-card button {
+    /* Hide everything except the invoice */
+    body * {
+        visibility: hidden;
+    }
+    .invoice-container,
+    .invoice-container * {
+        visibility: visible;
+    }
+    .invoice-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Hide navigation, buttons, header, footer, sidebar */
+    .no-print,
+    .back-btn,
+    .print-action-btn,
+    header,
+    footer,
+    nav,
+    app-header,
+    app-footer,
+    .sidebar,
+    .navbar {
         display: none !important;
     }
-    .am-card {
+
+    /* Invoice sheet: full width, no decorative borders */
+    .invoice-sheet {
+        border: none !important;
         box-shadow: none !important;
-        border: 1px solid #eee !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 30px 40px !important;
+        overflow: visible !important;
+    }
+
+    /* Hide the decorative top accent bar */
+    .invoice-top-accent {
+        display: none !important;
+    }
+
+    /* Ensure proper page sizing */
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    /* Prevent page breaks inside elements */
+    .invoice-sheet * {
+        page-break-inside: avoid;
+    }
+
+    /* Compact spacing to fit on one page */
+    .invoice-sheet .mb-5 {
+        margin-bottom: 1.5rem !important;
+    }
+    .invoice-sheet .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+    .invoice-sheet .py-4 {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+    .invoice-sheet .mt-5 {
+        margin-top: 1.5rem !important;
+    }
+    .invoice-sheet .pt-4 {
+        padding-top: 0.75rem !important;
+    }
+    .invoice-sheet .p-5 {
+        padding: 30px 40px !important;
+    }
+    .invoice-sheet hr.my-4 {
+        margin-top: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Keep table header styling in print */
+    .am-invoice-table thead th {
+        background: #1e293b !important;
+        color: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Keep backgrounds in print */
+    .billing-details,
+    .invoice-notes,
+    .invoice-summary {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Product thumbnail - keep visible but smaller */
+    .item-thumbnail {
+        width: 48px;
+        height: 48px;
     }
 }

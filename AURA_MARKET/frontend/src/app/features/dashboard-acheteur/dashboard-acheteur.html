@@ -43,7 +43,7 @@
               </div>
               <div class="d-flex justify-content-between align-items-center mt-1">
                 <span class="badge" [class.bg-primary]="n.rounds < 3" [class.bg-secondary]="n.rounds >= 3">Round {{ n.rounds }}/3</span>
-                <small class="text-muted">{{ n.prixFinal }} €</small>
+                <small class="text-muted">{{ n.prixFinal }} MAD</small>
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@
             <div class="message-bubble shadow-sm">
               <div class="message-content">{{ m.content }}</div>
               <div class="message-meta d-flex justify-content-between align-items-center mt-1">
-                <span class="message-price" *ngIf="m.price > 0">{{ m.price }} €</span>
+                <span class="message-price" *ngIf="m.price > 0">{{ m.price }} MAD</span>
                 <span class="message-time">{{ m.timestamp | date:'HH:mm' }}</span>
               </div>
             </div>
@@ -105,7 +105,7 @@
         <div class="chat-input-area" *ngIf="selectedNego.rounds < 3; else limitReached">
           <form (ngSubmit)="sendMessage()" class="d-flex gap-2">
             <div class="input-group">
-              <span class="input-group-text bg-white border-end-0">€</span>
+              <span class="input-group-text bg-white border-end-0">MAD</span>
               <input 
                 type="number" 
                 class="form-control border-start-0" 
@@ -153,7 +153,7 @@
         </div>
         <div class="modal-body p-4">
           <div class="text-center mb-4">
-            <h3 class="fw-bold text-success">{{ selectedNego?.prixFinal }} €</h3>
+            <h3 class="fw-bold text-success">{{ selectedNego?.prixFinal }} MAD</h3>
             <p class="text-muted">Dernière offre proposée par l'agent</p>
           </div>
           
@@ -168,7 +168,7 @@
                 [class.active]="selectedNego?.prixFinal === m.price"
               >
                 <span>Offre du {{ m.timestamp | date:'HH:mm' }}</span>
-                <span class="badge bg-primary rounded-pill">{{ m.price }} €</span>
+                <span class="badge bg-primary rounded-pill">{{ m.price }} MAD</span>
               </button>
             </div>
           </div>

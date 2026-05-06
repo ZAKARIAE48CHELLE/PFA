@@ -86,7 +86,7 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     const userMsg: MessageNegociation = {
       negociationId: this.selectedNego.id,
       sender: 'ACHETEUR',
-      content: `Je propose un prix de ${price} €`,
+      content: `Je propose un prix de ${price} MAD`,
       price: price
     };
 
@@ -110,7 +110,7 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
             const agentMsg: MessageNegociation = {
               negociationId: this.selectedNego!.id,
               sender: 'AGENT',
-              content: `Ma contre-proposition est de ${res.nouveauPrix} €.`,
+              content: `Ma contre-proposition est de ${res.nouveauPrix} MAD.`,
               price: res.nouveauPrix
             };
             this.negoService.saveMessage(agentMsg).subscribe(() => {

@@ -434,3 +434,80 @@ img { max-width: 100%; height: auto; }
 }
 .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
 .animate-slide-in-right { animation: slideInRight 0.5s ease-out; }
+
+/* ============================================
+   Print Media Query for Crisp Invoices (Factures)
+   ============================================ */
+@media print {
+  /* Completely hide application shell elements, headers, and footers */
+  .am-topbar, 
+  .am-header, 
+  .am-category-bar, 
+  .am-footer, 
+  .no-print, 
+  .back-btn, 
+  .print-action-btn, 
+  .breadcrumb,
+  header, 
+  footer, 
+  nav {
+    display: none !important;
+  }
+
+  /* Reset layout structure and backgrounds for clean print output */
+  body, html, .am-main {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .invoice-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .invoice-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 1.5rem !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Compress vertical spacing during printing to guarantee exactly 1 page fit */
+  .header-row, 
+  .billing-row, 
+  .table-responsive {
+    margin-bottom: 1.5rem !important;
+  }
+
+  hr {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .am-invoice-table tbody td {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .invoice-footer {
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
+  }
+
+  /* Keep the corporate design but remove dark overlays/watermarks during print */
+  .invoice-top-accent {
+    display: block !important;
+    height: 4px !important;
+  }
+
+  .invoice-watermark {
+    display: none !important;
+  }
+}
+

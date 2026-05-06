@@ -61,19 +61,8 @@ export class HomeComponent implements OnInit {
   private slideInterval: any;
 
   ngOnInit() {
-    forkJoin({
-      produits: this.productService.getProduits(),
-      offres: this.productService.getOffres()
-    }).subscribe(({ produits, offres }) => {
-      this.offres = offres;
-      this.produits = produits.map(p => {
-        if (p.id) {
-          const activeOffer = this.getActiveOffer(p.id);
-          p.prixOffre = activeOffer ? activeOffer.prixFinal : undefined;
-        }
-        return p;
-      });
-      
+    this.productService.getProduits().subscribe(produits => {
+      this.produits = produits;
       this.featuredProduits = this.produits.slice(0, 8);
       this.flashDeals = this.produits.filter(pr => pr.prixOffre != null).slice(0, 4);
       if (this.flashDeals.length === 0) {

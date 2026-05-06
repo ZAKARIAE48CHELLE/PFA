@@ -53,19 +53,8 @@ export class ListProduitComponent implements OnInit {
         this.searchQuery = '';
       }
 
-      forkJoin({
-        produits: this.productService.getProduits(category),
-        offres: this.productService.getOffres()
-      }).subscribe(({ produits, offres }) => {
-        this.offres = offres;
-        this.allProduits = produits.map(p => {
-          if (p.id) {
-            const activeOffer = this.getActiveOffer(p.id);
-            p.prixOffre = activeOffer ? activeOffer.prixFinal : undefined;
-          }
-          return p;
-        });
-        
+      this.productService.getProduits(category).subscribe(produits => {
+        this.allProduits = produits;
         this.categories = ['Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
         this.applyFilters();
       });
