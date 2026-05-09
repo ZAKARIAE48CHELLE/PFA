@@ -1,0 +1,99 @@
+<div class="chatbot-wrapper" [class.open]="isOpen">
+  <!-- Floating Button -->
+  <button class="chat-toggle-btn" (click)="toggleChat()">
+    <i class="bi" [class.bi-chat-dots-fill]="!isOpen" [class.bi-x-lg]="isOpen"></i>
+    <span class="pulse" *ngIf="!isOpen"></span>
+  </button>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" *ngIf="isOpen">
+    <div class="chat-header">
+      <div class="agent-info">
+        <div class="agent-avatar">
+          <i class="bi bi-robot"></i>
+          <span class="online-status"></span>
+        </div>
+        <div>
+          <h6>Aura Assistant</h6>
+          <small>IA Marketplace</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-body" #scrollMe>
+      <div *ngFor="let m of messages" class="message-row" [class.user]="m.role === 'user'">
+        <div class="message-bubble" [class.agent]="m.role === 'agent'">
+          <div class="message-content">
+            {{ m.content }}
+          </div>
+          
+          <!-- Intent-based Routing Buttons -->
+          <div class="intent-routing mt-2" *ngIf="m.role === 'agent'">
+            <button *ngIf="m.type === 'CHECK_ORDER'" class="btn btn-purple btn-xs" routerLink="/commandes">
+              <i class="bi bi-bag-check"></i> Mes Commandes
+            </button>
+            <button *ngIf="m.type === 'VIEW_CATEGORY' || m.type === 'SEARCH_PRODUCT'" class="btn btn-outline-primary btn-xs" routerLink="/list-produit">
+              <i class="bi bi-grid-3x3-gap"></i> Catalogue complet
+            </button>
+            <button *ngIf="m.type === 'GENERAL'" class="btn btn-link btn-xs text-decoration-none" routerLink="/list-produit" [queryParams]="{category: 'BestDeals'}">
+              <i class="bi bi-lightning"></i> Voir les offres du jour
+            </button>
+          </div>
+          
+          <!-- Product Cards in Chat -->
+          <div class="product-cards" *ngIf="m.produits && m.produits.length > 0">
+            <a *ngFor="let p of m.produits" class="mini-product-card text-decoration-none" [routerLink]="['/produits', p.id]">
+              <img [src]="p.imageUrl || 'assets/img/placeholder.png'" alt="Product">
+              <div class="mini-info">
+                <span class="title">{{ p.titre }}</span>
+                <span class="price">{{ p.prix | number:'1.2-2' }} MAD</span>
+              </div>
+              <i class="bi bi-chevron-right ms-auto"></i>
+            </a>
+            <a routerLink="/list-produit" class="show-all-link" *ngIf="m.produits.length >= 3">Voir tout le catalogue</a>
+          </div>
+          
+          <!-- Order Cards in Chat -->
+          <div class="order-cards" *ngIf="m.commandes && m.commandes.length > 0">
+            <div *ngFor="let o of m.commandes" class="mini-order-card" [routerLink]="['/commandes']">
+              <div class="order-icon">
+                <i class="bi bi-box-seam"></i>
+              </div>
+              <div class="mini-info">
+                <span class="title">Commande #{{ o.id.substring(0,8) }}</span>
+                <span class="status" [class.success]="o.statut === 'PAYEE'">{{ o.statut }}</span>
+                <span class="price">{{ o.total | number:'1.2-2' }} MAD</span>
+              </div>
+              <i class="bi bi-chevron-right ms-auto"></i>
+            </div>
+          </div>
+          
+          <small class="timestamp">{{ m.timestamp | date:'HH:mm' }}</small>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="message-row" *ngIf="isTyping">
+        <div class="message-bubble agent typing">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-footer">
+      <div class="quick-actions" *ngIf="messages.length < 5">
+        <button (click)="quickAction('Quelles sont les promotions ?')">Promos</button>
+        <button (click)="quickAction('Où est ma commande ?')">Commandes</button>
+      </div>
+      <div class="input-wrapper">
+        <input type="text" [(ngModel)]="userMessage" (keydown.enter)="sendMessage()" 
+               placeholder="Écrivez votre message..." />
+        <button (click)="sendMessage()" [disabled]="!userMessage.trim()">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -16,7 +16,13 @@ spring:
               - PUT
               - DELETE
               - OPTIONS
+              - PATCH
             allowedHeaders: "*"
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: PT300S
+        pool:
+          max-idle-time: PT300S
       routes:
         - id: auth-service
           uri: http://auth-service:8081
@@ -38,3 +44,6 @@ spring:
           uri: http://agents-bridge:8085
           predicates:
             - Path=/agent/**
+          metadata:
+            response-timeout: 300000
+            connect-timeout: 10000

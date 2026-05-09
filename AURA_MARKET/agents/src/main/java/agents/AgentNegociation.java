@@ -22,9 +22,16 @@ public class AgentNegociation extends Agent {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private FIS fis;
+    private com.auramarket.agents.service.KimiService kimi;
 
     @Override
     protected void setup() {
+        Object[] args = getArguments();
+        if (args != null && args.length > 0 && args[0] instanceof com.auramarket.agents.service.KimiService) {
+            this.kimi = (com.auramarket.agents.service.KimiService) args[0];
+            System.out.println("[AgentNegociation] KimiService injecté.");
+        }
+        
         System.out.println("[AgentNegociation] Démarrage : " + getLocalName());
         loadFuzzyEngine();
 
@@ -92,9 +99,16 @@ public class AgentNegociation extends Agent {
                 + " | prixMin=" + prixMin + " | prixPropose=" + prixPropose);
 
         // ── GARDE 0 : Config invalide ─────────────────────────────────────────
-        if (prixMin <= 0 || prixMin >= prixActuel - epsilon) {
-            System.err.println("[GUARD 0b] prixMin invalide : " + prixMin);
+        if (prixMin <= 0 || prixMin > prixActuel + epsilon) {
+            System.err.println("[GUARD 0b] prixMin invalide : " + prixMin + " (prixActuel=" + prixActuel + ")");
             return build(negociationId, prixActuel, 0, "INVALID_CONFIG", "STABLE", roundActuel, true);
+        }
+
+        // ── GARDE 5 : Acheteur au-dessus du prix actuel ──────────────────────
+        // On accepte toujours si l'acheteur propose plus que ce qu'on demande !
+        if (prixPropose >= prixActuel - epsilon) {
+            System.out.println("[GUARD 5] prixPropose >= prixActuel → acceptation immédiate");
+            return build(negociationId, prixPropose, 0, "ACCEPTED", "IMPROVING", roundActuel, true);
         }
 
         // ── GARDE 1 : Dépassement rounds ─────────────────────────────────────
@@ -111,8 +125,10 @@ public class AgentNegociation extends Agent {
 
         // ── GARDE 3 : Sous le plancher ────────────────────────────────────────
         if (prixPropose < prixMin - epsilon) {
-            System.out.println("[GUARD 3] Sous plancher → contre-proposition ferme prixMin=" + prixMin);
-            return build(negociationId, prixMin, prixActuel - prixMin, "AGGRESSIVE_BUYER", "DECLINING", roundActuel, (roundActuel >= roundsMax));
+            System.out.println("[GUARD 3] Offre sous plancher → vendeur immobile");
+            return build(negociationId, prixActuel, 0,
+                         "AGGRESSIVE_BUYER", "DECLINING", roundActuel, false);
+            // isFinalOffer = false → laisse l'acheteur faire une meilleure offre
         }
 
         // ── GARDE 4 : Au plancher (avec epsilon) ──────────────────────────────
@@ -127,17 +143,27 @@ public class AgentNegociation extends Agent {
             return build(negociationId, prixMin, 0, "FLOOR_REACHED", "STABLE", roundActuel, (roundActuel >= roundsMax));
         }
 
-        // ── GARDE 5 : Acheteur au-dessus du prix actuel ──────────────────────
-        if (prixPropose >= prixActuel) {
-            System.out.println("[GUARD 5] prixPropose >= prixActuel → acceptation");
-            return build(negociationId, prixPropose, 0, "ACCEPTED", "IMPROVING", roundActuel, true);
-        }
 
-        // ── GARDE 6 : Dernier round ───────────────────────────────────────────
-        if (roundActuel >= roundsMax) {
-            System.out.println("[GUARD 6] Dernier round → offre finale prixMin=" + prixMin);
-            String beh = deriveBehavior((prixActuel - prixPropose) / prixActuel * 100.0);
-            return build(negociationId, prixMin, prixActuel - prixMin, beh, "FINAL", roundActuel, true);
+        // ── ÉTAPE 0 : Kimi Inference (Si disponible) ─────────────────────────
+        if (kimi != null) {
+            Map<String, Object> kimiResult = runKimiSellerInference(prixActuel, prixMin, prixPropose, roundActuel, roundsMax, historique);
+            if (kimiResult != null) {
+                double nuevo = toDouble(kimiResult.get("nouveauPrix"));
+                
+                // Security: NEVER go below prixMin even if AI is crazy
+                nuevo = Math.max(prixMin, nuevo);
+                // Security: NEVER go below what the buyer just offered (don't give it cheaper than they asked!)
+                nuevo = Math.max(prixPropose, nuevo);
+                // Security: Don't go above current price (unless it's an acceptance of a higher bid)
+                if (prixPropose < prixActuel) {
+                    nuevo = Math.min(prixActuel, nuevo);
+                }
+
+                boolean isFinal = (boolean) kimiResult.getOrDefault("isFinalOffer", false) || (roundActuel >= roundsMax);
+                
+                System.out.println("[AgentNegociation] Kimi a décidé : " + nuevo);
+                return build(negociationId, nuevo, prixActuel - nuevo, "AI_STRATEGY", "AI_TREND", roundActuel, isFinal);
+            }
         }
 
         // ── ÉTAPE 1 : Variables fuzzy ─────────────────────────────────────────
@@ -158,18 +184,61 @@ public class AgentNegociation extends Agent {
         double stagnationBonus = computeStagnationBonus(historique);
 
         // Taux final = fuzzy + renforcement + stagnation
-        concessionRate = Math.max(0.01, Math.min(0.5,
-                concessionRate + reinforcementBonus + stagnationBonus));
+        concessionRate = concessionRate + reinforcementBonus + stagnationBonus;
+
+        // FIX: Minimum 12% de concession
+        concessionRate = Math.max(0.12, concessionRate);
+        
+        // Bonus si acheteur serieux
+        if ("IMPROVING".equalsIgnoreCase(buyerTrend)) {
+            concessionRate += 0.08;
+        }
+
+        // Limiter la concession maximum par round (ex: 25% de la marge pour ne pas descendre trop vite d'un coup)
+        double maxConcessionParRound = 0.25;
+        concessionRate = Math.max(0.12, Math.min(maxConcessionParRound, concessionRate));
 
         // ── ÉTAPE 5 : Calcul concession ───────────────────────────────────────
         double marge      = prixActuel - prixMin;
         double concession = concessionRate * marge;
         double candidat   = prixActuel - concession;
+        
+        // Si c'est l'avant dernier ou dernier round, on s'approche agressivement du min
+        if (roundActuel >= roundsMax - 1) {
+            candidat = prixMin + (marge * 0.1); // Propose presque le min (10% de la marge au-dessus)
+        }
 
-        // ── ÉTAPE 6 : Protection vendeur ─────────────────────────────────────
+        // ── ÉTAPE 6 : Protection vendeur (Stubbornness) ───────────────────────
         if (candidat <= prixPropose) {
-            candidat = (prixActuel + prixPropose) / 2.0;
+            // Le vendeur ne concède que 25% de l'écart au lieu de 50%
+            candidat = prixActuel - (prixActuel - prixPropose) * 0.25;
             candidat = Math.max(prixMin, candidat);
+        }
+        
+        System.out.println("[DEBUG] concessionRate=" + concessionRate + " | marge=" + marge + " | candidat=" + candidat);
+
+        // ── SEUIL DE CONVERGENCE AUTOMATIQUE ──────────────────────────────────
+        double margeInitiale = prixActuel - prixMin;
+        double ecartRestant = candidat - prixPropose;
+        
+        if (margeInitiale > 0) {
+            double ecartRelatif = ecartRestant / margeInitiale;
+
+            // Si l'écart restant est < 5% de la marge initiale → accepter
+            if (ecartRelatif > 0 && ecartRelatif < 0.05) {
+                System.out.println("[CONVERGENCE] Écart résiduel " 
+                    + round2(ecartRelatif * 100) + "% < 5% → acceptation");
+                return build(negociationId, prixPropose, prixActuel - prixPropose,
+                             "ACCEPTED", "IMPROVING", roundActuel, true);
+            }
+        }
+
+        // Si l'écart absolu est < 10 MAD et prixPropose > prixMin → accepter
+        if (ecartRestant > 0 && ecartRestant < 10.0 && prixPropose > prixMin) {
+            System.out.println("[CONVERGENCE] Écart absolu " 
+                + round2(ecartRestant) + " MAD < 10 MAD → acceptation");
+            return build(negociationId, prixPropose, prixActuel - prixPropose,
+                         "ACCEPTED", "IMPROVING", roundActuel, true);
         }
 
         // ── ÉTAPE 7 : Clamp absolu ────────────────────────────────────────────
@@ -262,8 +331,45 @@ public class AgentNegociation extends Agent {
         return "CLOSE";
     }
 
+    private Map<String, Object> runKimiSellerInference(double current, double min, double offer, int round, int max, List<Number> history) {
+        try {
+            String systemPrompt = "Tu es un vendeur expert et coriace sur AuraMarket. Ta mission est de maximiser le profit. Ne sois pas trop facile.";
+            String userPrompt = String.format(
+                "Négociation en cours: \n" +
+                "- Prix catalogue (départ): %.2f MAD \n" +
+                "- Ton prix plancher (SECRET, ne jamais descendre en dessous): %.2f MAD \n" +
+                "- Offre actuelle de l'acheteur: %.2f MAD \n" +
+                "- Round: %d/%d \n" +
+                "- Historique des offres de l'acheteur: %s \n\n" +
+                "Directives stratégiques: \n" +
+                "1. Ne propose JAMAIS ton prix plancher dès le début. \n" +
+                "2. Si l'offre de l'acheteur est très basse (< 80%% de ton prix), reste très ferme (concession de 1%% max). \n" +
+                "3. Si l'acheteur augmente ses offres, fais des petits pas (concessions de 2-5%%). \n" +
+                "4. Ton but est de finir le plus haut possible au-dessus de %.2f MAD. \n" +
+                "5. Si l'offre dépasse ton prix actuel, accepte immédiatement.\n" +
+                "Réponds UNIQUEMENT au format JSON: {\"nouveauPrix\": double, \"isFinalOffer\": boolean}",
+                current, min, offer, round, max, (history != null ? history.toString() : "Aucun"), min
+            );
+
+            String response = kimi.askKimi(systemPrompt, userPrompt);
+            // Simple JSON extraction
+            int start = response.indexOf("{");
+            int end = response.lastIndexOf("}");
+            if (start != -1 && end != -1) {
+                String json = response.substring(start, end + 1);
+                return mapper.readValue(json, Map.class);
+            }
+        } catch (Exception e) {
+            System.err.println("[Kimi Seller Error] " + e.getMessage());
+        }
+        return null;
+    }
+
     private double round2(double val) { return Math.round(val * 100.0) / 100.0; }
-    private double toDouble(Object o) { return ((Number) o).doubleValue(); }
+    private double toDouble(Object o) { 
+        if (o instanceof String) return Double.parseDouble((String) o);
+        return ((Number) o).doubleValue(); 
+    }
     private int    toInt(Object o)    { return ((Number) o).intValue(); }
 
     private Map<String, Object> build(String id, double nouveauPrix, double concession,

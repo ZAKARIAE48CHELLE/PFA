@@ -139,29 +139,62 @@
 .message-row {
   display: flex;
   width: 100%;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .message-row.me {
-  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.message-row.me .msg-avatar {
+  background: var(--am-primary);
+  color: white;
+}
+
+.message-row:not(.me) .msg-avatar {
+  background: #fff;
+  border: 1px solid var(--am-border);
+  color: var(--am-primary);
 }
 
 .message-bubble {
-  max-width: 75%;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
+  max-width: 70%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 18px;
   background: #fff;
   position: relative;
   font-size: 0.9375rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .message-row.me .message-bubble {
-  background: #d9fdd3;
-  /* WhatsApp User Green */
-  border-bottom-right-radius: 2px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
 }
 
 .message-row:not(.me) .message-bubble {
-  border-bottom-left-radius: 2px;
+  border-bottom-left-radius: 4px;
+}
+
+.message-row.me .message-meta {
+  color: rgba(255,255,255,0.7);
+}
+
+.message-row.me .message-price {
+  color: white;
 }
 
 .message-meta {
@@ -181,8 +214,37 @@
 /* Chat Input */
 .chat-input-area {
   padding: 1rem 1.5rem;
-  background: #f0f2f5;
-  border-top: 1px solid var(--am-border);
+  background: white;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.limit-reached-container {
+  padding: 1.5rem;
+  background: #f8f9fa;
+}
+
+.limit-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border-left: 5px solid #ffc107;
+}
+
+.limit-icon {
+  font-size: 2rem;
+  color: #ffc107;
+}
+
+.limit-text h6 {
+  margin: 0;
+  color: #333;
+  font-weight: 700;
+}
+
+.limit-text p {
+  margin: 0.25rem 0 0;
+  color: #666;
+  font-size: 0.85rem;
 }
 
 .limit-notice {
@@ -239,3 +301,111 @@
     /* Mobile logic would need a toggle */
   }
 }
+
+.btn-purple {
+  background: linear-gradient(135deg, #6f42c1 0%, #a445b2 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-purple:hover {
+  background: linear-gradient(135deg, #59359a 0%, #8a3a96 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.ai-suggestion {
+  animation: slideDown 0.3s ease-out;
+}
+
+.alert-info {
+  background: rgba(13, 202, 240, 0.05);
+  border: 1px dashed #0dcaf0;
+  color: #055160;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.italic {
+  font-style: italic;
+}
+
+.alert-purple {
+  background: rgba(111, 66, 193, 0.05);
+  border: 1px dashed #6f42c1;
+  color: #4b2e83;
+}
+
+.btn-xs {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+
+.text-accent {
+  color: #6366f1;
+}
+
+/* Auto Negotiation Progress */
+.auto-nego-progress {
+  background: linear-gradient(135deg, rgba(111, 66, 193, 0.04), rgba(99, 102, 241, 0.06));
+  border-left: 3px solid #6f42c1;
+}
+
+.auto-nego-progress .progress {
+  background: rgba(111, 66, 193, 0.1);
+}
+
+.progress-bar.bg-purple {
+  background: linear-gradient(90deg, #6f42c1, #6366f1) !important;
+}
+
+.spinner-border.text-purple {
+  color: #6f42c1 !important;
+}
+
+/* Input hint bar */
+.input-hint {
+  opacity: 0.6;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.input-hint i {
+  font-size: 0.65rem;
+}
+
+/* Purple button for AUTO */
+.btn-purple {
+  background: linear-gradient(135deg, #6f42c1, #7c5ecf);
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-purple:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a32a3, #6f42c1);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.btn-purple:disabled {
+  background: #c4b5d9;
+  color: rgba(255,255,255,0.7);
+}
+

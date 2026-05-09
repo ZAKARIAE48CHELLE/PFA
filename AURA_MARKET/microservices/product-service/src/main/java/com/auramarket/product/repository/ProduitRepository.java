@@ -12,6 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ProduitRepository extends JpaRepository<Produit, UUID> {
     List<Produit> findByCategorie(String categorie, Pageable pageable);
+    List<Produit> findByTitreContainingIgnoreCase(String titre, Pageable pageable);
 
     @Query("SELECT p.categorie, COUNT(p) FROM Produit p GROUP BY p.categorie")
     List<Object[]> countProductsByCategory();

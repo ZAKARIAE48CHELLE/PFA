@@ -8,13 +8,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { RouterModule } from '@angular/router';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-seller-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, BaseChartDirective, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, BaseChartDirective, NgxPaginationModule, RouterModule],
   templateUrl: './seller-dashboard.html',
   styleUrl: './seller-dashboard.css'
 })
@@ -69,7 +70,7 @@ export class SellerDashboardComponent implements OnInit {
   };
   public stockChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true, maintainAspectRatio: false,
-    scales: { 
+    scales: {
       y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#64748b' } },
       x: { grid: { display: false }, ticks: { color: '#64748b' }, display: false } // Hide x-axis labels if too many products
     },
@@ -82,7 +83,7 @@ export class SellerDashboardComponent implements OnInit {
   };
   public topProductsChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true, maintainAspectRatio: false,
-    scales: { 
+    scales: {
       y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#64748b' } },
       x: { grid: { display: false }, ticks: { color: '#64748b' }, display: false }
     },
@@ -136,7 +137,7 @@ export class SellerDashboardComponent implements OnInit {
         this.produits = p.filter(pr => pr.vendeurId === this.userId || !pr.vendeurId);
         this.computeKPIs();
         this.loadCommandes();
-        
+
         // Charger les offres pour chaque produit
         this.produits.forEach(prod => this.loadProductOffers(prod.id));
       },
@@ -167,10 +168,10 @@ export class SellerDashboardComponent implements OnInit {
         this.totalProductsCount = Object.values(stats).reduce((acc, val) => acc + val, 0);
         this.categoryChartData = {
           labels: Object.keys(stats),
-          datasets: [{ 
-            data: Object.values(stats), 
-            backgroundColor: ['#6366f1', '#f97316', '#10b981', '#f43f5e', '#8b5cf6', '#a855f7', '#ec4899', '#06b6d4', '#eab308'], 
-            hoverOffset: 4 
+          datasets: [{
+            data: Object.values(stats),
+            backgroundColor: ['#6366f1', '#f97316', '#10b981', '#f43f5e', '#8b5cf6', '#a855f7', '#ec4899', '#06b6d4', '#eab308'],
+            hoverOffset: 4
           }]
         };
       },
@@ -187,9 +188,9 @@ export class SellerDashboardComponent implements OnInit {
     // Top Products Chart
     const productRevenue: { [key: string]: number } = {};
     const productTitles: { [key: string]: string } = {};
-    
+
     this.produits.forEach(p => productTitles[p.id] = p.titre);
-    
+
     this.commandes.forEach(c => {
       const pid = c.produitId;
       productRevenue[pid] = (productRevenue[pid] || 0) + (c.prixFinal || 0);
@@ -206,7 +207,7 @@ export class SellerDashboardComponent implements OnInit {
   }
 
   // --- Modal Logic ---
-  onFileSelected(event: any, type: 'new'|'edit') {
+  onFileSelected(event: any, type: 'new' | 'edit') {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
@@ -257,9 +258,9 @@ export class SellerDashboardComponent implements OnInit {
   proceedCreate() {
     this.newProd.vendeurId = this.userId;
     this.newProd.statut = 'ACTIF';
-    
+
     this.productService.createProduit(this.newProd).subscribe({
-      next: (createdProd) => { 
+      next: (createdProd) => {
         // Si un prix offre a été spécifié, on crée aussi l'enregistrement dans la classe Offre
         if (this.newProd.prixOffre && this.newProd.prixOffre > 0) {
           const offrePayload = {
@@ -278,7 +279,7 @@ export class SellerDashboardComponent implements OnInit {
             error: err => console.error("Erreur création offre:", err)
           });
         } else {
-          this.loadProduits(); 
+          this.loadProduits();
           this.resetForm();
         }
       },
@@ -290,7 +291,7 @@ export class SellerDashboardComponent implements OnInit {
     this.productService.getOffresByProduit(produitId).subscribe({
       next: (offres) => {
         // Trier du plus récent au plus ancien
-        this.productOffers[produitId] = offres.sort((a, b) => 
+        this.productOffers[produitId] = offres.sort((a, b) =>
           new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime()
         );
 
@@ -330,9 +331,9 @@ export class SellerDashboardComponent implements OnInit {
   onUpdate() {
     if (!this.editProd.id) return;
     this.productService.updateProduit(this.editProd.id, this.editProd).subscribe({
-      next: () => { 
-        this.loadProduits(); 
-        this.editProd = {}; 
+      next: () => {
+        this.loadProduits();
+        this.editProd = {};
         this.editModalTab = 'info';
       },
       error: err => console.error(err)
@@ -355,7 +356,7 @@ export class SellerDashboardComponent implements OnInit {
     this.isEditingOffer = true;
     this.editingOfferId = off.id;
     this.newOfferPrice = off.prixPropose; // Keep for reference if needed
-    
+
     if (off.pourcentageDiscount && off.pourcentageDiscount > 0) {
       this.newOfferPercentage = off.pourcentageDiscount;
     } else if (off.prixPropose && this.editProd.prix) {
@@ -363,7 +364,7 @@ export class SellerDashboardComponent implements OnInit {
     } else {
       this.newOfferPercentage = null;
     }
-    
+
     this.newOfferStart = off.dateDebut ? off.dateDebut.slice(0, 16) : '';
     this.newOfferEnd = off.dateFin ? off.dateFin.slice(0, 16) : '';
     this.newOfferStatut = off.statut;
@@ -407,7 +408,7 @@ export class SellerDashboardComponent implements OnInit {
 
     const basePrice = this.editProd.prix || 0;
     const calculatedPrice = basePrice * (1 - this.newOfferPercentage / 100);
-    
+
     // EXIGENCE 1: Le prix proposé ne peut pas être inférieur au prixMin du produit
     if (calculatedPrice < (this.editProd.prixMin || 0)) {
       alert(`Erreur: La réduction de ${this.newOfferPercentage}% donne un prix de ${calculatedPrice.toFixed(2)} MAD, ce qui est inférieur au prix minimum autorisé (${this.editProd.prixMin} MAD).`);
@@ -451,7 +452,7 @@ export class SellerDashboardComponent implements OnInit {
     const basePrice = this.editProd.prix || 0;
     // Calculate new percentage based on alternative price
     const newPercentage = ((basePrice - altPrice) / basePrice) * 100;
-    
+
     this.newOfferPrice = altPrice;
     this.newOfferPercentage = parseFloat(newPercentage.toFixed(2));
     this.showAlternatives = false;
@@ -471,7 +472,7 @@ export class SellerDashboardComponent implements OnInit {
 
   submitOfferRecord(prix: number, percentage: number) {
     if (!this.editProd.id) return;
-    
+
     const offrePayload = {
       produitId: this.editProd.id,
       prixPropose: prix,
@@ -512,7 +513,7 @@ export class SellerDashboardComponent implements OnInit {
 
   isOfferActive(off: Offre): boolean {
     if (off.statut !== 'VALIDEE') return false;
-    
+
     const now = new Date();
     const start = off.dateDebut ? new Date(off.dateDebut) : null;
     const end = off.dateFin ? new Date(off.dateFin) : null;
@@ -520,7 +521,7 @@ export class SellerDashboardComponent implements OnInit {
     // EXIGENCE 3: Invalidation automatique si date de fin < date actuelle
     if (start && now < start) return false;
     if (end && now > end) return false;
-    
+
     return true;
   }
 
@@ -535,10 +536,11 @@ export class SellerDashboardComponent implements OnInit {
 
   triggerAgent(p: Produit) {
     this.productService.genererOffreAgent(p).subscribe({
-      next: res => { 
-        alert(`L'Agent a généré une offre à ${res.prixSuggere} MAD (Remise: ${res.discountPercent}%)`); 
+      next: res => {
+        alert(`L'Agent a généré une offre à ${res.prixSuggere} MAD (Remise: ${res.discountPercent}%)`);
       },
       error: err => console.error(err)
     });
   }
+
 }

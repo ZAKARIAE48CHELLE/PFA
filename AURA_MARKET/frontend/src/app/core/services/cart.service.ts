@@ -36,6 +36,8 @@ export class CartService {
 
     if (existing) {
       existing.quantite += 1;
+      // Update price if a newer negotiated price is provided
+      if (produit.prixOffre) existing.produit.prixOffre = produit.prixOffre;
       this.saveCart([...current]);
     } else {
       this.saveCart([...current, { produit, quantite: 1 }]);
@@ -66,7 +68,10 @@ export class CartService {
   }
 
   get getTotalPrice(): number {
-    return this.cartItems().reduce((total, item) => total + (item.produit.prix * item.quantite), 0);
+    return this.cartItems().reduce((total, item) => {
+      const price = item.produit.prixOffre || item.produit.prix;
+      return total + (price * item.quantite);
+    }, 0);
   }
 
   get getItemCount(): number {

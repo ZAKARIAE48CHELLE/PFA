@@ -18,8 +18,10 @@ public class ProduitController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Produit>> getAllProduits(@RequestParam(required = false) String category) {
-        return ResponseEntity.ok(productService.getAllProduits(category));
+    public ResponseEntity<List<Produit>> getAllProduits(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(productService.getAllProduits(category, search));
     }
 
     @GetMapping("/stats/categories")

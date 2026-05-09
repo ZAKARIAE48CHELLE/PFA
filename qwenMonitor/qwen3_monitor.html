@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qwen3 Monitor — AuraMarket</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --surface3: #22222e;
+      --border: #2a2a3a;
+      --border2: #3a3a4e;
+      --accent: #7c6af7;
+      --accent2: #a594f9;
+      --green: #22d3a0;
+      --red: #f05a5a;
+      --yellow: #f5c842;
+      --cyan: #38c8e8;
+      --text: #e8e6f0;
+      --text2: #9896a8;
+      --text3: #5a5870;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text2);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.offline {
+      background: var(--red);
+      animation: none;
+    }
+
+    .btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      font-family: var(--sans);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      background: var(--surface3);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .btn.danger {
+      border-color: #f05a5a44;
+      color: var(--red);
+    }
+
+    .btn.danger:hover {
+      background: #f05a5a18;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      gap: 1px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--border);
+    }
+
+    .stat-card {
+      flex: 1;
+      padding: 10px 16px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-value.yellow {
+      color: var(--yellow);
+    }
+
+    .stat-value.red {
+      color: var(--red);
+    }
+
+    .stat-value.accent {
+      color: var(--accent2);
+    }
+
+    .stat-sub {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    /* ── LOG PANEL ── */
+    .log-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-badge {
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 10px;
+      color: var(--accent2);
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .filter-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .filter-input:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-input::placeholder {
+      color: var(--text3);
+    }
+
+    .filter-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: var(--surface3);
+    }
+
+    .logs-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+      scroll-behavior: smooth;
+    }
+
+    .logs-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .logs-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .logs-container::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px;
+    }
+
+    .log-entry {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+
+    .log-entry:hover {
+      background: var(--surface);
+    }
+
+    .log-entry.selected {
+      background: var(--surface2);
+      border-left: 2px solid var(--accent);
+    }
+
+    .log-time {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      padding: 8px 10px;
+      white-space: nowrap;
+      min-width: 78px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      padding-top: 10px;
+    }
+
+    .log-type {
+      width: 80px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      padding-top: 10px;
+    }
+
+    .type-nego {
+      color: var(--accent2);
+    }
+
+    .type-chat {
+      color: var(--cyan);
+    }
+
+    .type-auto {
+      color: var(--yellow);
+    }
+
+    .type-error {
+      color: var(--red);
+    }
+
+    .type-system {
+      color: var(--text3);
+    }
+
+    .type-nav {
+      color: var(--green);
+    }
+
+    .log-body {
+      flex: 1;
+      padding: 8px 12px;
+      overflow: hidden;
+    }
+
+    .log-source {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: var(--mono);
+      margin-bottom: 3px;
+    }
+
+    .log-prompt {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .log-prompt.system {
+      color: var(--text3);
+      font-style: italic;
+    }
+
+    .log-prompt.user {
+      color: var(--text);
+    }
+
+    .log-prompt.assistant {
+      color: var(--accent2);
+    }
+
+    .log-meta {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      color: var(--text3);
+    }
+
+    .meta-tag.tokens {
+      color: var(--yellow);
+      border-color: #f5c84233;
+    }
+
+    .meta-tag.duration {
+      color: var(--cyan);
+      border-color: #38c8e833;
+    }
+
+    .meta-tag.status-ok {
+      color: var(--green);
+      border-color: #22d3a033;
+    }
+
+    .meta-tag.status-err {
+      color: var(--red);
+      border-color: #f05a5a33;
+    }
+
+    /* ── DETAIL PANEL ── */
+    .detail-panel {
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .detail-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .detail-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .detail-content::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px;
+    }
+
+    .detail-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 10px;
+      color: var(--text3);
+    }
+
+    .detail-empty-icon {
+      font-size: 32px;
+      opacity: 0.3;
+    }
+
+    .detail-section {
+      margin-bottom: 20px;
+    }
+
+    .detail-section-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text3);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-msg {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .detail-role {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .role-system {
+      color: var(--text3);
+    }
+
+    .role-user {
+      color: var(--cyan);
+    }
+
+    .role-assistant {
+      color: var(--accent2);
+    }
+
+    .detail-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .detail-think {
+      background: var(--surface3);
+      border-left: 2px solid var(--accent);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .think-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .think-text {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      font-style: italic;
+    }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .kv-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .kv-key {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      margin-bottom: 2px;
+    }
+
+    .kv-val {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .kv-val.green {
+      color: var(--green);
+    }
+
+    .kv-val.yellow {
+      color: var(--yellow);
+    }
+
+    .kv-val.red {
+      color: var(--red);
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .bottom-left {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .bottom-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .auto-scroll-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: var(--text3);
+      transition: color 0.15s;
+    }
+
+    .auto-scroll-toggle:hover {
+      color: var(--text2);
+    }
+
+    .toggle-box {
+      width: 28px;
+      height: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: var(--surface3);
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .toggle-box.on {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle-knob {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--text3);
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.2s;
+    }
+
+    .toggle-box.on .toggle-knob {
+      left: 15px;
+      background: white;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      gap: 12px;
+      color: var(--text3);
+      font-family: var(--mono);
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      opacity: 0.2;
+    }
+
+    .empty-title {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .empty-sub {
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 260px;
+    }
+
+    /* ── INTERCEPTOR BANNER ── */
+    .interceptor-banner {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text2);
+      flex-shrink: 0;
+    }
+
+    .interceptor-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+
+    .code-inline {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 10px;
+      color: var(--green);
+      margin-top: 6px;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* scrollbar */
+    .code-inline::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .code-inline::-webkit-scrollbar-thumb {
+      background: var(--border2);
+    }
+
+    /* animations */
+    .log-entry {
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      QWEN3 MONITOR
+      <span style="color:var(--text3); font-weight:400;">— AuraMarket</span>
+    </div>
+    <div class="header-right">
+      <div class="status-badge">
+        <div class="status-dot" id="ollamaStatusDot"></div>
+        <span id="ollamaStatusText">Checking...</span>
+      </div>
+      <div class="status-badge">
+        <span style="color:var(--text3)">model:</span>
+        <span style="color:var(--accent2)">qwen3:8b</span>
+      </div>
+      <button class="btn" onclick="testConnection()">Test ping</button>
+      <button class="btn danger" onclick="clearLogs()">Clear logs</button>
+    </div>
+  </header>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">Total calls</div>
+      <div class="stat-value accent" id="statTotal">0</div>
+      <div class="stat-sub">depuis démarrage</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Succès</div>
+      <div class="stat-value green" id="statSuccess">0</div>
+      <div class="stat-sub" id="statSuccessRate">— %</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Erreurs</div>
+      <div class="stat-value red" id="statErrors">0</div>
+      <div class="stat-sub">timeouts + failures</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Durée moy.</div>
+      <div class="stat-value yellow" id="statAvgDuration">—</div>
+      <div class="stat-sub">ms par appel</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tokens total</div>
+      <div class="stat-value" id="statTokens">0</div>
+      <div class="stat-sub">prompt + completion</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dernier appel</div>
+      <div class="stat-value" id="statLast" style="font-size:13px">—</div>
+      <div class="stat-sub" id="statLastType">—</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LOG PANEL -->
+    <div class="log-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          Messages interceptés
+          <span class="count-badge" id="logCount">0</span>
+        </div>
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          LIVE
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <input class="filter-input" id="searchInput" placeholder="Rechercher dans les messages..."
+          oninput="filterLogs()">
+        <button class="filter-btn active" data-filter="ALL" onclick="setFilter(this, 'ALL')">Tous</button>
+        <button class="filter-btn" data-filter="NEGO" onclick="setFilter(this, 'NEGO')">Négo</button>
+        <button class="filter-btn" data-filter="CHAT" onclick="setFilter(this, 'CHAT')">Chat</button>
+        <button class="filter-btn" data-filter="AUTO" onclick="setFilter(this, 'AUTO')">Auto</button>
+        <button class="filter-btn" data-filter="NAV" onclick="setFilter(this, 'NAV')">Nav</button>
+        <button class="filter-btn" data-filter="ERROR" onclick="setFilter(this, 'ERROR')">Erreurs</button>
+      </div>
+
+      <div class="logs-container" id="logsContainer">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">⬡</div>
+          <div class="empty-title">En attente de messages</div>
+          <div class="empty-sub">
+            Configurez le proxy Ollama ci-dessous pour intercepter les appels depuis Antigravity
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERCEPTOR SETUP -->
+      <div class="interceptor-banner">
+        <div class="interceptor-title">⚙ Configuration du proxy</div>
+        <div style="color:var(--text3); margin-bottom:6px;">
+          Deux options pour intercepter les appels depuis Antigravity :
+        </div>
+        <div style="color:var(--text2); margin-bottom:4px;">Option A — Polling (simple) : ce dashboard interroge Ollama
+          en direct</div>
+        <div class="code-inline">Ollama URL : <span id="ollamaUrlDisplay">http://localhost:11434</span>
+          <input id="ollamaUrlInput" value="http://localhost:11434"
+            style="background:transparent;border:none;color:var(--accent2);font-family:var(--mono);font-size:10px;width:200px;outline:none;"
+            onchange="updateOllamaUrl(this.value)">
+        </div>
+        <div style="color:var(--text2); margin-top:8px; margin-bottom:4px;">Option B — Antigravity interceptor : ajoutez
+          dans KimiService.java</div>
+        <div class="code-inline">// Après chaque appel Ollama, poster vers ce monitor :
+          RestTemplate monitor = new RestTemplate();
+          monitor.postForEntity("http://localhost:9999/intercept", payload, String.class);</div>
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+          <span style="color:var(--text3);">Port écoute monitor :</span>
+          <input id="portInput" value="9999"
+            style="background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--accent2);font-family:var(--mono);font-size:11px;width:70px;outline:none;">
+          <button class="btn" onclick="injectDemo()">Demo (données simulées)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel">
+      <div class="panel-header">
+        <div class="panel-title">Détail du message</div>
+        <button class="btn" id="copyBtn" onclick="copyDetail()" style="display:none">Copier</button>
+      </div>
+      <div class="detail-content" id="detailContent">
+        <div class="detail-empty">
+          <div class="detail-empty-icon">↖</div>
+          <div style="font-size:12px; color:var(--text3); font-family:var(--mono)">
+            Cliquez sur un message pour voir les détails
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div class="bottom-left">
+      <span id="bottomStatus">Prêt</span>
+      <span>|</span>
+      <span id="bottomFilter">Filtre: TOUS</span>
+      <span>|</span>
+      <span id="bottomVisible">0 messages visibles</span>
+    </div>
+    <div class="bottom-right">
+      <div class="auto-scroll-toggle" onclick="toggleAutoScroll()" title="Auto-scroll">
+        <div class="toggle-box on" id="autoScrollToggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span>Auto-scroll</span>
+      </div>
+      <span id="bottomTime">—</span>
+    </div>
+  </div>
+
+  <script>
+    const OLLAMA_BASE = { url: 'http://localhost:11434' };
+    let logs = [];
+    let selectedLog = null;
+    let currentFilter = 'ALL';
+    let searchQuery = '';
+    let autoScroll = true;
+    let stats = { total: 0, success: 0, errors: 0, durations: [], tokens: 0 };
+    let pollInterval = null;
+
+    function updateOllamaUrl(val) {
+      OLLAMA_BASE.url = val.trim();
+    }
+
+    // ── STATUS CHECK ──────────────────────────────────────────────────────────
+    async function checkOllamaStatus() {
+      try {
+        const r = await fetch(OLLAMA_BASE.url, { signal: AbortSignal.timeout(3000) });
+        if (r.ok) {
+          document.getElementById('ollamaStatusDot').classList.remove('offline');
+          document.getElementById('ollamaStatusText').textContent = 'Ollama en ligne';
+          return true;
+        }
+      } catch (e) { }
+      document.getElementById('ollamaStatusDot').classList.add('offline');
+      document.getElementById('ollamaStatusText').textContent = 'Ollama hors ligne';
+      return false;
+    }
+
+    async function testConnection() {
+      document.getElementById('bottomStatus').textContent = 'Test en cours...';
+      const ok = await checkOllamaStatus();
+      if (ok) {
+        addSystemLog('Connexion Ollama OK — ' + OLLAMA_BASE.url);
+        document.getElementById('bottomStatus').textContent = 'Connexion OK';
+      } else {
+        addSystemLog('Connexion échouée — vérifier que Ollama tourne (ollama serve)', true);
+        document.getElementById('bottomStatus').textContent = 'Connexion échouée';
+      }
+    }
+
+    // ── LOG MANAGEMENT ────────────────────────────────────────────────────────
+    function addLog(entry) {
+      logs.push(entry);
+      updateStats(entry);
+      renderLogs();
+      updateBottomBar();
+      updateStatCards();
+    }
+
+    function addSystemLog(msg, isError = false) {
+      addLog({
+        id: Date.now(),
+        time: new Date(),
+        type: isError ? 'ERROR' : 'SYSTEM',
+        source: 'monitor',
+        messages: [{ role: 'system', content: msg }],
+        response: null,
+        think: null,
+        duration: null,
+        tokens: null,
+        status: isError ? 'error' : 'ok'
+      });
+    }
+
+    function updateStats(entry) {
+      stats.total++;
+      if (entry.status === 'ok') stats.success++;
+      else stats.errors++;
+      if (entry.duration) stats.durations.push(entry.duration);
+      if (entry.tokens) stats.tokens += entry.tokens;
+    }
+
+    function updateStatCards() {
+      document.getElementById('statTotal').textContent = stats.total;
+      document.getElementById('statSuccess').textContent = stats.success;
+      document.getElementById('statErrors').textContent = stats.errors;
+      const rate = stats.total > 0 ? Math.round(stats.success / stats.total * 100) : 0;
+      document.getElementById('statSuccessRate').textContent = rate + '%';
+      const avgDur = stats.durations.length > 0
+        ? Math.round(stats.durations.reduce((a, b) => a + b, 0) / stats.durations.length)
+        : null;
+      document.getElementById('statAvgDuration').textContent = avgDur ? avgDur + 'ms' : '—';
+      document.getElementById('statTokens').textContent = stats.tokens.toLocaleString();
+      if (logs.length > 0) {
+        const last = logs[logs.length - 1];
+        document.getElementById('statLast').textContent = formatTime(last.time);
+        document.getElementById('statLastType').textContent = last.type;
+      }
+    }
+
+    function clearLogs() {
+      logs = [];
+      selectedLog = null;
+      stats = { total: 0, success: 0, errors: 0, durations: [], tokens: 0 };
+      renderLogs();
+      updateStatCards();
+      updateBottomBar();
+      document.getElementById('detailContent').innerHTML = `
+      <div class="detail-empty">
+        <div class="detail-empty-icon">↖</div>
+        <div style="font-size:12px; color:var(--text3); font-family:var(--mono)">
+          Cliquez sur un message pour voir les détails
+        </div>
+      </div>`;
+      document.getElementById('copyBtn').style.display = 'none';
+    }
+
+    // ── RENDER ────────────────────────────────────────────────────────────────
+    function getVisible() {
+      return logs.filter(l => {
+        if (currentFilter !== 'ALL' && l.type !== currentFilter) return false;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const text = JSON.stringify(l).toLowerCase();
+          if (!text.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('logsContainer');
+      const visible = getVisible();
+      document.getElementById('logCount').textContent = visible.length;
+
+      if (logs.length === 0) {
+        container.innerHTML = `<div class="empty-state" id="emptyState">
+        <div class="empty-icon">⬡</div>
+        <div class="empty-title">En attente de messages</div>
+        <div class="empty-sub">Utilisez le bouton Demo pour simuler des données, ou configurez le proxy</div>
+      </div>`;
+        return;
+      }
+
+      if (visible.length === 0) {
+        container.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">∅</div>
+        <div class="empty-title">Aucun résultat</div>
+        <div class="empty-sub">Modifiez le filtre ou la recherche</div>
+      </div>`;
+        return;
+      }
+
+      container.innerHTML = visible.map(l => renderLogEntry(l)).join('');
+
+      container.querySelectorAll('.log-entry').forEach(el => {
+        el.addEventListener('click', () => selectLog(parseInt(el.dataset.id)));
+      });
+
+      if (autoScroll) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function renderLogEntry(l) {
+      const isSelected = selectedLog && selectedLog.id === l.id;
+      const typeClass = 'type-' + l.type.toLowerCase();
+      const userMsg = l.messages ? l.messages.find(m => m.role === 'user') : null;
+      const preview = userMsg
+        ? userMsg.content.slice(0, 120) + (userMsg.content.length > 120 ? '…' : '')
+        : (l.messages && l.messages[0] ? l.messages[0].content.slice(0, 120) : '—');
+
+      const statusTag = l.status === 'ok'
+        ? `<span class="meta-tag status-ok">✓ OK</span>`
+        : `<span class="meta-tag status-err">✗ ERR</span>`;
+      const durationTag = l.duration
+        ? `<span class="meta-tag duration">${l.duration}ms</span>` : '';
+      const tokenTag = l.tokens
+        ? `<span class="meta-tag tokens">${l.tokens} tok</span>` : '';
+
+      return `<div class="log-entry ${isSelected ? 'selected' : ''}" data-id="${l.id}">
+      <div class="log-time">${formatTime(l.time)}</div>
+      <div class="log-type ${typeClass}">${l.type}</div>
+      <div class="log-body">
+        <div class="log-source">${l.source || 'unknown'}</div>
+        <div class="log-prompt user">${escHtml(preview)}</div>
+        ${l.response ? `<div class="log-prompt assistant">↳ ${escHtml(l.response.slice(0, 80))}${l.response.length > 80 ? '…' : ''}</div>` : ''}
+        <div class="log-meta">${statusTag}${durationTag}${tokenTag}</div>
+      </div>
+    </div>`;
+    }
+
+    function selectLog(id) {
+      selectedLog = logs.find(l => l.id === id);
+      renderLogs();
+      renderDetail();
+      document.getElementById('copyBtn').style.display = selectedLog ? 'block' : 'none';
+    }
+
+    function renderDetail() {
+      if (!selectedLog) return;
+      const l = selectedLog;
+      const dc = document.getElementById('detailContent');
+
+      let html = '';
+
+      // Metadata
+      html += `<div class="detail-section">
+      <div class="detail-section-title">Metadata</div>
+      <div class="kv-grid">
+        <div class="kv-item"><div class="kv-key">Type</div><div class="kv-val">${l.type}</div></div>
+        <div class="kv-item"><div class="kv-key">Status</div><div class="kv-val ${l.status === 'ok' ? 'green' : 'red'}">${l.status === 'ok' ? '✓ OK' : '✗ ERREUR'}</div></div>
+        <div class="kv-item"><div class="kv-key">Durée</div><div class="kv-val yellow">${l.duration ? l.duration + ' ms' : '—'}</div></div>
+        <div class="kv-item"><div class="kv-key">Tokens</div><div class="kv-val">${l.tokens || '—'}</div></div>
+        <div class="kv-item"><div class="kv-key">Source</div><div class="kv-val" style="font-size:11px">${l.source || '—'}</div></div>
+        <div class="kv-item"><div class="kv-key">Heure</div><div class="kv-val" style="font-size:11px">${formatTimeFull(l.time)}</div></div>
+      </div>
+    </div>`;
+
+      // Messages
+      if (l.messages && l.messages.length > 0) {
+        html += `<div class="detail-section"><div class="detail-section-title">Messages envoyés (${l.messages.length})</div>`;
+        l.messages.forEach(m => {
+          html += `<div class="detail-msg">
+          <div class="detail-role role-${m.role}">${m.role}</div>
+          <div class="detail-text">${escHtml(m.content)}</div>
+        </div>`;
+        });
+        html += `</div>`;
+      }
+
+      // Think block
+      if (l.think) {
+        html += `<div class="detail-section">
+        <div class="detail-section-title">Raisonnement interne (&lt;think&gt;)</div>
+        <div class="detail-think">
+          <div class="think-label">Pensée du modèle (supprimée de la réponse finale)</div>
+          <div class="think-text">${escHtml(l.think)}</div>
+        </div>
+      </div>`;
+      }
+
+      // Response
+      if (l.response) {
+        html += `<div class="detail-section">
+        <div class="detail-section-title">Réponse finale</div>
+        <div class="detail-msg">
+          <div class="detail-role role-assistant">assistant</div>
+          <div class="detail-text">${escHtml(l.response)}</div>
+        </div>
+      </div>`;
+      }
+
+      // Error
+      if (l.error) {
+        html += `<div class="detail-section">
+        <div class="detail-section-title">Erreur</div>
+        <div class="detail-msg" style="border-color:#f05a5a33">
+          <div class="detail-text" style="color:var(--red)">${escHtml(l.error)}</div>
+        </div>
+      </div>`;
+      }
+
+      dc.innerHTML = html;
+    }
+
+    function copyDetail() {
+      if (!selectedLog) return;
+      const text = JSON.stringify(selectedLog, null, 2);
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById('copyBtn').textContent = 'Copié !';
+        setTimeout(() => document.getElementById('copyBtn').textContent = 'Copier', 1500);
+      });
+    }
+
+    // ── FILTERS ───────────────────────────────────────────────────────────────
+    function setFilter(btn, filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('bottomFilter').textContent = 'Filtre: ' + filter;
+      renderLogs();
+      updateBottomBar();
+    }
+
+    function filterLogs() {
+      searchQuery = document.getElementById('searchInput').value;
+      renderLogs();
+      updateBottomBar();
+    }
+
+    function updateBottomBar() {
+      document.getElementById('bottomVisible').textContent = getVisible().length + ' messages visibles';
+      document.getElementById('bottomTime').textContent = new Date().toLocaleTimeString('fr-FR');
+    }
+
+    function toggleAutoScroll() {
+      autoScroll = !autoScroll;
+      const t = document.getElementById('autoScrollToggle');
+      if (autoScroll) t.classList.add('on'); else t.classList.remove('on');
+    }
+
+    // ── DEMO DATA ─────────────────────────────────────────────────────────────
+    function injectDemo() {
+      const demos = [
+        {
+          type: 'NEGO',
+          source: 'AgentRestBridge → /agent/nego/ajuster',
+          messages: [
+            { role: 'system', content: 'Tu es un agent vendeur AuraMarket. Tu négocies de façon professionnelle.\nRègle absolue : ton prix ne descend jamais sous le prix minimum.\nRéponds en 1-2 phrases maximum, ton commercial mais ferme.' },
+            { role: 'user', content: 'Justifie ta contre-proposition de 920.00€ (min=300€, actuel=1037.91€, proposé=800€) en 1 phrase.' }
+          ],
+          think: 'The buyer proposed 800 MAD which is below my current price of 1037.91. I need to make a reasonable counter-offer that respects my minimum of 300 MAD. The buyer seems serious, I should show flexibility but not give too much.',
+          response: 'Je propose 920 MAD, ce qui représente un geste commercial significatif tout en maintenant la valeur de ce produit de qualité.',
+          duration: 1840,
+          tokens: 312,
+          status: 'ok'
+        },
+        {
+          type: 'CHAT',
+          source: 'AgentRestBridge → /agent/chat/navigate',
+          messages: [
+            { role: 'system', content: 'Tu es l\'assistant IA d\'AuraMarket, une marketplace marocaine intelligente.\nTu aides les acheteurs à naviguer, trouver des produits et comprendre leurs commandes.\nRéponds en français, de façon concise et amicale (max 2-3 phrases).' },
+            { role: 'user', content: 'je cherche un smartphone pas cher, autour de 500 MAD' }
+          ],
+          think: 'User wants a cheap smartphone around 500 MAD. I should search for phones in that price range and suggest relevant products.',
+          response: '{"intention":"PRICE_RANGE","categorie":"Téléphones","prixMin":400,"prixMax":600,"motsCles":["smartphone","pas cher"],"reponse":"J\'ai trouvé plusieurs smartphones dans votre budget (400-600 MAD) !"}',
+          duration: 2210,
+          tokens: 445,
+          status: 'ok'
+        },
+        {
+          type: 'AUTO',
+          source: 'AgentAcheteur → NEGO_AUTO Round 1',
+          messages: [
+            { role: 'system', content: 'Tu es l\'agent négociateur IA d\'AuraMarket. Tu négocies à la place du client.\nSTRATÉGIE : Round 1 → propose 72% du prix actuel.\nFORMAT JSON strict uniquement.' },
+            { role: 'user', content: 'Contexte: prix actuel vendeur = 1037.91 MAD, budget client = 900 MAD, round 1/3, historique: [], comportement vendeur = STABLE, tendance = STABLE. Calcule ta prochaine offre.' }
+          ],
+          think: 'Round 1, I should start aggressive at 72% of 1037.91 = 747.3 MAD. This is below the client budget of 900 so it\'s valid.',
+          response: '{"prixPropose":747.30,"message":"Je propose 747 MAD, une offre sérieuse pour démarrer notre négociation.","raisonnement":"Round 1 agressif à 72% du prix actuel"}',
+          duration: 1650,
+          tokens: 287,
+          status: 'ok'
+        },
+        {
+          type: 'ERROR',
+          source: 'KimiService → ollama timeout',
+          messages: [
+            { role: 'system', content: 'Tu es l\'assistant IA d\'AuraMarket...' },
+            { role: 'user', content: 'Explique la différence entre négociation manuelle et automatique.' }
+          ],
+          think: null,
+          response: null,
+          error: 'Read timeout: Ollama n\'a pas répondu dans le délai imparti (60s). Le modèle est peut-être encore en chargement au premier appel (cold start). Réessayez.',
+          duration: 60000,
+          tokens: 0,
+          status: 'error'
+        },
+        {
+          type: 'NAV',
+          source: 'ChatbotWidget → /agent/chat/navigate',
+          messages: [
+            { role: 'system', content: 'Tu es un assistant de navigation AuraMarket. Réponds uniquement en JSON valide.' },
+            { role: 'user', content: 'ma commande CMD-20260508-004712' }
+          ],
+          think: 'User wants to check order CMD-20260508-004712. Intention is CHECK_ORDER.',
+          response: '{"intention":"CHECK_ORDER","categorie":null,"prixMin":null,"prixMax":null,"motsCles":["commande","CMD-20260508-004712"],"reponse":"Je vous redirige vers le détail de votre commande."}',
+          duration: 980,
+          tokens: 198,
+          status: 'ok'
+        }
+      ];
+
+      let delay = 0;
+      demos.forEach(d => {
+        setTimeout(() => {
+          addLog({ id: Date.now() + Math.random(), time: new Date(), ...d });
+        }, delay);
+        delay += 400;
+      });
+    }
+
+    // ── UTILS ─────────────────────────────────────────────────────────────────
+    function formatTime(d) {
+      if (!d) return '—';
+      const date = new Date(d);
+      return date.toLocaleTimeString('fr-FR', { hour12: false });
+    }
+
+    function formatTimeFull(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleString('fr-FR');
+    }
+
+    function escHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    checkOllamaStatus();
+    setInterval(checkOllamaStatus, 10000);
+    setInterval(() => {
+      document.getElementById('bottomTime').textContent = new Date().toLocaleTimeString('fr-FR');
+    }, 1000);
+
+    addSystemLog('Monitor démarré — en attente de messages Ollama');
+    // Connexion SSE au serveur monitor
+    const evtSource = new EventSource('http://localhost:9999/events');
+    evtSource.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        data.id = Date.now() + Math.random();
+        data.time = new Date(data.time || Date.now());
+        addLog(data);
+      } catch (err) { console.error('Parse error', err); }
+    };
+    evtSource.onerror = () => {
+      addSystemLog('Connexion monitor-server perdue — relancer node monitor-server.js', true);
+    };
+  </script>
+</body>
+
+</html>

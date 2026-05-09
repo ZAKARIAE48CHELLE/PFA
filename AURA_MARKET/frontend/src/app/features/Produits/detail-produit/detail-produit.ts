@@ -36,13 +36,16 @@ export class DetailProduit implements OnInit {
   private authService = inject(AuthService);
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadProduit(id);
-    } else {
-      this.error = 'Identifiant du produit manquant';
-      this.loading = false;
-    }
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loading = true;
+        this.loadProduit(id);
+      } else {
+        this.error = 'Identifiant du produit manquant';
+        this.loading = false;
+      }
+    });
   }
 
   showStatus(msg: string, type: 'success' | 'danger' = 'success') {

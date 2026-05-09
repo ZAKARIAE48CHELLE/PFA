@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Produit, Offre } from '../../core/services/product.service';
 import { NegotiationService, Negociation, MessageNegociation } from '../../core/services/negotiation.service';
-import { RouterModule } from '@angular/router';
+import { CartService } from '../../core/services/cart.service';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-acheteur',
@@ -19,12 +20,19 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
   produits: Produit[] = [];
   selectedNego?: Negociation;
   isSending = false;
-  showAcceptModal = false;
   statusMessage = '';
   statusType: 'success' | 'danger' = 'success';
+  
+  // Buyer Agent states
+  autoNegoInProgress = false;
+  autoNegoTarget: number = 0;
+  aiSuggestion: string | undefined;
+  sessionId = 'session_' + Math.random().toString(36).substring(7);
 
   private negoService = inject(NegotiationService);
   private productService = inject(ProductService);
+  private cartService = inject(CartService);
+  private router = inject(Router);
   messages: MessageNegociation[] = [];
   newMessagePrice: number | undefined;
   ngOnInit() {
@@ -52,7 +60,12 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
   loadData() {
     this.negoService.getNegociations().subscribe(n => {
       this.negociations = n;
-      if (n.length > 0 && !this.selectedNego) {
+      if (this.selectedNego) {
+        const updated = n.find(x => x.id === this.selectedNego!.id);
+        if (updated) {
+          this.selectedNego = updated;
+        }
+      } else if (n.length > 0) {
         this.selectNego(n[0]);
       }
     });
@@ -82,7 +95,6 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     this.newMessagePrice = undefined;
     this.isSending = true;
 
-    // 1. Save User Message
     const userMsg: MessageNegociation = {
       negociationId: this.selectedNego.id,
       sender: 'ACHETEUR',
@@ -92,52 +104,158 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
 
     this.negoService.saveMessage(userMsg).subscribe({
       next: () => {
+        if (this.selectedNego) {
+          this.selectedNego.rounds = (this.selectedNego.rounds || 0) + 1;
+        }
         this.loadMessages(this.selectedNego!.id);
         
-        // 2. Get Agent Response
         const priceHistory = this.messages
           .filter(m => m.sender === 'ACHETEUR')
           .map(m => m.price);
         
-        // 2. Get the real prixMin from the product database
         const produit = this.getProduitForNego(this.selectedNego!.produitId);
         const prixMin = produit?.prixMin || this.selectedNego!.prixInitial * 0.6;
-        console.log('[Dashboard] prixMin from product:', prixMin, '| produit:', produit?.titre);
 
         this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory, prixMin).subscribe({
           next: (res) => {
-            // 3. Save Agent Message
-            const agentMsg: MessageNegociation = {
-              negociationId: this.selectedNego!.id,
-              sender: 'AGENT',
-              content: `Ma contre-proposition est de ${res.nouveauPrix} MAD.`,
-              price: res.nouveauPrix
+            const commentaryPayload = {
+              nouveauPrix: res.nouveauPrix,
+              prixActuel: this.selectedNego!.prixFinal,
+              buyerBehavior: res.buyerBehavior,
+              round: this.selectedNego!.rounds
             };
-            this.negoService.saveMessage(agentMsg).subscribe(() => {
-              this.loadMessages(this.selectedNego!.id);
-              this.isSending = false;
-              this.loadData(); // Refresh rounds
+
+            this.negoService.commenterNegociation(commentaryPayload).subscribe({
+              next: (commentRes) => {
+                const agentMsg: MessageNegociation = {
+                  negociationId: this.selectedNego!.id,
+                  sender: 'AGENT',
+                  content: commentRes.message,
+                  price: res.nouveauPrix
+                };
+                this.negoService.saveMessage(agentMsg).subscribe(() => {
+                  this.loadMessages(this.selectedNego!.id);
+                  this.isSending = false;
+                  this.loadData();
+                  this.selectedNego!.prixFinal = res.nouveauPrix;
+                });
+              },
+              error: () => {
+                const agentMsg: MessageNegociation = {
+                  negociationId: this.selectedNego!.id,
+                  sender: 'AGENT',
+                  content: `Ma contre-proposition est de ${res.nouveauPrix} MAD.`,
+                  price: res.nouveauPrix
+                };
+                this.negoService.saveMessage(agentMsg).subscribe(() => {
+                  this.loadMessages(this.selectedNego!.id);
+                  this.isSending = false;
+                  this.loadData();
+                });
+              }
             });
           },
           error: (err) => {
             console.error('Agent adjustment error:', err);
-            this.showStatus(err.error?.error || "L'agent n'a pas pu répondre.", 'danger');
+            this.showStatus("L'agent n'a pas pu répondre.", 'danger');
             this.isSending = false;
           }
         });
+      }
+    });
+  }
+
+  startAutoNego() {
+    if (!this.selectedNego || !this.newMessagePrice || this.isSending) return;
+    
+    const target = this.newMessagePrice;
+    this.newMessagePrice = undefined;
+    this.isSending = true;
+    this.autoNegoInProgress = true;
+    this.autoNegoTarget = target;
+
+    const userMsg: MessageNegociation = {
+      negociationId: this.selectedNego.id,
+      sender: 'ACHETEUR',
+      content: `🤖 Négociation AUTO lancée — budget: ${target} MAD. L'IA négocie pour moi.`,
+      price: target
+    };
+
+    this.negoService.saveMessage(userMsg).subscribe(() => {
+      this.loadMessages(this.selectedNego!.id);
+      
+      const produit = this.getProduitForNego(this.selectedNego!.produitId);
+      const prixMin = produit?.prixMin || this.selectedNego!.prixInitial * 0.6;
+
+      this.negoService.startAcheteurNegoAuto(this.selectedNego!, target, prixMin, this.sessionId).subscribe({
+        next: (res) => {
+          this.autoNegoInProgress = false;
+
+          const agentMsg: MessageNegociation = {
+            negociationId: this.selectedNego!.id,
+            sender: 'AGENT',
+            content: res.reponse,
+            price: res.prixAccord || res.prixFinal || this.selectedNego!.prixFinal
+          };
+          
+          this.negoService.saveMessage(agentMsg).subscribe(() => {
+            this.loadMessages(this.selectedNego!.id);
+            this.isSending = false;
+            
+            if (res.prixFinal) {
+              this.selectedNego!.prixFinal = res.prixFinal;
+            }
+
+            if (res.accordTrouve) {
+              this.selectedNego!.prixFinal = res.prixAccord;
+              this.showStatus(`✅ Accord trouvé à ${res.prixAccord} MAD !`);
+            } else {
+              this.showStatus(`Meilleure offre du vendeur: ${res.prixFinal} MAD. Vous pouvez accepter ou continuer.`, 'danger');
+            }
+            this.loadData();
+          });
+        },
+        error: (err) => {
+          this.autoNegoInProgress = false;
+          this.showStatus("L'assistant n'a pas pu démarrer la négociation.", 'danger');
+          this.isSending = false;
+        }
+      });
+    });
+  }
+
+  askAISuggestion() {
+    if (!this.selectedNego || this.isSending) return;
+    
+    this.isSending = true;
+    const lastMsg = this.messages.length > 0 ? this.messages[this.messages.length-1].content : "Début de négo";
+
+    this.negoService.sendAcheteurNegoMessage(lastMsg, this.selectedNego.id, this.sessionId).subscribe({
+      next: (res) => {
+        this.aiSuggestion = res.reponse;
+        this.isSending = false;
       },
-      error: (err) => {
-        console.error('Save message error:', err);
-        this.showStatus("Erreur lors de l'envoi du message.", 'danger');
+      error: () => {
+        this.showStatus("Impossible de contacter l'assistant IA.", 'danger');
         this.isSending = false;
       }
     });
   }
 
+  useAISuggestion() {
+    if (!this.aiSuggestion) return;
+    
+    // Attempt to extract a price like "1200 MAD" or "1200.50 MAD" or just "1200"
+    const match = this.aiSuggestion.match(/(\d+(?:[.,]\d+)?)/);
+    if (match) {
+      this.newMessagePrice = parseFloat(match[1].replace(',', '.'));
+      this.showStatus("Prix suggéré appliqué !");
+    }
+    this.aiSuggestion = undefined;
+  }
+
   deleteNego(event: Event, id: string) {
     event.stopPropagation();
-    // Simplified delete for now (could also use a modal, but let's at least remove native confirm for consistency if possible)
-    // Here I'll just do it directly or add another confirmation state
     this.negoService.deleteNegociation(id).subscribe(() => {
       this.showStatus('Négociation supprimée');
       this.loadData();
@@ -150,93 +268,27 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
 
   accepterOffre() {
     if (!this.selectedNego || this.isSending) return;
-    this.showAcceptModal = true;
-  }
+    
+    const p = this.getProduitForNego(this.selectedNego.produitId);
+    if (!p) return;
 
-  closeModal() {
-    this.showAcceptModal = false;
-  }
+    this.isSending = true;
+    this.showStatus("Acceptation en cours...");
 
-  getAgentOffers(): MessageNegociation[] {
-    const uniquePrices = new Set<number>();
-    return this.messages
-      .filter((m: MessageNegociation) => m.sender === 'AGENT' && m.price > 0)
-      .filter((m: MessageNegociation) => {
-        if (uniquePrices.has(m.price)) return false;
-        uniquePrices.add(m.price);
-        return true;
-      })
-      .reverse();
+    const negotiatedProduct = { 
+      ...p, 
+      prixOffre: this.selectedNego.prixFinal 
+    };
+
+    this.cartService.addToCart(negotiatedProduct);
+    
+    this.isSending = false;
+    this.router.navigate(['/checkout']);
   }
 
   selectOfferFromHistory(price: number) {
     if (this.selectedNego) {
       this.selectedNego.prixFinal = price;
     }
-  }
-
-  confirmAcceptation() {
-    if (!this.selectedNego || this.isSending) return;
-    
-    const p = this.getProduitForNego(this.selectedNego.produitId);
-    if (!p) return;
-
-    this.isSending = true;
-    
-    const offreData = {
-      titre: `Offre pour ${p.titre}`,
-      description: `Négociation finalisée pour le produit ${p.titre}`,
-      prixPropose: this.selectedNego.prixFinal,
-      produitId: p.id,
-      acheteurId: this.selectedNego.acheteurId,
-      agentGenere: true
-    };
-
-    // 1. Create a formal Offre
-    this.productService.createOffre(offreData).subscribe({
-      next: (offre) => {
-        // 2. Accept the offer
-        this.productService.accepterOffre(offre.id).subscribe({
-          next: () => {
-            // 3. Simulate Payment
-            const payRequest = {
-              methode: 'CARTE',
-              montant: offre.prixPropose
-            };
-            
-            this.productService.payerOffre(offre.id, payRequest).subscribe({
-              next: (res) => {
-                this.showStatus(`Payé ! Commande ${res.commande.reference} générée.`);
-                this.isSending = false;
-                this.showAcceptModal = false;
-                
-                this.negoService.deleteNegociation(this.selectedNego!.id).subscribe(() => {
-                  this.loadData();
-                  this.selectedNego = undefined;
-                  this.messages = [];
-                });
-              },
-              error: (err) => {
-                console.error('Payment error:', err);
-                const msg = err.error?.message || "Échec du paiement simulation.";
-                this.showStatus(msg, 'danger');
-                this.isSending = false;
-              }
-            });
-          },
-          error: (err) => {
-            console.error('Validation error:', err);
-            const msg = err.error?.message || "Erreur lors de la validation de l'offre.";
-            this.showStatus(msg, 'danger');
-            this.isSending = false;
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Create offer error:', err);
-        this.showStatus("Erreur lors de la création de l'offre.", 'danger');
-        this.isSending = false;
-      }
-    });
   }
 }

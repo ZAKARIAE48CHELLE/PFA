@@ -5,10 +5,12 @@ import { CartService } from './core/services/cart.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { ChatbotWidgetComponent } from './features/chatbot-widget/chatbot-widget';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, ChatbotWidgetComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

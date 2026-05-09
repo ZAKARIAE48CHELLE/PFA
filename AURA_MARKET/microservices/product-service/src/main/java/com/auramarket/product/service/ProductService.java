@@ -48,11 +48,20 @@ public class ProductService {
     }
 
     public List<Produit> getAllProduits(String category) {
+        return getAllProduits(category, null);
+    }
+
+    public List<Produit> getAllProduits(String category, String search) {
+        PageRequest pageRequest = PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "datePublication"));
+        
+        if (search != null && !search.trim().isEmpty()) {
+            return produitRepository.findByTitreContainingIgnoreCase(search, pageRequest);
+        }
+        
         if (category != null && !category.trim().isEmpty()) {
-            PageRequest pageRequest = PageRequest.of(0, 1000, Sort.by(Sort.Direction.DESC, "datePublication"));
             return produitRepository.findByCategorie(category, pageRequest);
         }
-        PageRequest pageRequest = PageRequest.of(0, 1000);
+        
         return produitRepository.findAll(pageRequest).getContent();
     }
 

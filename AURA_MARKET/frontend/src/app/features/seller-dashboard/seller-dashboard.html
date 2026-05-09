@@ -139,11 +139,8 @@
         <!-- Category Sub-Tabs / Sub-Pills -->
         <div class="px-4 pb-3">
           <div class="d-flex flex-wrap gap-2">
-            <button *ngFor="let cat of categoriesList" 
-                    class="btn btn-sm" 
-                    [class.btn-primary]="selectedCategory === cat" 
-                    [class.btn-outline-secondary]="selectedCategory !== cat"
-                    (click)="changeCategory(cat)">
+            <button *ngFor="let cat of categoriesList" class="btn btn-sm" [class.btn-primary]="selectedCategory === cat"
+              [class.btn-outline-secondary]="selectedCategory !== cat" (click)="changeCategory(cat)">
               {{ cat }}
             </button>
           </div>
@@ -179,7 +176,8 @@
                   <div class="price-cell">
                     <span class="fw-bold" [class.text-decoration-line-through]="p.prixOffre"
                       [class.text-muted]="p.prixOffre">{{ p.prix | number:'1.2-2' }} MAD</span>
-                    <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre | number:'1.2-2' }} MAD</span>
+                    <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre | number:'1.2-2' }}
+                      MAD</span>
                     <span class="text-muted small d-block">Min: {{ p.prixMin | number:'1.2-2' }} MAD</span>
                   </div>
                 </td>
@@ -244,6 +242,7 @@
                 <th>Date</th>
                 <th>Montant</th>
                 <th>Statut</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -254,6 +253,11 @@
                 <td><span class="fw-bold text-success">{{ c.prixFinal }} MAD</span></td>
                 <td>
                   <span class="am-badge" [class.am-badge-success]="c.statut === 'PAYEE'">{{ c.statut }}</span>
+                </td>
+                <td>
+                  <button [routerLink]="['/commandes', c.id]" class="btn btn-light btn-sm rounded-circle">
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
                 </td>
               </tr>
               <tr *ngIf="commandes.length === 0">
@@ -294,7 +298,8 @@
                   <label class="form-label">Catégorie</label>
                   <select class="form-select" [(ngModel)]="newProd.categorie" name="cat" required>
                     <option value="" disabled selected>Choisir...</option>
-                    <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}</option>
+                    <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}
+                    </option>
                   </select>
                 </div>
                 <div class="col-12">
@@ -396,7 +401,8 @@
                     <label class="form-label">Catégorie</label>
                     <select class="form-select" [(ngModel)]="editProd.categorie" name="editCat" required>
                       <option value="" disabled selected>Choisir...</option>
-                      <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}</option>
+                      <option *ngFor="let cat of categoriesList" [value]="cat" [hidden]="cat === 'Tous'">{{ cat }}
+                      </option>
                     </select>
                   </div>
                   <div class="col-12">

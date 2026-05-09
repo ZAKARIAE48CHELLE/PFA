@@ -6,8 +6,6 @@ import { CartService } from '../../core/services/cart.service';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 
-import { forkJoin } from 'rxjs';
-
 @Component({
   selector: 'app-list-produit',
   standalone: true,
@@ -40,24 +38,39 @@ export class ListProduitComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const category = params['category'];
-      if (category) {
+      if (category == "BestDeals") {
+        this.allProduits = [];
         this.selectedCategories.clear();
-        this.selectedCategories.add(category);
+        this.productService.getProduits().subscribe(produits => {
+          console.log(produits[0].prixOffre)
+          produits.map((p: Produit) => {
+            if (p.prixOffre != null) {
+              this.allProduits.push(p)
+            }
+          });
+          this.categories = ['Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
+          this.applyFilters();
+        });
       } else {
-        this.selectedCategories.clear();
-      }
-      
-      if (params['search']) {
-        this.searchQuery = params['search'];
-      } else {
-        this.searchQuery = '';
-      }
+        if (category) {
+          this.selectedCategories.clear();
+          this.selectedCategories.add(category);
+        } else {
+          this.selectedCategories.clear();
+        }
 
-      this.productService.getProduits(category).subscribe(produits => {
-        this.allProduits = produits;
-        this.categories = ['Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
-        this.applyFilters();
-      });
+        if (params['search']) {
+          this.searchQuery = params['search'];
+        } else {
+          this.searchQuery = '';
+        }
+
+        this.productService.getProduits(category).subscribe(produits => {
+          this.allProduits = produits;
+          this.categories = ['Smartphones', 'Informatique', 'Gaming', 'Électroménager', 'Mode', 'Maison', 'Beauté', 'Sport'];
+          this.applyFilters();
+        });
+      }
     });
   }
 
@@ -146,14 +159,14 @@ export class ListProduitComponent implements OnInit {
 
   isOfferActive(off: Offre): boolean {
     if (off.statut !== 'VALIDEE') return false;
-    
+
     const now = new Date();
     const start = off.dateDebut ? new Date(off.dateDebut) : null;
     const end = off.dateFin ? new Date(off.dateFin) : null;
 
     if (start && now < start) return false;
     if (end && now > end) return false;
-    
+
     return true;
   }
 }
