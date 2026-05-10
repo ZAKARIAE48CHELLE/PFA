@@ -46,16 +46,16 @@ public class AgentRestBridge {
     
     public static class NegotiationState {
         public double prixActuel;
-        public double prixMin;
+        public double prixPlancher;
         public int roundActuel;
         public List<Double> historiqueOffres;
         public String lastBuyerBehavior;
         public String lastBuyerTrend;
         public long lastUpdated;
 
-        public NegotiationState(double prixActuel, double prixMin, int roundActuel) {
+        public NegotiationState(double prixActuel, double prixPlancher, int roundActuel) {
             this.prixActuel = prixActuel;
-            this.prixMin = prixMin;
+            this.prixPlancher = prixPlancher;
             this.roundActuel = roundActuel;
             this.historiqueOffres = new ArrayList<>();
             this.lastBuyerBehavior = "INITIAL";
@@ -135,28 +135,34 @@ public class AgentRestBridge {
     public ResponseEntity<?> ajusterNego(@RequestBody Map<String, Object> request) {
         String negoId = (String) request.get("negociationId");
         
-        // --- VALIDATION & LOGGING prixMin ---
+        // --- VALIDATION & LOGGING prixPlancher ---
         Object pMin = request.get("prixMin");
-        double prixMin = (pMin instanceof Number) ? ((Number) pMin).doubleValue() : 0.0;
+        double prixPlancher = (pMin instanceof Number) ? ((Number) pMin).doubleValue() : 0.0;
         double pActuel = (request.get("prixActuel") instanceof Number) ? ((Number) request.get("prixActuel")).doubleValue() : 0.0;
         
-        System.out.println("[Bridge] Nego " + negoId + " | prixMin source: " + prixMin);
+        System.out.println("[Bridge] Nego " + negoId + " | prixPlancher source: " + prixPlancher);
         
-        if (prixMin <= 0 || (pActuel > 0 && prixMin >= pActuel)) {
-            System.err.println("[Bridge ERROR] prixMin invalide (" + prixMin + ") pour prixActuel (" + pActuel + ")");
+        if (prixPlancher <= 0 || (pActuel > 0 && prixPlancher >= pActuel)) {
+            System.err.println("[Bridge ERROR] prixPlancher invalide (" + prixPlancher + ") pour prixActuel (" + pActuel + ")");
             return ResponseEntity.badRequest().body(Map.of(
-                "error", "prixMin invalide",
-                "prixMin", prixMin,
+                "error", "Prix cible invalide",
                 "prixActuel", pActuel
             ));
         }
-        System.out.println("[BRIDGE VALIDATION] prixMin=" + prixMin + " prixActuel=" + pActuel);
+        System.out.println("[BRIDGE VALIDATION] prixPlancher=" + prixPlancher + " prixActuel=" + pActuel);
         
         // FIX: Maintain complete state per negotiation
         double prixPropose = (request.get("prixPropose") instanceof Number) ? ((Number) request.get("prixPropose")).doubleValue() : 0.0;
         
-        NegotiationState state = stateMap.computeIfAbsent(negoId, k -> new NegotiationState(pActuel, prixMin, 1));
+        NegotiationState state = stateMap.computeIfAbsent(negoId, k -> new NegotiationState(pActuel, prixPlancher, 1));
         
+        // [LOGGING] Debug state issues
+        System.out.println("[STATE] negoId=" + negoId 
+            + " prixActuel=" + state.prixActuel
+            + " prixPlancher=" + state.prixPlancher  
+            + " round=" + state.roundActuel
+            + " historique=" + state.historiqueOffres);
+
         if (prixPropose > 0) {
             state.historiqueOffres.add(prixPropose);
         }
@@ -176,7 +182,12 @@ public class AgentRestBridge {
                 double nouveauPrix = ((Number) body.get("nouveauPrix")).doubleValue();
                 boolean isFinal = (Boolean) body.getOrDefault("isFinalOffer", false);
                 
-                state.prixActuel = nouveauPrix;
+                // FIX: Le vendeur ne peut JAMAIS remonter son prix
+                if (nouveauPrix < state.prixActuel) {
+                    state.prixActuel = nouveauPrix;
+                } else {
+                    System.out.println("[GUARD] Tentative de hausse de prix bloquée : " + nouveauPrix + " MAD > " + state.prixActuel + " MAD");
+                }
                 state.roundActuel++;
                 state.lastUpdated = System.currentTimeMillis();
                 
@@ -200,20 +211,29 @@ public class AgentRestBridge {
 
     @PostMapping("/acheteur/commenter")
     public ResponseEntity<?> commenterNegociation(@RequestBody Map<String, Object> request) {
-        String behavior = (String) request.getOrDefault("buyerBehavior", "");
-        String systemPrompt;
+        String systemPrompt = "Tu es Aura, l'assistante AuraMarket. " +
+            "Tu commentes la négociation pour l'acheteur de façon naturelle. " +
+            "RÈGLES ABSOLUES : " +
+            "- Ne jamais mentionner les chiffres exacts de réduction " +
+            "  (pas de 'réduction de X MAD') " +
+            "- Ne jamais mentionner le prix précédent " +
+            "- Ne jamais mentionner prixMin ou prix plancher " +
+            "- 1 seule phrase, ton conversationnel et encourageant " +
+            "- Parler du vendeur à la 3ème personne " +
+            "EXEMPLES DE BONNES RÉPONSES : " +
+            "'Le vendeur fait un geste, c'est encourageant !' " +
+            "'Bonne nouvelle, le vendeur montre de la flexibilité.' " +
+            "'Le vendeur résiste encore, mais continuez !' " +
+            "'La négociation avance dans le bon sens.'";
+
+        String userMsg = String.format(
+            "Comportement vendeur: %s. Tendance: %s. " +
+            "L'acheteur doit-il être encouragé ou prudent ?",
+            request.get("buyerBehavior"),
+            request.get("buyerTrend")
+        );
         
-        if ("AGGRESSIVE_BUYER".equals(behavior)) {
-            systemPrompt = "L'acheteur fait une offre irréaliste bien en dessous du prix minimum acceptable. Réponds fermement en 1 phrase que cette offre n'est pas sérieuse et invite-le à revoir sa proposition. Ne mentionne jamais le prix minimum.";
-        } else {
-            systemPrompt = "Tu es l'assistant AuraMarket. Le vendeur propose un nouveau prix. Explique la situation au client de façon naturelle. " +
-                    "COMPORTEMENT: 1 phrase, amical, suggère si c'est une bonne remise.";
-        }
-        
-        String userMsg = String.format("Vendeur propose %.2f. Prix précédent %.2f. Comportement: %s.", 
-                                        request.get("nouveauPrix"), request.get("prixActuel"), behavior);
-        
-        String response = kimiService.askKimi(systemPrompt, userMsg);
+        String response = kimiService.askKimi(systemPrompt, userMsg, "COMMENT");
         return ResponseEntity.ok(Map.of("message", response));
     }
 
@@ -253,18 +273,18 @@ User: "i want to buy an iphone 15"
    "recherche":"iPhone 15","prixMax":null,
    "reponse":"Let me find iPhone 15 options for you!"}
 
-User: "gimme disponible offre pour sworn"  
-→ {"intention":"SEARCH_PRODUCT","categorie":null,
-   "recherche":"sworn","prixMax":null,
-   "reponse":"Je recherche les offres disponibles pour Sworn !"}
+User: "hey"
+→ {"intention":"GENERAL","categorie":null,
+   "recherche":null,"prixMax":null,
+   "reponse":"Bonjour ! Comment puis-je vous aider aujourd'hui ?"}
 
-User: "is the iphone 15 available"
-→ {"intention":"SEARCH_PRODUCT","categorie":"Téléphones",
-   "recherche":"iPhone 15","prixMax":null,
-   "reponse":"Let me check availability for iPhone 15!"}
+User: "where is my order"
+→ {"intention":"CHECK_ORDER","categorie":null,
+   "recherche":null,"prixMax":null,
+   "reponse":"Let me check the status of your orders."}
 """;
         
-        String llmIntent = kimiService.askKimi(intentPrompt, userMessage, history);
+        String llmIntent = kimiService.askKimi(intentPrompt, userMessage, history, "NAV");
         Map<String, Object> intent;
         try {
             int start = llmIntent.indexOf("{");
@@ -281,12 +301,16 @@ User: "is the iphone 15 available"
             if (llmIntent != null && llmIntent.trim().length() > 10 
                 && !llmIntent.contains("Exception")) {
                 String cleaned = llmIntent
-                    .replaceAll("(?s)<think>.*?</think>", "")
+                    .replaceAll("(?si)<think>.*?(</think>|$)", "")
                     .trim();
-                return ResponseEntity.ok(Map.of(
-                    "type", "GENERAL", 
-                    "reponse", cleaned
-                ));
+                
+                // Si la réponse ressemble à un JSON coupé, on force le fallback par mot-clé
+                if (!cleaned.startsWith("{")) {
+                    return ResponseEntity.ok(Map.of(
+                        "type", "GENERAL", 
+                        "reponse", cleaned
+                    ));
+                }
             }
             
             String lower = userMessage.toLowerCase();
@@ -432,17 +456,69 @@ User: "is the iphone 15 available"
 
     @PostMapping("/acheteur/nego/start")
     public ResponseEntity<?> acheteurNegoStart(@RequestBody Map<String, Object> request) {
+        
+        // Validation budget vs prixPlancher
+        double prixCible = ((Number) request.get("prixCible")).doubleValue();
+        double prixPlancher = ((Number) request.get("prixMin")).doubleValue();
+        double prixActuel = ((Number) request.get("prixActuel")).doubleValue();
+        
+        System.out.println("[BRIDGE] AUTO start — prixCible=" + prixCible 
+                         + " prixPlancher=" + prixPlancher + " prixActuel=" + prixActuel);
+        
+        // Cas 1 : Budget sous le plancher → impossible
+        if (prixCible < prixPlancher) {
+            String msg = kimiService.askKimi(
+                "Tu es Aura, assistant AuraMarket. " +
+                "RÈGLE ABSOLUE : ne jamais mentionner le prix minimum " +
+                "du vendeur — c'est confidentiel. " +
+                "Réponds en 1-2 phrases bienveillantes.",
+                String.format("Le budget du client (%.2f MAD) est trop bas " +
+                    "pour ce produit. Explique sans mentionner de chiffre " +
+                    "minimum que l'accord automatique est impossible et " +
+                    "suggère de négocier manuellement.", prixCible),
+                "AUTO"
+            );
+            return ResponseEntity.ok(Map.of(
+                "accordTrouve",  false,
+                "isFinalOffer",  true,
+                "impossible",    true,
+                "prixCible",     prixCible,
+                "reponse",       msg != null ? msg : 
+                    "Votre budget de " + String.format("%.2f", prixCible) + " MAD est trop bas pour ce produit. " +
+                    "Essayez de négocier manuellement ou augmentez votre budget."
+            ));
+        }
+        
+        // Cas 2 : Budget = prixActuel → accepter directement
+        if (prixCible >= prixActuel) {
+            return ResponseEntity.ok(Map.of(
+                "accordTrouve", true,
+                "isFinalOffer", true,
+                "nouveauPrix",  prixActuel,
+                "reponse",      "Votre budget couvre le prix demandé. " +
+                               "Vous pouvez accepter l'offre directement !"
+            ));
+        }
+        
+        // Cas normal → lancer la négociation
         String sessionId = (String) request.get("sessionId");
+        String negoId = (String) request.get("negociationId");
+        
+        // Toujours réinitialiser le state pour une nouvelle AUTO
+        NegotiationState freshState = new NegotiationState(
+            prixActuel,   // prix actuel du moment
+            prixPlancher, 
+            1             // toujours repartir du round 1
+        );
+        stateMap.put(negoId + "_auto_" + sessionId, freshState);
+        
+        // Utiliser ce negoId séparé pour ne pas polluer 
+        // la négo manuelle existante
+        request.put("negociationId", negoId + "_auto_" + sessionId);
+        
         request.put("mode", "NEGO_AUTO");
-        
-        // Initialize or update session
         sessionState.put(sessionId, new HashMap<>(request));
-        
-        ResponseEntity<?> response = contactAgent("AgentAcheteur", ACLMessage.REQUEST, request);
-        
-        // Cleanup session if finalized (in real world we'd check if accord found)
-        // For now, keep it for history or clean up after a while
-        return response;
+        return contactAgent("AgentAcheteur", ACLMessage.REQUEST, request);
     }
 
     @PostMapping("/acheteur/nego/message")

@@ -86,7 +86,7 @@ public class AgentNegociation extends Agent {
 
         String negociationId    = (String) input.get("negociationId");
         double prixActuel       = toDouble(input.get("prixActuel"));
-        double prixMin          = toDouble(input.get("prixMin"));
+        double prixPlancher     = toDouble(input.get("prixMin"));
         double prixPropose      = toDouble(input.get("prixPropose"));
         int    roundActuel      = toInt(input.get("roundActuel"));
         int    roundsMax        = toInt(input.get("roundsMax"));
@@ -96,11 +96,11 @@ public class AgentNegociation extends Agent {
         System.out.println("\n[AgentNegociation] ══════════════════════════════════");
         System.out.println("[AgentNegociation] Round " + roundActuel + "/" + roundsMax);
         System.out.println("[AgentNegociation] prixActuel=" + prixActuel
-                + " | prixMin=" + prixMin + " | prixPropose=" + prixPropose);
+                + " | prixPlancher=" + prixPlancher + " | prixPropose=" + prixPropose);
 
         // ── GARDE 0 : Config invalide ─────────────────────────────────────────
-        if (prixMin <= 0 || prixMin > prixActuel + epsilon) {
-            System.err.println("[GUARD 0b] prixMin invalide : " + prixMin + " (prixActuel=" + prixActuel + ")");
+        if (prixPlancher <= 0 || prixPlancher > prixActuel + epsilon) {
+            System.err.println("[GUARD 0b] prixPlancher invalide : " + prixPlancher + " (prixActuel=" + prixActuel + ")");
             return build(negociationId, prixActuel, 0, "INVALID_CONFIG", "STABLE", roundActuel, true);
         }
 
@@ -114,7 +114,7 @@ public class AgentNegociation extends Agent {
         // ── GARDE 1 : Dépassement rounds ─────────────────────────────────────
         if (roundActuel > roundsMax) {
             System.err.println("[GUARD 1] Dépassement roundsMax — clôture forcée");
-            return build(negociationId, prixMin, prixActuel - prixMin, "TIMEOUT", "STABLE", roundActuel, true);
+            return build(negociationId, prixPlancher, prixActuel - prixPlancher, "TIMEOUT", "STABLE", roundActuel, true);
         }
 
         // ── GARDE 2 : Offre invalide ──────────────────────────────────────────
@@ -124,7 +124,7 @@ public class AgentNegociation extends Agent {
         }
 
         // ── GARDE 3 : Sous le plancher ────────────────────────────────────────
-        if (prixPropose < prixMin - epsilon) {
+        if (prixPropose < prixPlancher - epsilon) {
             System.out.println("[GUARD 3] Offre sous plancher → vendeur immobile");
             return build(negociationId, prixActuel, 0,
                          "AGGRESSIVE_BUYER", "DECLINING", roundActuel, false);
@@ -132,39 +132,29 @@ public class AgentNegociation extends Agent {
         }
 
         // ── GARDE 4 : Au plancher (avec epsilon) ──────────────────────────────
-        if (prixPropose <= prixMin + epsilon) {
+        if (prixPropose <= prixPlancher + epsilon) {
             System.out.println("[GUARD 4] Au plancher → acceptation immédiate");
-            return build(negociationId, prixMin, prixActuel - prixMin, "ACCEPTED_AT_FLOOR", "IMPROVING", roundActuel, true);
+            return build(negociationId, prixPlancher, prixActuel - prixPlancher, "ACCEPTED_AT_FLOOR", "IMPROVING", roundActuel, true);
         }
 
         // ── GARDE 4b : Marge résiduelle nulle ────────────────────────────────
-        if (prixActuel - prixMin <= epsilon) {
-            System.out.println("[GUARD 4b] Marge résiduelle nulle → attente acheteur sur prixMin=" + prixMin);
-            return build(negociationId, prixMin, 0, "FLOOR_REACHED", "STABLE", roundActuel, (roundActuel >= roundsMax));
+        if (prixActuel - prixPlancher <= epsilon) {
+            System.out.println("[GUARD 4b] Marge résiduelle nulle → attente acheteur sur prixPlancher=" + prixPlancher);
+            return build(negociationId, prixPlancher, 0, "FLOOR_REACHED", "STABLE", roundActuel, (roundActuel >= roundsMax));
         }
 
 
         // ── ÉTAPE 0 : Kimi Inference (Si disponible) ─────────────────────────
+        // [DÉSACTIVÉ] L'appel au LLM ici provoque une latence massive (5 rounds * 50s = timeout).
+        // La logique floue (Fuzzy Logic) en Étape 1+ est beaucoup plus rapide et mathématiquement stable.
+        /*
         if (kimi != null) {
-            Map<String, Object> kimiResult = runKimiSellerInference(prixActuel, prixMin, prixPropose, roundActuel, roundsMax, historique);
+            Map<String, Object> kimiResult = runKimiSellerInference(prixActuel, prixPlancher, prixPropose, roundActuel, roundsMax, historique);
             if (kimiResult != null) {
-                double nuevo = toDouble(kimiResult.get("nouveauPrix"));
-                
-                // Security: NEVER go below prixMin even if AI is crazy
-                nuevo = Math.max(prixMin, nuevo);
-                // Security: NEVER go below what the buyer just offered (don't give it cheaper than they asked!)
-                nuevo = Math.max(prixPropose, nuevo);
-                // Security: Don't go above current price (unless it's an acceptance of a higher bid)
-                if (prixPropose < prixActuel) {
-                    nuevo = Math.min(prixActuel, nuevo);
-                }
-
-                boolean isFinal = (boolean) kimiResult.getOrDefault("isFinalOffer", false) || (roundActuel >= roundsMax);
-                
-                System.out.println("[AgentNegociation] Kimi a décidé : " + nuevo);
-                return build(negociationId, nuevo, prixActuel - nuevo, "AI_STRATEGY", "AI_TREND", roundActuel, isFinal);
+                // ...
             }
         }
+        */
 
         // ── ÉTAPE 1 : Variables fuzzy ─────────────────────────────────────────
         double ecart       = (prixActuel - prixPropose) / prixActuel * 100.0;
@@ -199,26 +189,26 @@ public class AgentNegociation extends Agent {
         concessionRate = Math.max(0.12, Math.min(maxConcessionParRound, concessionRate));
 
         // ── ÉTAPE 5 : Calcul concession ───────────────────────────────────────
-        double marge      = prixActuel - prixMin;
+        double marge      = prixActuel - prixPlancher;
         double concession = concessionRate * marge;
         double candidat   = prixActuel - concession;
         
         // Si c'est l'avant dernier ou dernier round, on s'approche agressivement du min
         if (roundActuel >= roundsMax - 1) {
-            candidat = prixMin + (marge * 0.1); // Propose presque le min (10% de la marge au-dessus)
+            candidat = prixPlancher + (marge * 0.1); // Propose presque le min (10% de la marge au-dessus)
         }
 
         // ── ÉTAPE 6 : Protection vendeur (Stubbornness) ───────────────────────
         if (candidat <= prixPropose) {
             // Le vendeur ne concède que 25% de l'écart au lieu de 50%
             candidat = prixActuel - (prixActuel - prixPropose) * 0.25;
-            candidat = Math.max(prixMin, candidat);
+            candidat = Math.max(prixPlancher, candidat);
         }
         
         System.out.println("[DEBUG] concessionRate=" + concessionRate + " | marge=" + marge + " | candidat=" + candidat);
 
         // ── SEUIL DE CONVERGENCE AUTOMATIQUE ──────────────────────────────────
-        double margeInitiale = prixActuel - prixMin;
+        double margeInitiale = prixActuel - prixPlancher;
         double ecartRestant = candidat - prixPropose;
         
         if (margeInitiale > 0) {
@@ -233,8 +223,8 @@ public class AgentNegociation extends Agent {
             }
         }
 
-        // Si l'écart absolu est < 10 MAD et prixPropose > prixMin → accepter
-        if (ecartRestant > 0 && ecartRestant < 10.0 && prixPropose > prixMin) {
+        // Si l'écart absolu est < 10 MAD et prixPropose > prixPlancher → accepter
+        if (ecartRestant > 0 && ecartRestant < 10.0 && prixPropose > prixPlancher) {
             System.out.println("[CONVERGENCE] Écart absolu " 
                 + round2(ecartRestant) + " MAD < 10 MAD → acceptation");
             return build(negociationId, prixPropose, prixActuel - prixPropose,
@@ -243,7 +233,7 @@ public class AgentNegociation extends Agent {
 
         // ── ÉTAPE 7 : Clamp absolu ────────────────────────────────────────────
         double nouveauPrix = candidat;
-        nouveauPrix = Math.max(prixMin, nouveauPrix);
+        nouveauPrix = Math.max(prixPlancher, nouveauPrix);
         nouveauPrix = Math.max(prixPropose, nouveauPrix);
         nouveauPrix = Math.min(prixActuel, nouveauPrix);
 
@@ -331,7 +321,7 @@ public class AgentNegociation extends Agent {
         return "CLOSE";
     }
 
-    private Map<String, Object> runKimiSellerInference(double current, double min, double offer, int round, int max, List<Number> history) {
+    private Map<String, Object> runKimiSellerInference(double current, double plancher, double offer, int round, int max, List<Number> history) {
         try {
             String systemPrompt = "Tu es un vendeur expert et coriace sur AuraMarket. Ta mission est de maximiser le profit. Ne sois pas trop facile.";
             String userPrompt = String.format(
@@ -348,10 +338,10 @@ public class AgentNegociation extends Agent {
                 "4. Ton but est de finir le plus haut possible au-dessus de %.2f MAD. \n" +
                 "5. Si l'offre dépasse ton prix actuel, accepte immédiatement.\n" +
                 "Réponds UNIQUEMENT au format JSON: {\"nouveauPrix\": double, \"isFinalOffer\": boolean}",
-                current, min, offer, round, max, (history != null ? history.toString() : "Aucun"), min
+                current, plancher, offer, round, max, (history != null ? history.toString() : "Aucun"), plancher
             );
 
-            String response = kimi.askKimi(systemPrompt, userPrompt);
+            String response = kimi.askKimi(systemPrompt, userPrompt, "NEGO");
             // Simple JSON extraction
             int start = response.indexOf("{");
             int end = response.lastIndexOf("}");

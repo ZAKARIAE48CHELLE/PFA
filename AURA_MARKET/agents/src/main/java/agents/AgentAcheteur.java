@@ -73,7 +73,7 @@ public class AgentAcheteur extends Agent {
                 "Si question sur un produit spécifique → demande des détails. " +
                 "Si utilisateur veut négocier → explique les deux modes : AUTO (l'agent négocie seul) et MANUEL (le client propose).";
         
-        String responseText = kimiService.askKimi(systemPrompt, message);
+        String responseText = kimiService.askKimi(systemPrompt, message, "CHAT");
         
         Map<String, Object> res = new HashMap<>();
         res.put("sessionId", sessionId);
@@ -95,7 +95,7 @@ public class AgentAcheteur extends Agent {
         String userMsg = String.format("Vendeur propose: %.2f. Client veut: %.2f. Dernier message vendeur: %s", 
                                         prixActuel, prixCible, lastAgentResponse);
         
-        String responseText = kimiService.askKimi(systemPrompt, userMsg);
+        String responseText = kimiService.askKimi(systemPrompt, userMsg, "NEGO");
         
         Map<String, Object> res = new HashMap<>();
         res.put("sessionId", input.get("sessionId"));
@@ -107,7 +107,7 @@ public class AgentAcheteur extends Agent {
     private Map<String, Object> handleAutoNego(Map<String, Object> input) {
         double prixCible = toDouble(input.get("prixCible"));
         double prixActuel = toDouble(input.get("prixActuel"));
-        double prixMin = toDouble(input.get("prixMin"));
+        double prixPlancher = toDouble(input.get("prixMin"));
         int roundActuel = toInt(input.get("roundActuel"));
         int roundsMax = 5; // Cap at 5 for stability with 8B model
         List<Double> history = (List<Double>) input.getOrDefault("historiqueOffres", new ArrayList<>());
@@ -131,18 +131,9 @@ public class AgentAcheteur extends Agent {
                 break;
             }
 
-            String userPrompt = String.format("Vendeur à %.2f. Ton budget %.2f. Round %d/%d. Historique: %s. Tendance vendeur: %s",
-                                            prixActuel, prixCible, roundActuel, roundsMax, history, sellerTrend);
-            
-            String response = kimiService.askKimi(systemPrompt, userPrompt);
-            try {
-                // We still ask Kimi to generate the conversational response to the seller,
-                // but we ignore its numerical output to strictly enforce our mathematical budget strategy.
-                String unusedLLMResponse = response; 
-            } catch (Exception e) {
-                // Ignore
-            }
-
+            // LLM call removed here to prevent massive latency.
+            // In NEGO_AUTO, the user does not read individual round messages.
+            // The numerical offer is calculated below using the mathematical strategy.
             // Strictly calculate the next offer based on strategy
             double nextOffer = com.auramarket.agents.strategy.BuyerNegotiationStrategy.calculateNextOffer(
                 prixCible, prixActuel, sellerTrend, roundActuel, history, roundsMax
@@ -152,7 +143,7 @@ public class AgentAcheteur extends Agent {
             Map<String, Object> negoRequest = new HashMap<>();
             negoRequest.put("negociationId", negociationId);
             negoRequest.put("prixActuel", prixActuel);
-            negoRequest.put("prixMin", prixMin);
+            negoRequest.put("prixMin", prixPlancher);
             negoRequest.put("prixPropose", nextOffer);
             negoRequest.put("roundActuel", roundActuel);
             negoRequest.put("roundsMax", roundsMax);

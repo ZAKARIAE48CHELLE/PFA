@@ -114,9 +114,9 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
           .map(m => m.price);
         
         const produit = this.getProduitForNego(this.selectedNego!.produitId);
-        const prixMin = produit?.prixMin || this.selectedNego!.prixInitial * 0.6;
-
-        this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory, prixMin).subscribe({
+        const prixPlancher = produit?.prixPlancher || this.selectedNego!.prixInitial * 0.6;
+        
+        this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory, prixPlancher).subscribe({
           next: (res) => {
             const commentaryPayload = {
               nouveauPrix: res.nouveauPrix,
@@ -165,10 +165,63 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     });
   }
 
+  get currentPrixPlancher(): number {
+    if (!this.selectedNego) return 0;
+    const produit = this.getProduitForNego(this.selectedNego.produitId);
+    return produit?.prixPlancher || this.selectedNego.prixInitial * 0.6;
+  }
+
+  get isBudgetInvalid(): boolean {
+    return this.newMessagePrice !== undefined && this.newMessagePrice > 0 && this.newMessagePrice < this.currentPrixPlancher;
+  }
+
+  get isBudgetValid(): boolean {
+    return this.newMessagePrice !== undefined && this.newMessagePrice >= this.currentPrixPlancher;
+  }
+
+  get budgetMargin(): string | null {
+    if (this.newMessagePrice === undefined || !this.selectedNego || this.newMessagePrice < this.currentPrixPlancher) return null;
+    const currentPrice = this.selectedNego.prixFinal || this.selectedNego.prixInitial;
+    if (this.newMessagePrice < currentPrice) {
+      // Return a descriptive string or a ratio instead of a raw margin against the secret min if preferred, 
+      // but here we just hide the "minimum" from being subtracted.
+      // We can just return 'Valide' or the distance to current price.
+      return `✓ Votre budget est dans une zone négociable.`;
+    }
+    return null;
+  }
+
   startAutoNego() {
     if (!this.selectedNego || !this.newMessagePrice || this.isSending) return;
     
     const target = this.newMessagePrice;
+    const prixPlancher = this.currentPrixPlancher;
+    const prixActuel = this.selectedNego.prixFinal || this.selectedNego.prixInitial;
+
+    // Validation 1 : budget sous plancher
+    if (target < prixPlancher) {
+      const agentMsg: MessageNegociation = {
+        negociationId: this.selectedNego.id,
+        sender: 'AGENT',
+        content: `⚠️ Votre budget de ${target.toFixed(2)} MAD est trop bas pour ce produit. Un accord automatique est impossible. Essayez de négocier manuellement ou augmentez votre budget.`,
+        price: prixActuel
+      };
+      this.negoService.saveMessage(agentMsg).subscribe(() => this.loadMessages(this.selectedNego!.id));
+      return;
+    }
+
+    // Validation 2 : budget >= prix actuel → accepter directement
+    if (target >= prixActuel) {
+      const agentMsg: MessageNegociation = {
+        negociationId: this.selectedNego.id,
+        sender: 'AGENT',
+        content: `✅ Votre budget couvre le prix demandé (${prixActuel.toFixed(2)} MAD). Vous pouvez accepter l'offre directement !`,
+        price: prixActuel
+      };
+      this.negoService.saveMessage(agentMsg).subscribe(() => this.loadMessages(this.selectedNego!.id));
+      return;
+    }
+
     this.newMessagePrice = undefined;
     this.isSending = true;
     this.autoNegoInProgress = true;
@@ -184,10 +237,9 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     this.negoService.saveMessage(userMsg).subscribe(() => {
       this.loadMessages(this.selectedNego!.id);
       
-      const produit = this.getProduitForNego(this.selectedNego!.produitId);
-      const prixMin = produit?.prixMin || this.selectedNego!.prixInitial * 0.6;
+      const prixPlancher = this.currentPrixPlancher;
 
-      this.negoService.startAcheteurNegoAuto(this.selectedNego!, target, prixMin, this.sessionId).subscribe({
+      this.negoService.startAcheteurNegoAuto(this.selectedNego!, target, prixPlancher, this.sessionId).subscribe({
         next: (res) => {
           this.autoNegoInProgress = false;
 

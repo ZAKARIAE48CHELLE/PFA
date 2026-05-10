@@ -178,7 +178,7 @@
                       [class.text-muted]="p.prixOffre">{{ p.prix | number:'1.2-2' }} MAD</span>
                     <span class="text-accent fw-bold d-block" *ngIf="p.prixOffre">{{ p.prixOffre | number:'1.2-2' }}
                       MAD</span>
-                    <span class="text-muted small d-block">Min: {{ p.prixMin | number:'1.2-2' }} MAD</span>
+                    <span class="text-muted small d-block">Min: {{ p.prixPlancher | number:'1.2-2' }} MAD</span>
                   </div>
                 </td>
                 <td>
@@ -312,7 +312,7 @@
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">Prix Min (MAD)</label>
-                  <input type="number" class="form-control" [(ngModel)]="newProd.prixMin" name="prixMin" required>
+                  <input type="number" class="form-control" [(ngModel)]="newProd.prixPlancher" name="prixPlancher" required>
                 </div>
                 <div class="col-md-3">
                   <label class="form-label">Quantité (Stock)</label>
@@ -416,7 +416,7 @@
                   </div>
                   <div class="col-md-4">
                     <label class="form-label">Prix Min (MAD)</label>
-                    <input type="number" class="form-control" [(ngModel)]="editProd.prixMin" name="editPrixMin"
+                    <input type="number" class="form-control" [(ngModel)]="editProd.prixPlancher" name="editPrixPlancher"
                       required>
                   </div>
                   <div class="col-md-4">

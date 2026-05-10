@@ -14,7 +14,8 @@ public class Produit {
     @Column(columnDefinition = "TEXT")
     private String description;
     private double prix;
-    private double prixMin;
+    @Column(name = "prix_min")
+    private double prixPlancher;
     private String categorie;
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
@@ -42,8 +43,8 @@ public class Produit {
     public void setDescription(String description) { this.description = description; }
     public double getPrix() { return prix; }
     public void setPrix(double prix) { this.prix = prix; }
-    public double getPrixMin() { return prixMin; }
-    public void setPrixMin(double prixMin) { this.prixMin = prixMin; }
+    public double getPrixPlancher() { return prixPlancher; }
+    public void setPrixPlancher(double prixPlancher) { this.prixPlancher = prixPlancher; }
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) { this.categorie = categorie; }
     public String getImageUrl() { return imageUrl; }

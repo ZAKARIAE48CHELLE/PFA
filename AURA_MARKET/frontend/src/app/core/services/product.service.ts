@@ -9,7 +9,7 @@ export interface Produit {
   titre: string;
   description: string;
   prix: number;
-  prixMin: number;
+  prixPlancher: number;
   categorie: string;
   imageUrl: string;
   stock: number;
@@ -99,7 +99,7 @@ export class ProductService {
       produitId: p.id,
       titre: p.titre,
       prixBase: p.prix,
-      prixMin: p.prixMin,
+      prixPlancher: p.prixPlancher,
       categorie: p.categorie,
       plateforme: 'amazon'
     };

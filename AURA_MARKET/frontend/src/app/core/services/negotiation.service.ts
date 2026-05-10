@@ -54,11 +54,11 @@ export class NegotiationService {
     return this.http.post<MessageNegociation>(`${this.apiUrl}/messages`, message, { headers: this.getHeaders() });
   }
 
-  ajusterNegociation(nego: Negociation, prixPropose: number, history: number[], prixMin: number): Observable<any> {
+  ajusterNegociation(nego: Negociation, prixPropose: number, history: number[], prixPlancher: number): Observable<any> {
     const payload = {
       negociationId: nego.id,
       prixActuel: nego.prixFinal,
-      prixMin: prixMin, // Real prixMin from the product database
+      prixMin: prixPlancher, // Real prixPlancher from the product database
       prixPropose: prixPropose,
       roundActuel: (nego.rounds || 0) + 1,
       roundsMax: 5,
@@ -79,11 +79,11 @@ export class NegotiationService {
     return this.http.post<any>(`${API_CONFIG.baseUrl}/agent/acheteur/chat`, payload, { headers: this.getHeaders() });
   }
 
-  startAcheteurNegoAuto(nego: Negociation, prixCible: number, prixMin: number, sessionId: string): Observable<any> {
+  startAcheteurNegoAuto(nego: Negociation, prixCible: number, prixPlancher: number, sessionId: string): Observable<any> {
     const payload = {
       negociationId: nego.id,
       prixActuel: nego.prixFinal || nego.prixInitial,
-      prixMin: prixMin,
+      prixMin: prixPlancher,
       prixCible: prixCible,
       roundActuel: (nego.rounds || 0) + 1,
       roundsMax: 5,

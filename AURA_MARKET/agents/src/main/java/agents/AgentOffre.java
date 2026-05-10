@@ -43,8 +43,8 @@ public class AgentOffre extends Agent {
                         double prixBase = req.has("prixBase") ? req.get("prixBase").asDouble() : (req.has("prixProduit") ? req.get("prixProduit").asDouble() : 0.0);
                         payload.put("prixBase", prixBase);
                         
-                        double prixMin = req.has("prixMin") ? req.get("prixMin").asDouble() : 0.0;
-                        payload.put("prixMin", prixMin);
+                        double prixPlancher = req.has("prixMin") ? req.get("prixMin").asDouble() : 0.0;
+                        payload.put("prixMin", prixPlancher);
                         
                         double noteVendeur = req.has("noteVendeur") ? req.get("noteVendeur").asDouble() : 4.0;
                         payload.put("noteVendeur", noteVendeur);

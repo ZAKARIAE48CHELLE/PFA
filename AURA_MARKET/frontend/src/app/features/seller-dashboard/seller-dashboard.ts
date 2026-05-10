@@ -409,9 +409,9 @@ export class SellerDashboardComponent implements OnInit {
     const basePrice = this.editProd.prix || 0;
     const calculatedPrice = basePrice * (1 - this.newOfferPercentage / 100);
 
-    // EXIGENCE 1: Le prix proposé ne peut pas être inférieur au prixMin du produit
-    if (calculatedPrice < (this.editProd.prixMin || 0)) {
-      alert(`Erreur: La réduction de ${this.newOfferPercentage}% donne un prix de ${calculatedPrice.toFixed(2)} MAD, ce qui est inférieur au prix minimum autorisé (${this.editProd.prixMin} MAD).`);
+    // EXIGENCE 1: Le prix proposé ne peut pas être inférieur au prixPlancher du produit
+    if (calculatedPrice < (this.editProd.prixPlancher || 0)) {
+      alert(`Erreur: La réduction de ${this.newOfferPercentage}% donne un prix de ${calculatedPrice.toFixed(2)} MAD, ce qui est inférieur au prix minimum autorisé (${this.editProd.prixPlancher} MAD).`);
       return;
     }
 

@@ -89,7 +89,7 @@ public class ProductService {
             p.setTitre(updated.getTitre());
             p.setDescription(updated.getDescription());
             p.setPrix(updated.getPrix());
-            p.setPrixMin(updated.getPrixMin());
+            p.setPrixPlancher(updated.getPrixPlancher());
             p.setCategorie(updated.getCategorie());
             p.setStock(updated.getStock());
             p.setImageUrl(updated.getImageUrl());

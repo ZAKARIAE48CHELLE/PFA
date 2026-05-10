@@ -138,6 +138,8 @@
               <input 
                 type="number" 
                 class="form-control border-start-0" 
+                [class.input-warning]="isBudgetInvalid"
+                [class.input-success]="isBudgetValid"
                 [(ngModel)]="newMessagePrice" 
                 name="price"
                 placeholder="Votre budget / proposition..." 
@@ -154,6 +156,16 @@
               <i class="bi bi-magic"></i>
             </button>
           </form>
+          
+          <!-- Warning budget sous plancher -->
+          <div class="warning-msg mt-1" *ngIf="isBudgetInvalid">
+            ⚠️ Budget trop bas pour ce produit — accord automatique impossible
+          </div>
+          <!-- Info marge disponible -->
+          <div class="info-msg mt-1" *ngIf="budgetMargin">
+            {{ budgetMargin }}
+          </div>
+
           <div class="input-hint mt-1 d-flex align-items-center gap-2 text-muted small px-1">
             <span><i class="bi bi-send-fill"></i> Manuel</span>
             <span>·</span>
