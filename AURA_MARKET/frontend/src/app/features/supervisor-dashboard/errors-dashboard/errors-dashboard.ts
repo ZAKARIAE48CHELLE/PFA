@@ -5,7 +5,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ErrorDashboardService, SystemError } from '../../../core/services/error-dashboard.service';
 import { API_CONFIG } from '../../../core/config/api.config';
 import SockJS from 'sockjs-client';
-import * as Stomp from 'stompjs';
+import { Stomp } from '@stomp/stompjs';
 
 import { RouterModule } from '@angular/router';
 

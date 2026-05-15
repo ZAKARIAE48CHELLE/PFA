@@ -1,40 +1,42 @@
 <div class="dashboard-wrapper animate-fade-in-up">
   <!-- Status Messages -->
-  <div *ngIf="statusMessage" class="alert fixed-top mx-auto mt-3 w-50 shadow-sm animate-fade-in" 
-       [class.alert-success]="statusType === 'success'" [class.alert-danger]="statusType === 'danger'"
-       style="z-index: 2000;">
-    <i class="bi" [class.bi-check-circle-fill]="statusType === 'success'" [class.bi-exclamation-triangle-fill]="statusType === 'danger'"></i>
+  <div *ngIf="statusMessage" class="alert fixed-top mx-auto mt-3 w-50 shadow-sm animate-fade-in"
+    [class.alert-success]="statusType === 'success'" [class.alert-danger]="statusType === 'danger'"
+    style="z-index: 2000;">
+    <i class="bi" [class.bi-check-circle-fill]="statusType === 'success'"
+      [class.bi-exclamation-triangle-fill]="statusType === 'danger'"></i>
     {{ statusMessage }}
   </div>
 
-  <div class="row g-0 chat-container am-card">
+  <div class="row g-0 chat-container am-card shadow-lg">
     <!-- Sidebar: Nego List -->
     <div class="col-md-4 col-lg-3 nego-sidebar">
       <div class="sidebar-header">
-        <h5><i class="bi bi-chat-left-dots-fill me-2"></i> Discussions</h5>
-      </div>  
-      <div class="nego-list-scroll">
-        <div 
-          *ngFor="let n of negociations" 
-          class="nego-list-item" 
-          [class.active]="selectedNego?.id === n.id"
-          (click)="selectNego(n)"
-        >
+        <h5 class="mb-0 fw-bold"><i class="bi bi-chat-left-dots-fill me-2 text-primary"></i> Mes Négos</h5>
+        <span class="badge bg-light text-dark border ms-auto">{{ negociations.length }}</span>
+      </div>
+      <div class="nego-list-scroll custom-scrollbar">
+        <div *ngFor="let n of negociations" class="nego-list-item" [class.active]="selectedNego?.id === n.id"
+          (click)="selectNego(n)">
           <div class="d-flex align-items-center gap-3">
-            <div class="nego-mini-img">
-              <img *ngIf="n.produitId && getProduitForNego(n.produitId)?.imageUrl" [src]="getProduitForNego(n.produitId)?.imageUrl">
+            <div class="nego-mini-img shadow-sm" [class.border-success]="n.status === 'ACCEPTED'">
+              <img *ngIf="n.produitId && getProduitForNego(n.produitId)?.imageUrl"
+                [src]="getProduitForNego(n.produitId)?.imageUrl">
               <i *ngIf="!n.produitId || !getProduitForNego(n.produitId)?.imageUrl" class="bi bi-box"></i>
             </div>
             <div class="flex-grow-1 overflow-hidden">
               <div class="d-flex justify-content-between align-items-start">
-                <h6 class="mb-0 text-truncate">{{ n.produitId ? getProduitForNego(n.produitId)?.titre : 'Chargement...' }}</h6>
+                <h6 class="mb-0 text-truncate fw-bold">{{ (n.produitId && getProduitForNego(n.produitId)?.titre) ?
+                  getProduitForNego(n.produitId)?.titre : 'Chargement...' }}</h6>
+                
                 <div class="dropdown" (click)="$event.stopPropagation()">
                   <button class="btn btn-link btn-sm text-muted p-0" type="button" data-bs-toggle="dropdown">
                     <i class="bi bi-three-dots-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                     <li>
-                      <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="javascript:void(0)" (click)="deleteNego($event, n.id)">
+                      <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="javascript:void(0)"
+                        (click)="deleteNego($event, n.id)">
                         <i class="bi bi-trash3"></i> Supprimer
                       </a>
                     </li>
@@ -42,43 +44,50 @@
                 </div>
               </div>
               <div class="d-flex justify-content-between align-items-center mt-1">
-                <span class="badge" [class.bg-primary]="n.rounds < 3" [class.bg-secondary]="n.rounds >= 3">Round {{ n.rounds }}/3</span>
-                <small class="fw-bold text-accent">{{ n.prixFinal | number:'1.2-2' }} MAD</small>
+                <small class="text-accent fw-bold">{{ n.prixFinal | number:'1.2-2' }} MAD</small>
+                <span class="status-indicator" [class.open]="n.status === 'OPEN'" [class.accepted]="n.status === 'ACCEPTED'"></span>
               </div>
             </div>
           </div>
         </div>
 
-        <div *ngIf="negociations.length === 0" class="p-4 text-center text-muted">
-          <p>Aucune négociation</p>
+        <div *ngIf="negociations.length === 0" class="p-5 text-center text-muted opacity-50">
+          <i class="bi bi-chat-square-dots fs-1 mb-3 d-block"></i>
+          <p>Aucune négociation active</p>
         </div>
       </div>
     </div>
 
     <!-- Main Chat Window -->
-    <div class="col-md-8 col-lg-9 chat-window">
+    <div class="col-md-8 col-lg-9 chat-window d-flex flex-column">
       <ng-container *ngIf="selectedNego; else noSelection">
         <!-- Chat Header -->
         <div class="chat-header">
           <div class="d-flex align-items-center gap-3">
-            <div class="header-img">
-              <img *ngIf="selectedNego.produitId && getProduitForNego(selectedNego.produitId)?.imageUrl" [src]="getProduitForNego(selectedNego.produitId)?.imageUrl">
+            <div class="header-img shadow-sm">
+              <img *ngIf="selectedNego.produitId && getProduitForNego(selectedNego.produitId)?.imageUrl"
+                [src]="getProduitForNego(selectedNego.produitId)?.imageUrl">
+              <i *ngIf="!selectedNego.produitId || !getProduitForNego(selectedNego.produitId)?.imageUrl"
+                class="bi bi-box text-muted fs-4"></i>
             </div>
             <div>
-              <h5 class="mb-0">{{ selectedNego.produitId ? getProduitForNego(selectedNego.produitId)?.titre : 'Produit' }}</h5>
-              <small class="text-success"><i class="bi bi-circle-fill" style="font-size: 8px"></i> Agent en ligne</small>
+              <h5 class="mb-0 fw-bold">{{ (selectedNego.produitId && getProduitForNego(selectedNego.produitId)?.titre) ?
+                getProduitForNego(selectedNego.produitId)?.titre : 'Chargement...' }}</h5>
+              <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-light text-primary border px-2 py-1" style="font-size: 0.65rem;">
+                   Round {{ selectedNego.rounds }}/3
+                </span>
+                <small class="text-success small-pulse"><i class="bi bi-circle-fill" style="font-size: 6px"></i> Agent Vendeur en ligne</small>
+              </div>
             </div>
           </div>
           <div class="header-actions d-flex gap-2">
-            <button 
-              class="btn btn-success btn-sm d-flex align-items-center gap-2" 
-              (click)="accepterOffre()"
-              [disabled]="isSending"
-            >
-              <i class="bi bi-check-circle-fill"></i> Accepter l'offre
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-3" [routerLink]="['/produits', selectedNego.produitId]">
+              <i class="bi bi-eye"></i> Voir le produit
             </button>
-            <button class="btn btn-outline-primary btn-sm" [routerLink]="['/produits', selectedNego.produitId]">
-              <i class="bi bi-info-circle"></i> Détails
+            <button class="btn btn-success btn-sm rounded-pill px-3" (click)="accepterOffre()"
+              *ngIf="selectedNego.status === 'OPEN'" [disabled]="isSending">
+              <i class="bi bi-check-lg"></i> Payer {{ selectedNego.prixFinal | number:'1.0-0' }} MAD
             </button>
           </div>
         </div>
@@ -88,133 +97,122 @@
           <div class="d-flex align-items-center gap-3">
             <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
             <div class="flex-grow-1">
-              <div class="fw-bold small">🤖 Négociation AUTO en cours...</div>
-              <div class="text-muted small">Aura négocie pour vous avec un budget de <strong>{{ autoNegoTarget | number:'1.2-2' }} MAD</strong>. Patientez quelques instants.</div>
+              <div class="fw-bold small">🤖 Négociation IA en cours...</div>
+              <div class="text-muted small">Aura négocie pour vous (Budget: <strong>{{ autoNegoTarget |
+                  number:'1.2-2' }} MAD</strong>)</div>
             </div>
           </div>
-          <div class="progress mt-2" style="height: 3px;">
+          <div class="progress mt-2" style="height: 4px; border-radius: 2px;">
             <div class="progress-bar progress-bar-striped progress-bar-animated bg-purple" style="width: 100%"></div>
           </div>
         </div>
 
         <!-- Messages Area -->
-        <div class="chat-messages" #scrollMe>
-          <div *ngFor="let m of messages" class="message-row" [class.me]="m.sender === 'ACHETEUR'">
-            <div class="msg-avatar shadow-sm">
-              <i class="bi" [class.bi-person-fill]="m.sender === 'ACHETEUR'" [class.bi-robot]="m.sender === 'AGENT'"></i>
+        <div class="chat-messages custom-scrollbar flex-grow-1" #scrollMe>
+          <div *ngFor="let m of messages" class="message-row animate-message" [class.me]="m.sender === 'ACHETEUR'" [class.system]="m.sender === 'SYSTEM'">
+            
+            <div *ngIf="m.sender === 'SYSTEM'" class="system-bubble shadow-sm">
+               <i class="bi bi-robot me-2"></i> {{ m.content }}
+               <div *ngIf="m.price > 0" class="mt-2 pt-1 border-top border-secondary-subtle">
+                 <small class="fw-bold">Proposition IA : {{ m.price | number:'1.2-2' }} MAD</small>
+               </div>
             </div>
-            <div class="message-bubble shadow-sm">
-              <div class="message-content" [class.italic]="m.sender === 'AGENT'">{{ m.content }}</div>
-              <div class="message-meta d-flex justify-content-between align-items-center mt-1">
-                <span class="message-price fw-bold" *ngIf="m.price > 0">
-                  {{ m.price | number:'1.2-2' }} MAD
-                  <button *ngIf="m.sender === 'AGENT'" class="btn btn-xs ms-2" 
-                          [class.btn-success]="selectedNego.prixFinal === m.price"
-                          [class.btn-outline-success]="selectedNego.prixFinal !== m.price"
-                          (click)="selectOfferFromHistory(m.price)"
-                          title="Sélectionner cette offre">
-                    <i class="bi bi-check2-circle"></i> <span class="d-none d-sm-inline">{{ selectedNego.prixFinal === m.price ? 'Sélectionnée' : 'Sélectionner' }}</span>
-                  </button>
-                </span>
-                <span class="message-time">{{ m.timestamp | date:'HH:mm' }}</span>
+
+            <ng-container *ngIf="m.sender !== 'SYSTEM'">
+              <div class="message-bubble shadow-sm">
+                <div class="message-content">{{ m.content }}</div>
+                <div class="message-meta d-flex justify-content-between align-items-center mt-2">
+                  <span class="message-price" *ngIf="m.price > 0">
+                    <i class="bi bi-tag-fill me-1"></i> {{ m.price | number:'1.2-2' }} MAD
+                  </span>
+                  <span class="message-time">{{ m.timestamp | date:'HH:mm' }}</span>
+                </div>
               </div>
-            </div>
+            </ng-container>
           </div>
-          <div *ngIf="isSending" class="message-row">
-            <div class="msg-avatar shadow-sm">
-              <i class="bi bi-robot"></i>
-            </div>
-            <div class="message-bubble typing shadow-sm">
+
+          <div *ngIf="isSending" class="message-row me">
+            <div class="message-bubble typing-bubble shadow-sm">
               <span class="dot"></span><span class="dot"></span><span class="dot"></span>
             </div>
           </div>
         </div>
 
-        <!-- Chat Input -->
-        <div class="chat-input-area" *ngIf="selectedNego.rounds < 3; else limitReached">
-          <form (ngSubmit)="sendMessage()" class="d-flex gap-2">
-            <div class="input-group">
-              <span class="input-group-text bg-white border-end-0">MAD</span>
-              <input 
-                type="number" 
-                class="form-control border-start-0" 
-                [class.input-warning]="isBudgetInvalid"
-                [class.input-success]="isBudgetValid"
-                [(ngModel)]="newMessagePrice" 
-                name="price"
-                placeholder="Votre budget / proposition..." 
-                required
-              >
-            </div>
-            <button type="submit" class="btn btn-primary px-3" [disabled]="!newMessagePrice || isSending" title="Envoyer (Manuel)">
-              <i class="bi bi-send-fill"></i>
-            </button>
-            <button type="button" class="btn btn-purple px-3" (click)="startAutoNego()" [disabled]="!newMessagePrice || isSending" title="Négociation AUTO avec ce budget">
-              <i class="bi bi-robot"></i>
-            </button>
-            <button type="button" class="btn btn-outline-info px-3" (click)="askAISuggestion()" [disabled]="isSending" title="Demander conseil à l'IA">
-              <i class="bi bi-magic"></i>
-            </button>
-          </form>
-          
-          <!-- Warning budget sous plancher -->
-          <div class="warning-msg mt-1" *ngIf="isBudgetInvalid">
-            ⚠️ Budget trop bas pour ce produit — accord automatique impossible
-          </div>
-          <!-- Info marge disponible -->
-          <div class="info-msg mt-1" *ngIf="budgetMargin">
-            {{ budgetMargin }}
-          </div>
-
-          <div class="input-hint mt-1 d-flex align-items-center gap-2 text-muted small px-1">
-            <span><i class="bi bi-send-fill"></i> Manuel</span>
-            <span>·</span>
-            <span><i class="bi bi-robot"></i> Auto (l'IA négocie pour vous)</span>
-            <span>·</span>
-            <span><i class="bi bi-magic"></i> Conseil</span>
-          </div>
-          <div class="ai-suggestion mt-2 animate-fade-in" *ngIf="aiSuggestion">
-            <div class="alert alert-purple py-2 px-3 mb-0 small d-flex align-items-center justify-content-between gap-2 shadow-sm">
-              <div class="d-flex align-items-start gap-2">
-                <i class="bi bi-stars"></i>
-                <div class="italic">
-                  <strong>Conseil IA :</strong> {{ aiSuggestion }}
+        <!-- Input Area -->
+        <div class="chat-input-container">
+          <!-- Accord block if finished -->
+          <div *ngIf="negociationTerminee || selectedNego.status === 'ACCEPTED'" class="p-3 animate-fade-in-up">
+            <div class="accord-card d-flex align-items-center justify-content-between p-3 shadow-sm">
+              <div class="d-flex align-items-center gap-3">
+                <div class="accord-icon"><i class="bi bi-patch-check-fill"></i></div>
+                <div>
+                  <h6 class="mb-0 fw-bold">Accord trouvé !</h6>
+                  <p class="mb-0 small text-muted">Finalisé à {{ selectedNego.prixFinal | number:'1.2-2' }} MAD</p>
                 </div>
               </div>
-              <div class="d-flex gap-2">
-                <button class="btn btn-purple btn-xs" (click)="useAISuggestion()">Suivre</button>
-                <button class="btn-close" style="font-size: 8px" (click)="aiSuggestion = undefined"></button>
+              <button class="btn btn-primary rounded-pill px-4" (click)="accepterOffre()">
+                Procéder au paiement
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabs for Manual/Auto if active -->
+          <div *ngIf="!negociationTerminee && selectedNego.status === 'OPEN'" class="p-3">
+            <div class="tabs-toolbar mb-3">
+              <button class="tab-btn" [class.active]="activeTab === 'MANUAL'" (click)="activeTab = 'MANUAL'">
+                <i class="bi bi-chat-text"></i> Manuel
+              </button>
+              <button class="tab-btn" [class.active]="activeTab === 'AUTO'" (click)="activeTab = 'AUTO'">
+                <i class="bi bi-robot"></i> Automatique
+              </button>
+            </div>
+
+            <div [ngSwitch]="activeTab" class="tab-content-area">
+              <!-- Manual Tab -->
+              <form *ngSwitchCase="'MANUAL'" (ngSubmit)="sendMessage()" class="manual-input-row">
+                <input type="text" class="form-control" [(ngModel)]="newMessageText" name="text"
+                  placeholder="Message au vendeur...">
+                <div class="price-input-wrapper">
+                  <input type="number" class="form-control" [(ngModel)]="newMessagePrice" name="price" placeholder="Prix">
+                  <span class="currency">MAD</span>
+                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="(!newMessageText.trim() && !newMessagePrice) || isSending">
+                  <i class="bi bi-send-fill"></i>
+                </button>
+              </form>
+
+              <!-- Auto Tab -->
+              <div *ngSwitchCase="'AUTO'" class="auto-input-row">
+                 <div class="input-group">
+                   <span class="input-group-text bg-light border-end-0">Mon Budget Max</span>
+                   <input type="number" class="form-control border-start-0" [class.is-invalid]="isBudgetInvalid"
+                          [(ngModel)]="newMessagePrice" name="autoPrice" placeholder="Ex: 800">
+                   <span class="input-group-text">MAD</span>
+                 </div>
+                 <button class="btn btn-purple" (click)="startAutoNego()" [disabled]="!newMessagePrice || isSending || isBudgetInvalid">
+                   Lancer l'Agent IA
+                 </button>
+                 <button class="btn btn-outline-info" (click)="askAISuggestion()" [disabled]="isSending" title="Conseil IA">
+                   <i class="bi bi-magic"></i>
+                 </button>
+                 <div class="invalid-feedback d-block" *ngIf="isBudgetInvalid">
+                   Le budget est trop bas pour ce produit.
+                 </div>
               </div>
             </div>
           </div>
         </div>
-        <ng-template #limitReached>
-          <div class="chat-input-area limit-reached-container animate-fade-in">
-            <div class="limit-card shadow-sm">
-              <div class="d-flex align-items-center gap-3">
-                <div class="limit-icon">
-                  <i class="bi bi-exclamation-octagon-fill"></i>
-                </div>
-                <div class="limit-text">
-                  <h6>Limite de rounds atteinte</h6>
-                  <p>Vous avez utilisé vos 3 tentatives. Vous pouvez accepter la dernière offre de l'agent ou recommencer une nouvelle discussion.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ng-template>
       </ng-container>
 
       <ng-template #noSelection>
-        <div class="no-selection">
-          <div class="text-center">
-            <i class="bi bi-chat-quote display-1 opacity-25"></i>
-            <h4 class="mt-3">Sélectionnez une discussion</h4>
-            <p class="text-muted">Choisissez un produit à gauche pour voir l'historique.</p>
+        <div class="no-selection-view">
+          <div class="pulse-container">
+            <i class="bi bi-chat-dots display-1 opacity-10"></i>
           </div>
+          <h4 class="fw-bold mt-4">Sélectionnez une discussion</h4>
+          <p class="text-muted">Vos négociations en cours apparaîtront ici.</p>
         </div>
       </ng-template>
     </div>
   </div>
-
 </div>

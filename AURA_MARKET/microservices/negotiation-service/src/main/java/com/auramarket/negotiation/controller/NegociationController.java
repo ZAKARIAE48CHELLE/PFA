@@ -36,6 +36,19 @@ public class NegociationController {
         return ResponseEntity.ok(negociationService.saveMessage(message));
     }
 
+    @GetMapping("/seller/{vendeurId}")
+    public ResponseEntity<List<Negociation>> getSellerNegociations(@PathVariable java.util.UUID vendeurId) {
+        return ResponseEntity.ok(negociationService.getNegociationsByVendeurId(vendeurId));
+    }
+
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<Negociation> acceptNegociation(
+            @PathVariable java.util.UUID id, 
+            @RequestBody java.util.Map<String, Object> payload) {
+        double acceptedPrice = ((Number) payload.get("acceptedPrice")).doubleValue();
+        return ResponseEntity.ok(negociationService.acceptNegociation(id, acceptedPrice));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNegociation(@PathVariable java.util.UUID id) {
         negociationService.deleteNegociation(id);

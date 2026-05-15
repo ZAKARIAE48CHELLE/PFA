@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Produit, Offre } from '../../core/services/product.service';
+import { NegotiationService, Negociation, MessageNegociation } from '../../core/services/negotiation.service';
 import flatpickr from 'flatpickr';
 import { French } from 'flatpickr/dist/l10n/fr.js';
 import { AuthService } from '../../core/services/auth.service';
@@ -22,6 +23,13 @@ Chart.register(...registerables);
 export class SellerDashboardComponent implements OnInit {
   produits: Produit[] = [];
   userId: string = '';
+
+  negociations: Negociation[] = [];
+  selectedNego?: Negociation;
+  messages: MessageNegociation[] = [];
+  replyText: string = '';
+  replyPrice: number | null = null;
+  isSending: boolean = false;
 
   newProd: Partial<Produit> = {};
   editProd: Partial<Produit> & { id?: string } = {};
@@ -91,12 +99,13 @@ export class SellerDashboardComponent implements OnInit {
   };
 
   private productService = inject(ProductService);
+  private negoService = inject(NegotiationService);
   private authService = inject(AuthService);
 
   commandes: any[] = [];
   totalRevenue = 0;
   totalProductsCount = 0;
-  activeTab: 'overview' | 'inventory' | 'orders' = 'overview';
+  activeTab: 'overview' | 'inventory' | 'orders' | 'negociations' = 'overview';
   pProduits: number = 1;
   pCommandes: number = 1;
 
@@ -114,8 +123,11 @@ export class SellerDashboardComponent implements OnInit {
     if (user) {
       this.userId = user.id;
       this.loadProduits();
+      this.loadNegociations();
     }
   }
+
+  private fetchedProductIds = new Set<string>();
 
   get filteredProduits(): Produit[] {
     let list = this.produits;
@@ -153,6 +165,100 @@ export class SellerDashboardComponent implements OnInit {
         this.updateCharts();
       },
       error: err => console.error('Erreur chargement commandes:', err)
+    });
+  }
+
+  loadNegociations() {
+    this.negoService.getSellerNegociations(this.userId).subscribe({
+      next: n => {
+        this.negociations = n;
+        if (this.selectedNego) {
+          const updated = n.find(x => x.id === this.selectedNego!.id);
+          if (updated) this.selectedNego = updated;
+        }
+        this.fetchMissingProductsForNego();
+      },
+      error: err => console.error('Erreur chargement negociations:', err)
+    });
+  }
+
+  private fetchMissingProductsForNego() {
+    const currentIds = new Set(this.produits.map(p => p.id));
+    this.negociations.forEach(nego => {
+      const pid = nego.produitId;
+      if (pid && !currentIds.has(pid) && !this.fetchedProductIds.has(pid)) {
+        this.fetchedProductIds.add(pid);
+        this.productService.getProduitById(pid).subscribe({
+          next: p => {
+            if (p && !this.produits.some(x => x.id === p.id)) {
+              this.produits = [...this.produits, p];
+            }
+          }
+        });
+      }
+    });
+  }
+
+  getProduitForNego(produitId: string): Produit | undefined {
+    return this.produits.find(p => p.id === produitId);
+  }
+
+  selectNego(n: Negociation) {
+    this.selectedNego = n;
+    this.loadMessages(n.id);
+  }
+
+  loadMessages(negoId: string) {
+    this.negoService.getMessages(negoId).subscribe({
+      next: m => this.messages = m,
+      error: err => console.error('Erreur messages:', err)
+    });
+  }
+
+  sendReply() {
+    if (!this.selectedNego || this.isSending) return;
+    if (!this.replyText.trim() && !this.replyPrice) return;
+
+    const text = this.replyText.trim();
+    const price = this.replyPrice || 0;
+    const content = text ? text : `Je propose une contre-offre à ${price} MAD`;
+
+    this.isSending = true;
+    const msg: MessageNegociation = {
+      negociationId: this.selectedNego.id,
+      sender: 'VENDEUR',
+      content: content,
+      price: price
+    };
+
+    this.negoService.saveMessage(msg).subscribe({
+      next: () => {
+        this.replyText = '';
+        this.replyPrice = null;
+        this.isSending = false;
+        this.loadMessages(this.selectedNego!.id);
+        this.loadNegociations();
+      },
+      error: err => {
+        console.error('Erreur envoi message:', err);
+        this.isSending = false;
+      }
+    });
+  }
+
+  accepterOffre(n: Negociation) {
+    if (!n.prixFinal) return;
+    this.isSending = true;
+    this.negoService.acceptNegociation(n.id, n.prixFinal).subscribe({
+      next: () => {
+        this.isSending = false;
+        this.loadMessages(n.id);
+        this.loadNegociations();
+      },
+      error: err => {
+        console.error('Erreur acceptation:', err);
+        this.isSending = false;
+      }
     });
   }
 

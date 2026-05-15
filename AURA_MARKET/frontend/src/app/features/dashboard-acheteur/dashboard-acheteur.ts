@@ -5,6 +5,7 @@ import { ProductService, Produit, Offre } from '../../core/services/product.serv
 import { NegotiationService, Negociation, MessageNegociation } from '../../core/services/negotiation.service';
 import { CartService } from '../../core/services/cart.service';
 import { Router, RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard-acheteur',
@@ -28,6 +29,8 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
   autoNegoTarget: number = 0;
   aiSuggestion: string | undefined;
   sessionId = 'session_' + Math.random().toString(36).substring(7);
+  negociationTerminee = false;
+  prixFinal: number | undefined;
 
   private negoService = inject(NegotiationService);
   private productService = inject(ProductService);
@@ -35,6 +38,9 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
   private router = inject(Router);
   messages: MessageNegociation[] = [];
   newMessagePrice: number | undefined;
+  newMessageText: string = '';
+  activeTab: 'MANUAL' | 'AUTO' = 'MANUAL';
+
   ngOnInit() {
     this.loadData();
   }
@@ -57,23 +63,59 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     } catch (err) { }
   }
 
+  private fetchedIds = new Set<string>();
+
   loadData() {
-    this.negoService.getNegociations().subscribe(n => {
-      this.negociations = n;
-      if (this.selectedNego) {
-        const updated = n.find(x => x.id === this.selectedNego!.id);
-        if (updated) {
-          this.selectedNego = updated;
+    forkJoin({
+      n: this.negoService.getNegociations(),
+      p: this.productService.getProduits()
+    }).subscribe({
+      next: ({ n, p }) => {
+        this.negociations = n;
+        this.produits = p;
+
+        if (this.selectedNego) {
+          const updated = n.find(x => x.id === this.selectedNego!.id);
+          if (updated) {
+            this.selectedNego = updated;
+          }
+        } else if (n.length > 0) {
+          this.selectNego(n[0]);
         }
-      } else if (n.length > 0) {
-        this.selectNego(n[0]);
+        this.fetchMissingProducts();
+      },
+      error: (err) => {
+        console.error('[DashboardAcheteur] Erreur lors du chargement des données:', err);
       }
     });
-    this.productService.getProduits().subscribe(p => this.produits = p);
+  }
+
+  private fetchMissingProducts() {
+    if (!this.negociations.length) return;
+    
+    const currentProductIds = new Set(this.produits.map(p => p.id));
+    
+    this.negociations.forEach(nego => {
+      const pid = nego.produitId;
+      if (pid && !currentProductIds.has(pid) && !this.fetchedIds.has(pid)) {
+        this.fetchedIds.add(pid);
+        this.productService.getProduitById(pid).subscribe({
+          next: (p) => {
+            if (p && !this.produits.some(x => x.id === p.id)) {
+              this.produits = [...this.produits, p];
+            }
+          },
+          error: () => {
+            console.warn(`[DashboardAcheteur] Impossible de charger le produit ${pid}`);
+          }
+        });
+      }
+    });
   }
 
   selectNego(nego: Negociation) {
     this.selectedNego = nego;
+    this.negociationTerminee = false;
     this.loadMessages(nego.id);
   }
 
@@ -89,16 +131,22 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
   }
 
   sendMessage() {
-    if (!this.selectedNego || !this.newMessagePrice || this.isSending) return;
+    if (!this.selectedNego || this.isSending) return;
+    if (!this.newMessageText.trim() && !this.newMessagePrice) return;
     
-    const price = this.newMessagePrice;
+    const price = this.newMessagePrice || 0;
+    const text = this.newMessageText.trim();
+    
     this.newMessagePrice = undefined;
+    this.newMessageText = '';
     this.isSending = true;
+
+    const content = text ? text : `Je propose un prix de ${price} MAD`;
 
     const userMsg: MessageNegociation = {
       negociationId: this.selectedNego.id,
       sender: 'ACHETEUR',
-      content: `Je propose un prix de ${price} MAD`,
+      content: content,
       price: price
     };
 
@@ -108,59 +156,13 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
           this.selectedNego.rounds = (this.selectedNego.rounds || 0) + 1;
         }
         this.loadMessages(this.selectedNego!.id);
-        
-        const priceHistory = this.messages
-          .filter(m => m.sender === 'ACHETEUR')
-          .map(m => m.price);
-        
-        const produit = this.getProduitForNego(this.selectedNego!.produitId);
-        const prixPlancher = produit?.prixPlancher || this.selectedNego!.prixInitial * 0.6;
-        
-        this.negoService.ajusterNegociation(this.selectedNego!, price, priceHistory, prixPlancher).subscribe({
-          next: (res) => {
-            const commentaryPayload = {
-              nouveauPrix: res.nouveauPrix,
-              prixActuel: this.selectedNego!.prixFinal,
-              buyerBehavior: res.buyerBehavior,
-              round: this.selectedNego!.rounds
-            };
-
-            this.negoService.commenterNegociation(commentaryPayload).subscribe({
-              next: (commentRes) => {
-                const agentMsg: MessageNegociation = {
-                  negociationId: this.selectedNego!.id,
-                  sender: 'AGENT',
-                  content: commentRes.message,
-                  price: res.nouveauPrix
-                };
-                this.negoService.saveMessage(agentMsg).subscribe(() => {
-                  this.loadMessages(this.selectedNego!.id);
-                  this.isSending = false;
-                  this.loadData();
-                  this.selectedNego!.prixFinal = res.nouveauPrix;
-                });
-              },
-              error: () => {
-                const agentMsg: MessageNegociation = {
-                  negociationId: this.selectedNego!.id,
-                  sender: 'AGENT',
-                  content: `Ma contre-proposition est de ${res.nouveauPrix} MAD.`,
-                  price: res.nouveauPrix
-                };
-                this.negoService.saveMessage(agentMsg).subscribe(() => {
-                  this.loadMessages(this.selectedNego!.id);
-                  this.isSending = false;
-                  this.loadData();
-                });
-              }
-            });
-          },
-          error: (err) => {
-            console.error('Agent adjustment error:', err);
-            this.showStatus("L'agent n'a pas pu répondre.", 'danger');
-            this.isSending = false;
-          }
-        });
+        this.isSending = false;
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Save message error:', err);
+        this.showStatus("Impossible d'envoyer le message.", 'danger');
+        this.isSending = false;
       }
     });
   }
@@ -198,30 +200,6 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
     const prixPlancher = this.currentPrixPlancher;
     const prixActuel = this.selectedNego.prixFinal || this.selectedNego.prixInitial;
 
-    // Validation 1 : budget sous plancher
-    if (target < prixPlancher) {
-      const agentMsg: MessageNegociation = {
-        negociationId: this.selectedNego.id,
-        sender: 'AGENT',
-        content: `⚠️ Votre budget de ${target.toFixed(2)} MAD est trop bas pour ce produit. Un accord automatique est impossible. Essayez de négocier manuellement ou augmentez votre budget.`,
-        price: prixActuel
-      };
-      this.negoService.saveMessage(agentMsg).subscribe(() => this.loadMessages(this.selectedNego!.id));
-      return;
-    }
-
-    // Validation 2 : budget >= prix actuel → accepter directement
-    if (target >= prixActuel) {
-      const agentMsg: MessageNegociation = {
-        negociationId: this.selectedNego.id,
-        sender: 'AGENT',
-        content: `✅ Votre budget couvre le prix demandé (${prixActuel.toFixed(2)} MAD). Vous pouvez accepter l'offre directement !`,
-        price: prixActuel
-      };
-      this.negoService.saveMessage(agentMsg).subscribe(() => this.loadMessages(this.selectedNego!.id));
-      return;
-    }
-
     this.newMessagePrice = undefined;
     this.isSending = true;
     this.autoNegoInProgress = true;
@@ -229,47 +207,52 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
 
     const userMsg: MessageNegociation = {
       negociationId: this.selectedNego.id,
-      sender: 'ACHETEUR',
-      content: `🤖 Négociation AUTO lancée — budget: ${target} MAD. L'IA négocie pour moi.`,
+      sender: 'SYSTEM',
+      content: `🤖 L'acheteur a lancé une négociation automatique avec un budget de ${target} MAD.`,
       price: target
     };
 
     this.negoService.saveMessage(userMsg).subscribe(() => {
       this.loadMessages(this.selectedNego!.id);
       
-      const prixPlancher = this.currentPrixPlancher;
-
       this.negoService.startAcheteurNegoAuto(this.selectedNego!, target, prixPlancher, this.sessionId).subscribe({
         next: (res) => {
           this.autoNegoInProgress = false;
 
+          let content = res.message || '';
+
+          if (res.status === 'ACCEPTED') {
+            this.negociationTerminee = true;
+            const finalPrice = res.prixFinal || res.budget;
+            this.prixFinal = finalPrice;
+            this.selectedNego!.prixFinal = finalPrice;
+            this.showStatus(`✅ Accord automatique trouvé à ${finalPrice} MAD !`);
+            content = `🎉 Accord automatique trouvé à ${finalPrice} MAD.`;
+          } else if (res.status === 'NO_AGREEMENT') {
+            this.selectedNego!.prixFinal = res.prixFinal;
+            this.showStatus(`Aucun accord automatique trouvé. Dernière offre du vendeur : ${res.prixFinal} MAD.`, 'danger');
+            content = `Aucun accord automatique n'a été trouvé. Dernière proposition : ${res.prixFinal} MAD.`;
+          } else if (res.status === 'INVALID_BUDGET') {
+            this.showStatus('Budget insuffisant pour une négociation automatique.', 'danger');
+            content = `Budget insuffisant pour une négociation automatique.`;
+          }
+
           const agentMsg: MessageNegociation = {
             negociationId: this.selectedNego!.id,
-            sender: 'AGENT',
-            content: res.reponse,
-            price: res.prixAccord || res.prixFinal || this.selectedNego!.prixFinal
+            sender: 'SYSTEM',
+            content: content,
+            price: res.prixFinal || prixActuel
           };
           
           this.negoService.saveMessage(agentMsg).subscribe(() => {
             this.loadMessages(this.selectedNego!.id);
             this.isSending = false;
-            
-            if (res.prixFinal) {
-              this.selectedNego!.prixFinal = res.prixFinal;
-            }
-
-            if (res.accordTrouve) {
-              this.selectedNego!.prixFinal = res.prixAccord;
-              this.showStatus(`✅ Accord trouvé à ${res.prixAccord} MAD !`);
-            } else {
-              this.showStatus(`Meilleure offre du vendeur: ${res.prixFinal} MAD. Vous pouvez accepter ou continuer.`, 'danger');
-            }
             this.loadData();
           });
         },
         error: (err) => {
           this.autoNegoInProgress = false;
-          this.showStatus("L'assistant n'a pas pu démarrer la négociation.", 'danger');
+          this.showStatus("L'assistant n'a pas pu démarrer la négociation automatique.", 'danger');
           this.isSending = false;
         }
       });

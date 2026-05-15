@@ -32,7 +32,7 @@
             <button *ngIf="m.type === 'CHECK_ORDER'" class="btn btn-purple btn-xs" routerLink="/commandes">
               <i class="bi bi-bag-check"></i> Mes Commandes
             </button>
-            <button *ngIf="m.type === 'VIEW_CATEGORY' || m.type === 'SEARCH_PRODUCT'" class="btn btn-outline-primary btn-xs" routerLink="/list-produit">
+            <button *ngIf="m.type === 'VIEW_CATEGORY' || m.type === 'SEARCH_PRODUCT' || m.type === 'PRODUCTS_FOUND' || m.type === 'NO_PRODUCTS_FOUND'" class="btn btn-outline-primary btn-xs" routerLink="/list-produit">
               <i class="bi bi-grid-3x3-gap"></i> Catalogue complet
             </button>
             <button *ngIf="m.type === 'GENERAL'" class="btn btn-link btn-xs text-decoration-none" routerLink="/list-produit" [queryParams]="{category: 'BestDeals'}">

@@ -17,6 +17,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.auramarket.agents.service.KimiService;
+import com.auramarket.agents.config.SystemPrompts;
+import com.auramarket.agents.strategy.BuyerNegotiationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestTemplate;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,8 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * AgentRestBridge: Exposes the JADE agent system as a REST API.
@@ -44,33 +48,91 @@ public class AgentRestBridge {
     private final ObjectMapper mapper = new ObjectMapper();
     private AgentContainer mainContainer;
     
-    public static class NegotiationState {
+    public static class ManualNegotiationState {
+        public String negociationId;
+        public String produitId;
+        public String acheteurId;
+        public double prixInitial;
         public double prixActuel;
-        public double prixPlancher;
+        public double prixMin;
         public int roundActuel;
-        public List<Double> historiqueOffres;
-        public String lastBuyerBehavior;
-        public String lastBuyerTrend;
+        public int roundsMax;
+        public List<Double> buyerManualOffers;
+        public List<Double> sellerResponses;
+        public String status;
+        public boolean closed;
         public long lastUpdated;
 
-        public NegotiationState(double prixActuel, double prixPlancher, int roundActuel) {
+        public ManualNegotiationState(String negociationId, double prixInitial, double prixActuel, double prixMin, int roundsMax) {
+            this.negociationId = negociationId;
+            this.prixInitial = prixInitial;
             this.prixActuel = prixActuel;
-            this.prixPlancher = prixPlancher;
-            this.roundActuel = roundActuel;
-            this.historiqueOffres = new ArrayList<>();
-            this.lastBuyerBehavior = "INITIAL";
-            this.lastBuyerTrend = "STABLE";
+            this.prixMin = prixMin;
+            this.roundActuel = 1;
+            this.roundsMax = roundsMax;
+            this.buyerManualOffers = new ArrayList<>();
+            this.sellerResponses = new ArrayList<>();
+            this.status = "IN_PROGRESS";
+            this.closed = false;
             this.lastUpdated = System.currentTimeMillis();
         }
     }
 
-    private final Map<String, NegotiationState> stateMap = new ConcurrentHashMap<>();
+    public static class AutoRoundTrace {
+        public int round;
+        public double buyerOffer;
+        public double sellerResponse;
+        public String buyerBehavior;
+        public String buyerTrend;
+
+        public AutoRoundTrace(int round, double buyerOffer, double sellerResponse, String buyerBehavior, String buyerTrend) {
+            this.round = round;
+            this.buyerOffer = buyerOffer;
+            this.sellerResponse = sellerResponse;
+            this.buyerBehavior = buyerBehavior;
+            this.buyerTrend = buyerTrend;
+        }
+    }
+
+    public static class AutoNegotiationState {
+        public String negociationId;
+        public String produitId;
+        public String acheteurId;
+        public double prixInitial;
+        public double prixMin;
+        public double budget;
+        public int roundsUsed;
+        public int roundsMax;
+        public List<AutoRoundTrace> trace;
+        public String status;
+        public boolean autoInProgress;
+        public boolean closed;
+        public long lastUpdated;
+
+        public AutoNegotiationState(String negociationId, double prixInitial, double prixMin, double budget, int roundsMax) {
+            this.negociationId = negociationId;
+            this.prixInitial = prixInitial;
+            this.prixMin = prixMin;
+            this.budget = budget;
+            this.roundsUsed = 0;
+            this.roundsMax = roundsMax;
+            this.trace = new ArrayList<>();
+            this.status = "IN_PROGRESS";
+            this.autoInProgress = false;
+            this.closed = false;
+            this.lastUpdated = System.currentTimeMillis();
+        }
+    }
+
+    private final Map<String, ManualNegotiationState> manualStateMap = new ConcurrentHashMap<>();
+    private final Map<String, AutoNegotiationState> autoStateMap = new ConcurrentHashMap<>();
 
     @Scheduled(fixedRate = 1800000)
     public void cleanupStateMap() {
         long now = System.currentTimeMillis();
-        stateMap.entrySet().removeIf(e -> (now - e.getValue().lastUpdated) > 1800000);
-        System.out.println("[BRIDGE] Cleanup NegotiationState completed. Active sessions: " + stateMap.size());
+        manualStateMap.entrySet().removeIf(e -> (now - e.getValue().lastUpdated) > 1800000);
+        autoStateMap.entrySet().removeIf(e -> (now - e.getValue().lastUpdated) > 1800000);
+        System.out.println("[BRIDGE] Cleanup completed. Active MANUAL: " + manualStateMap.size() + ", AUTO: " + autoStateMap.size());
     }
 
     @Autowired
@@ -134,80 +196,133 @@ public class AgentRestBridge {
         return contactAgent("AgentOffre", ACLMessage.REQUEST, request);
     }
 
-    @PostMapping("/nego/ajuster")
-    public ResponseEntity<?> ajusterNego(@RequestBody Map<String, Object> request) {
+    @PostMapping("/nego/manual")
+    public ResponseEntity<?> manualNego(@RequestBody Map<String, Object> request) {
         String negoId = (String) request.get("negociationId");
         
-        // --- VALIDATION & LOGGING prixPlancher ---
-        Object pMin = request.get("prixMin");
-        double prixPlancher = (pMin instanceof Number) ? ((Number) pMin).doubleValue() : 0.0;
+        double prixPropose = (request.get("prixPropose") instanceof Number) ? ((Number) request.get("prixPropose")).doubleValue() : 0.0;
         double pActuel = (request.get("prixActuel") instanceof Number) ? ((Number) request.get("prixActuel")).doubleValue() : 0.0;
-        
-        System.out.println("[Bridge] Nego " + negoId + " | prixPlancher source: " + prixPlancher);
-        
+        double prixPlancher = (request.get("prixMin") instanceof Number) ? ((Number) request.get("prixMin")).doubleValue() : 0.0;
+        int roundsMax = (request.get("roundsMax") instanceof Number) ? ((Number) request.get("roundsMax")).intValue() : 3;
+
+        System.out.println("[MANUAL_NEGO] negociationId=" + negoId);
+        System.out.println("[MANUAL_NEGO] prixActuel=" + pActuel);
+        System.out.println("[MANUAL_NEGO] prixPropose=" + prixPropose);
+        System.out.println("[MANUAL_NEGO] prixMin=" + prixPlancher);
+
         if (prixPlancher <= 0 || (pActuel > 0 && prixPlancher >= pActuel)) {
             String errDetail = "[Bridge ERROR] prixPlancher invalide (" + prixPlancher + ") pour prixActuel (" + pActuel + ")";
             System.err.println(errDetail);
-            
             String prodId = request.containsKey("produitId") ? String.valueOf(request.get("produitId")) : null;
             errorReporter.reportConfigError("agents-bridge", errDetail, negoId, prodId);
+            return ResponseEntity.badRequest().body(Map.of("status", "INVALID", "message", "Configuration de prix invalide."));
+        }
 
-            return ResponseEntity.badRequest().body(Map.of(
-                "error", "Prix cible invalide",
-                "prixActuel", pActuel
+        ManualNegotiationState state = manualStateMap.computeIfAbsent(negoId, k -> 
+            new ManualNegotiationState(negoId, pActuel, pActuel, prixPlancher, roundsMax)
+        );
+
+        if (state.closed) {
+            return ResponseEntity.ok(Map.of(
+                "mode", "MANUAL",
+                "status", state.status,
+                "message", "Cette négociation est déjà terminée.",
+                "prixPropose", prixPropose,
+                "prixVendeur", state.prixActuel,
+                "prixAffiche", state.prixActuel,
+                "accordTrouve", "ACCEPTED".equals(state.status),
+                "isFinalOffer", true,
+                "roundActuel", state.roundActuel,
+                "roundsMax", state.roundsMax
             ));
         }
-        System.out.println("[BRIDGE VALIDATION] prixPlancher=" + prixPlancher + " prixActuel=" + pActuel);
-        
-        // FIX: Maintain complete state per negotiation
-        double prixPropose = (request.get("prixPropose") instanceof Number) ? ((Number) request.get("prixPropose")).doubleValue() : 0.0;
-        
-        NegotiationState state = stateMap.computeIfAbsent(negoId, k -> new NegotiationState(pActuel, prixPlancher, 1));
-        
-        // [LOGGING] Debug state issues
-        System.out.println("[STATE] negoId=" + negoId 
-            + " prixActuel=" + state.prixActuel
-            + " prixPlancher=" + state.prixPlancher  
-            + " round=" + state.roundActuel
-            + " historique=" + state.historiqueOffres);
 
-        if (prixPropose > 0) {
-            state.historiqueOffres.add(prixPropose);
+        if (prixPropose < prixPlancher) {
+            state.buyerManualOffers.add(prixPropose);
+            state.status = "REJECTED";
+            System.out.println("[MANUAL_NEGO] status=REJECTED (sous le plancher)");
+            return ResponseEntity.ok(Map.of(
+                "mode", "MANUAL",
+                "status", "REJECTED",
+                "message", "Votre offre est trop basse. Le vendeur garde son prix actuel.",
+                "prixPropose", prixPropose,
+                "prixVendeur", state.prixActuel,
+                "prixAffiche", state.prixActuel,
+                "accordTrouve", false,
+                "isFinalOffer", state.roundActuel >= state.roundsMax,
+                "roundActuel", state.roundActuel,
+                "roundsMax", state.roundsMax
+            ));
         }
+
+        state.buyerManualOffers.add(prixPropose);
         state.lastUpdated = System.currentTimeMillis();
-        
-        // Ensure request uses the state
+
         request.put("prixActuel", state.prixActuel);
-        request.put("historiqueOffres", state.historiqueOffres);
+        request.put("historiqueOffres", state.buyerManualOffers);
         request.put("roundActuel", state.roundActuel);
-        
+
         ResponseEntity<?> response = contactAgent("AgentNegociation", ACLMessage.PROPOSE, request);
-        
+
         if (response.getStatusCode() == HttpStatus.OK) {
             @SuppressWarnings("unchecked")
             Map<String, Object> body = (Map<String, Object>) response.getBody();
             if (body != null && body.containsKey("nouveauPrix")) {
                 double nouveauPrix = ((Number) body.get("nouveauPrix")).doubleValue();
                 boolean isFinal = (Boolean) body.getOrDefault("isFinalOffer", false);
-                
-                // FIX: Le vendeur ne peut JAMAIS remonter son prix
+                String behavior = (String) body.getOrDefault("buyerBehavior", "NORMAL");
+
+                state.sellerResponses.add(nouveauPrix);
+
                 if (nouveauPrix < state.prixActuel) {
                     state.prixActuel = nouveauPrix;
+                }
+
+                String status;
+                String message;
+                double prixAffiche;
+                boolean accordTrouve;
+
+                if ("ACCEPTED".equals(behavior) || nouveauPrix <= prixPropose || (isFinal && nouveauPrix == prixPropose)) {
+                    status = "ACCEPTED";
+                    message = "🎉 Accord trouvé ! Le vendeur accepte votre offre de " + String.format("%.2f", prixPropose) + " MAD.";
+                    prixAffiche = prixPropose;
+                    accordTrouve = true;
+                    state.prixActuel = prixPropose;
                 } else {
-                    System.out.println("[GUARD] Tentative de hausse de prix bloquée : " + nouveauPrix + " MAD > " + state.prixActuel + " MAD");
+                    status = "COUNTER_OFFER";
+                    message = "Le vendeur propose " + String.format("%.2f", nouveauPrix) + " MAD.";
+                    prixAffiche = nouveauPrix;
+                    accordTrouve = false;
                 }
+
+                state.status = status;
                 state.roundActuel++;
-                state.lastUpdated = System.currentTimeMillis();
-                
-                System.out.println("[BRIDGE] negociationId=" + negoId + " round=" + state.roundActuel + " prixActuel=" + state.prixActuel + " historiqueOffres=" + state.historiqueOffres);
-                
-                if (isFinal) {
-                    System.out.println("[Bridge] Negotiation " + negoId + " finalized. Removing from state.");
-                    stateMap.remove(negoId);
+
+                if (accordTrouve || isFinal || state.roundActuel > state.roundsMax) {
+                    state.closed = true;
                 }
+
+                System.out.println("[MANUAL_NEGO] nouveauPrix=" + nouveauPrix);
+                System.out.println("[MANUAL_NEGO] status=" + status);
+
+                return ResponseEntity.ok(Map.of(
+                    "mode", "MANUAL",
+                    "status", status,
+                    "message", message,
+                    "prixPropose", prixPropose,
+                    "prixVendeur", nouveauPrix,
+                    "prixAffiche", prixAffiche,
+                    "accordTrouve", accordTrouve,
+                    "isFinalOffer", state.closed,
+                    "roundActuel", Math.min(state.roundActuel, state.roundsMax),
+                    "roundsMax", state.roundsMax
+                ));
             }
         }
-        return response;
+        
+        System.out.println("[MANUAL_NEGO] status=ERROR");
+        return ResponseEntity.ok(Map.of("status", "ERROR", "mode", "MANUAL", "message", "Erreur de communication avec le vendeur."));
     }
 
     @PostMapping("/securite/verifier")
@@ -219,29 +334,10 @@ public class AgentRestBridge {
 
     @PostMapping("/acheteur/commenter")
     public ResponseEntity<?> commenterNegociation(@RequestBody Map<String, Object> request) {
-        String systemPrompt = "Tu es Aura, l'assistante AuraMarket. " +
-            "Tu commentes la négociation pour l'acheteur de façon naturelle. " +
-            "RÈGLES ABSOLUES : " +
-            "- Ne jamais mentionner les chiffres exacts de réduction " +
-            "  (pas de 'réduction de X MAD') " +
-            "- Ne jamais mentionner le prix précédent " +
-            "- Ne jamais mentionner prixMin ou prix plancher " +
-            "- 1 seule phrase, ton conversationnel et encourageant " +
-            "- Parler du vendeur à la 3ème personne " +
-            "EXEMPLES DE BONNES RÉPONSES : " +
-            "'Le vendeur fait un geste, c'est encourageant !' " +
-            "'Bonne nouvelle, le vendeur montre de la flexibilité.' " +
-            "'Le vendeur résiste encore, mais continuez !' " +
-            "'La négociation avance dans le bon sens.'";
+        String behavior = (String) request.get("buyerBehavior");
+        String trend = (String) request.get("buyerTrend");
 
-        String userMsg = String.format(
-            "Comportement vendeur: %s. Tendance: %s. " +
-            "L'acheteur doit-il être encouragé ou prudent ?",
-            request.get("buyerBehavior"),
-            request.get("buyerTrend")
-        );
-        
-        String response = kimiService.askKimi(systemPrompt, userMsg, "COMMENT");
+        String response = kimiService.generateManualNegotiationAdvice(behavior, trend);
         return ResponseEntity.ok(Map.of("message", response));
     }
 
@@ -254,42 +350,11 @@ public class AgentRestBridge {
         List<Map<String, String>> history = chatHistory.getOrDefault(sessionId, new ArrayList<>());
         
         // 1. Intent Detection
-        String intentPrompt = """
-Tu es Aura, l'assistant IA d'AuraMarket marketplace marocaine.
-Tu dois TOUJOURS répondre en JSON valide, rien d'autre.
-Langue de réponse : même langue que l'utilisateur 
-(français si français, anglais si anglais, darija si darija).
-
-RÈGLE CRITIQUE : Si l'utilisateur mentionne un mot que
-tu ne reconnais pas comme un objet commun, traite-le 
-TOUJOURS comme un nom de produit à rechercher.
-Ne jamais interpréter les noms propres ou mots inconnus 
-comme du vocabulaire général.
-En cas de doute → intention SEARCH_PRODUCT avec 
-recherche = le mot inconnu.
-
-FORMAT OBLIGATOIRE :
-{
-  "intention": "SEARCH_PRODUCT" | "VIEW_CATEGORY" | "CHECK_ORDER" | "GENERAL",
-  "categorie": "Téléphones" | "Informatique" | "Électroménager" | null,
-  "recherche": "mot clé produit ou null",
-  "prixMax": null ou nombre,
-  "reponse": "Ton message naturel pour l'utilisateur"
-}
-
-RÈGLES DE CLASSIFICATION :
-- Mention d'un produit (iPhone, laptop, télé...) → SEARCH_PRODUCT
-- Question sur commande/livraison/statut → CHECK_ORDER  
-- Salutation/question générale → GENERAL
-- reponse doit toujours être utile et naturelle, jamais vide
-
-EXEMPLES :
-- "do you have sworn" -> {"intention":"SEARCH_PRODUCT","recherche":"sworn","reponse":"Checking for sworn availability!"}
-- "je veux un zartek" -> {"intention":"SEARCH_PRODUCT","recherche":"zartek","reponse":"Je cherche 'zartek' dans notre catalogue."}
-- User: "hey" -> {"intention":"GENERAL","recherche":null,"reponse":"Bonjour !"}
-""";
-        
-        String llmIntent = kimiService.askKimi(intentPrompt, userMessage, history, "NAV");
+        String llmIntent = kimiService.detectNavigationIntent(
+            SystemPrompts.chatNavigation(userMessage),
+            userMessage, 
+            history
+        );
         Map<String, Object> intent = null;
         try {
             int start = llmIntent.indexOf("{");
@@ -313,11 +378,15 @@ EXEMPLES :
                 lower.contains("got any")     || lower.contains("what about") ||
                 lower.contains("and also")    || lower.contains("aussi") ||
                 lower.contains("too")         || lower.contains("show me") ||
-                lower.contains("offres");
+                lower.contains("offres")      || lower.contains("offers") ||
+                lower.contains("gimme")       || lower.contains("give me") ||
+                lower.contains("range")       || lower.contains("budget") ||
+                lower.contains("price")       || lower.contains("sous") ||
+                lower.contains("under")       || lower.contains("moins de");
             
             if (isSearchIntent) {
-                String searchTerm = extractSearchTerm(userMessage);
-                if (searchTerm != null) {
+                String searchTerm = cleanProductSearchQuery(userMessage);
+                if (searchTerm != null && !searchTerm.isBlank()) {
                     intent = new HashMap<>();
                     intent.put("intention", "SEARCH_PRODUCT");
                     intent.put("recherche", searchTerm);
@@ -339,45 +408,99 @@ EXEMPLES :
                     }
                 }
                 
-                String fallbackReponse;
-                String fallbackType;
+                String lower2 = userMessage.toLowerCase();
                 
-                if (lower.contains("iphone") || lower.contains("laptop") || 
-                    lower.contains("téléphone") || lower.contains("phone") ||
-                    lower.contains("produit") || lower.contains("cherche") ||
-                    lower.contains("disponible") || lower.contains("available")) {
-                    fallbackReponse = "Je recherche ça pour vous...";
-                    fallbackType = "SEARCH_PRODUCT";
-                } else if (lower.contains("commande") || lower.contains("order") ||
-                           lower.contains("livraison") || lower.contains("statut")) {
-                    fallbackReponse = "Je vérifie vos commandes...";
-                    fallbackType = "CHECK_ORDER";
+                // Product-related keywords → create intent for product search (don't return early!)
+                if (lower2.contains("iphone") || lower2.contains("laptop") || 
+                    lower2.contains("téléphone") || lower2.contains("phone") ||
+                    lower2.contains("samsung") || lower2.contains("ordinateur") ||
+                    lower2.contains("ordinator") || lower2.contains("computer") ||
+                    lower2.contains("produit") || lower2.contains("offers") ||
+                    lower2.contains("offres") || lower2.contains("price") ||
+                    lower2.contains("range") || lower2.contains("budget")) {
+                    String searchTerm = cleanProductSearchQuery(userMessage);
+                    if (searchTerm == null || searchTerm.isBlank()) searchTerm = "";
+                    intent = new HashMap<>();
+                    intent.put("intention", "SEARCH_PRODUCT");
+                    intent.put("recherche", searchTerm);
+                    intent.put("categorie", null);
+                    intent.put("reponse", "Je recherche ça pour vous...");
+                } else if (lower2.contains("commande") || lower2.contains("order") ||
+                           lower2.contains("livraison") || lower2.contains("statut")) {
+                    return ResponseEntity.ok(Map.of("type", "CHECK_ORDER", "reponse", "Je vérifie vos commandes..."));
                 } else {
-                    fallbackReponse = "Bonjour ! Je peux vous aider à trouver des produits.";
-                    fallbackType = "GENERAL";
+                    return ResponseEntity.ok(Map.of("type", "GENERAL", "reponse", "Bonjour ! Je peux vous aider à trouver des produits."));
                 }
-                
-                return ResponseEntity.ok(Map.of("type", fallbackType, "reponse", fallbackReponse));
             }
         }
 
-        String intention = (String) intent.get("intention");
-        String agentResponse = (String) intent.get("reponse");
-
-        // Update History (Limit to 5 last messages)
-        history.add(Map.of("role", "user", "content", userMessage));
-        history.add(Map.of("role", "assistant", "content", agentResponse));
-        if (history.size() > 10) { // 5 exchanges = 10 messages
-            history = history.subList(history.size() - 10, history.size());
+        String intention = intent.containsKey("intent") ? (String) intent.get("intent") : (String) intent.get("intention");
+        if (intention == null) intention = "GENERAL";
+        
+        // Normalisation intent search
+        if ("CHECK_PRODUCT_AVAILABILITY".equalsIgnoreCase(intention) || "SEARCH_PRODUCT".equalsIgnoreCase(intention)) {
+            intention = "PRODUCT_SEARCH";
         }
-        chatHistory.put(sessionId, history);
+
+        // Step 5, 7: Keyword purification & backend semantic normalization
+        String rawSearchQuery = intent.containsKey("searchQuery") ? (String) intent.get("searchQuery") : (String) intent.get("recherche");
+        String cleanedSearchQuery = cleanProductSearchQuery(rawSearchQuery);
+
+        if (cleanedSearchQuery.isBlank()) {
+            cleanedSearchQuery = cleanProductSearchQuery(userMessage);
+        }
+
+        // Enforce deterministic semantic normalize (ordinator -> ordinateur, iphoe -> iphone, etc)
+        cleanedSearchQuery = normalizeProductKeyword(cleanedSearchQuery, userMessage);
+
+        // Extra safety: If query is only numeric, clear it!
+        if (cleanedSearchQuery != null && cleanedSearchQuery.matches("\\d+")) {
+            cleanedSearchQuery = normalizeProductKeyword(null, userMessage);
+            if (cleanedSearchQuery != null && cleanedSearchQuery.matches("\\d+")) {
+                cleanedSearchQuery = "";
+            }
+        }
+
+        String category = intent.containsKey("category") ? (String) intent.get("category") : (String) intent.get("categorie");
+        String agentResponse = intent.containsKey("responseBeforeSearch") ? (String) intent.get("responseBeforeSearch") : (String) intent.get("reponse");
+        String requestType = intent.containsKey("requestType") ? (String) intent.get("requestType") : "GENERAL";
+
+        // Step 6: Deterministic Price extraction fallbacks
+        Double priceMin = null;
+        Double priceMax = null;
+        try {
+            if (intent.containsKey("priceMin") && intent.get("priceMin") != null) {
+                priceMin = ((Number) intent.get("priceMin")).doubleValue();
+            }
+            if (intent.containsKey("priceMax") && intent.get("priceMax") != null) {
+                priceMax = ((Number) intent.get("priceMax")).doubleValue();
+            }
+        } catch (Exception e) {
+            System.err.println("[CHAT_NAVIGATE] Price parsing failure: " + e.getMessage());
+        }
+
+        // Backup extraction directly via backend regex for reliability
+        Double backendPriceMax = extractPriceMax(userMessage);
+        if (backendPriceMax != null) {
+            priceMax = backendPriceMax;
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("type", intention);
         result.put("reponse", agentResponse);
 
+        // Step 1: MANDATORY LOGGING
+        System.out.println("[CHAT] userMessage=" + userMessage);
+        System.out.println("[CHAT] llmRaw=" + llmIntent);
+        System.out.println("[CHAT] parsedIntent=" + intent);
+        System.out.println("[CHAT] rawSearchQuery=" + rawSearchQuery);
+        System.out.println("[CHAT] cleanedSearchQuery=" + cleanedSearchQuery);
+        System.out.println("[CHAT] category=" + category);
+        System.out.println("[CHAT] priceMin=" + priceMin);
+        System.out.println("[CHAT] priceMax=" + priceMax);
+
         // 2. Data Retrieval based on Intent
-        if ("SEARCH_PRODUCT".equals(intention) || "VIEW_CATEGORY".equals(intention)) {
+        if ("PRODUCT_SEARCH".equals(intention) || "VIEW_CATEGORY".equals(intention)) {
             try {
                 // Forward JWT Token
                 HttpHeaders headers = new HttpHeaders();
@@ -388,44 +511,186 @@ EXEMPLES :
                 }
                 
                 HttpEntity<String> entity = new HttpEntity<>(headers);
-                
-                // Build URL with optional category and search filters
-                String category = (String) intent.get("categorie");
-                String recherche = (String) intent.get("recherche");
-                
-                StringBuilder urlBuilder = new StringBuilder(PRODUCT_SERVICE_URL + "/products?");
-                if (category != null && !category.isEmpty()) {
-                    urlBuilder.append("category=").append(category).append("&");
+                List<Map<String, Object>> all = new ArrayList<>();
+                String finalQueryUrlUsed = "";
+                int finalHttpStatus = 0;
+
+                // STEP A: Search by cleanedSearchQuery ONLY
+                if (cleanedSearchQuery != null && !cleanedSearchQuery.isBlank()) {
+                    StringBuilder urlBuilder = new StringBuilder(PRODUCT_SERVICE_URL + "/products?");
+                    urlBuilder.append("search=").append(java.net.URLEncoder.encode(cleanedSearchQuery, "UTF-8")).append("&");
+                    if (priceMin != null) urlBuilder.append("priceMin=").append(priceMin).append("&");
+                    if (priceMax != null) urlBuilder.append("priceMax=").append(priceMax).append("&");
+                    
+                    String url = urlBuilder.toString();
+                    if (url.endsWith("&") || url.endsWith("?")) url = url.substring(0, url.length() - 1);
+                    finalQueryUrlUsed = url;
+
+                    ResponseEntity<List> res = externalRestTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, List.class);
+                    finalHttpStatus = res.getStatusCode().value();
+                    if (res.getStatusCode().is2xxSuccessful() && res.getBody() != null) {
+                        all = (List<Map<String, Object>>) res.getBody();
+                    }
                 }
-                if (recherche != null && !recherche.isEmpty()) {
-                    urlBuilder.append("search=")
-                              .append(java.net.URLEncoder.encode(recherche, "UTF-8"))
-                              .append("&");
+
+                // STEP B: If empty & category exists
+                if (all.isEmpty() && category != null && !category.isBlank()) {
+                    StringBuilder urlBuilder = new StringBuilder(PRODUCT_SERVICE_URL + "/products?");
+                    urlBuilder.append("category=").append(java.net.URLEncoder.encode(category, "UTF-8")).append("&");
+                    if (priceMin != null) urlBuilder.append("priceMin=").append(priceMin).append("&");
+                    if (priceMax != null) urlBuilder.append("priceMax=").append(priceMax).append("&");
+                    
+                    String url = urlBuilder.toString();
+                    if (url.endsWith("&") || url.endsWith("?")) url = url.substring(0, url.length() - 1);
+                    finalQueryUrlUsed = url;
+
+                    ResponseEntity<List> res = externalRestTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, List.class);
+                    finalHttpStatus = res.getStatusCode().value();
+                    if (res.getStatusCode().is2xxSuccessful() && res.getBody() != null) {
+                        all = (List<Map<String, Object>>) res.getBody();
+                    }
                 }
-                
-                String url = urlBuilder.toString();
-                if (url.endsWith("&") || url.endsWith("?")) {
-                    url = url.substring(0, url.length() - 1);
-                }
-                
-                ResponseEntity<List> productsRes = externalRestTemplate.exchange(url, org.springframework.http.HttpMethod.GET, entity, List.class);
-                
-                if (productsRes.getStatusCode().is2xxSuccessful()) {
-                    List<Map<String, Object>> all = productsRes.getBody();
-                    // Map to a cleaner format and ensure IDs are strings
-                    List<Map<String, Object>> clean = all.stream().limit(3).map(p -> {
-                        Map<String, Object> m = new HashMap<>();
-                        m.put("id", p.get("id").toString());
-                        m.put("titre", p.get("titre"));
-                        m.put("prix", p.get("prix"));
-                        m.put("imageUrl", p.get("imageUrl"));
-                        m.put("categorie", p.get("categorie"));
-                        return m;
-                    }).toList();
-                    result.put("produits", clean);
+
+                // STEP C removed — returning the full catalog without any text filter
+                // was causing irrelevant products to appear. If A and B returned nothing,
+                // we go straight to fuzzy matching below.
+
+                System.out.println("[CHAT] productServiceUrl=" + finalQueryUrlUsed);
+                System.out.println("[CHAT] productServiceStatus=" + finalHttpStatus);
+                System.out.println("[CHAT] productsFound=" + all.size());
+
+                // Language Detection
+                String lowerMsg = userMessage.toLowerCase();
+                boolean isEnglish = lowerMsg.matches(".*\\b(have|any|in|stock|available|do|you|u|find|show|about|where|offers|gimme|give)\\b.*");
+                String finalSearchQuery = (cleanedSearchQuery != null && !cleanedSearchQuery.isEmpty()) ? cleanedSearchQuery : "ce produit";
+
+                if (all.isEmpty()) {
+                    boolean fuzzyMatched = false;
+
+                    // Fuzzy matching fallback locally
+                    if (cleanedSearchQuery != null && !cleanedSearchQuery.isEmpty() && cleanedSearchQuery.length() >= 3) {
+                        try {
+                            ResponseEntity<List> catalogRes = externalRestTemplate.exchange(PRODUCT_SERVICE_URL + "/products", org.springframework.http.HttpMethod.GET, entity, List.class);
+                            if (catalogRes.getStatusCode().is2xxSuccessful() && catalogRes.getBody() != null) {
+                                List<Map<String, Object>> catalog = (List<Map<String, Object>>) catalogRes.getBody();
+                                
+                                Map<String, Object> bestMatch = null;
+                                double bestSim = 0.0;
+                                
+                                for (Map<String, Object> p : catalog) {
+                                    String title = (String) p.get("titre");
+                                    if (title != null) {
+                                        double sim = getSimilarity(cleanedSearchQuery, title.trim());
+                                        if (sim > bestSim) {
+                                            bestSim = sim;
+                                            bestMatch = p;
+                                        }
+                                    }
+                                }
+                                
+                                if (bestMatch != null && bestSim >= 0.75) {
+                                    String suggestedTitle = (String) bestMatch.get("titre");
+                                    result.put("type", "PRODUCTS_FOUND");
+                                    
+                                    String finalResp = isEnglish
+                                        ? String.format("I couldn’t find “%s”. Did you mean “%s”?", cleanedSearchQuery, suggestedTitle)
+                                        : String.format("Je n’ai pas trouvé « %s ». Vouliez-vous dire « %s » ?", cleanedSearchQuery, suggestedTitle);
+                                    
+                                    result.put("reponse", finalResp);
+                                    
+                                    Map<String, Object> m = new HashMap<>();
+                                    m.put("id", bestMatch.get("id").toString());
+                                    m.put("titre", bestMatch.get("titre"));
+                                    m.put("prix", bestMatch.get("prix"));
+                                    m.put("imageUrl", bestMatch.get("imageUrl"));
+                                    m.put("categorie", bestMatch.get("categorie"));
+                                    
+                                    result.put("produits", List.of(m));
+                                    fuzzyMatched = true;
+                                }
+                            }
+                        } catch (Exception fe) {
+                            System.err.println("[CHAT_NAVIGATE] Fuzzy match failure: " + fe.getMessage());
+                        }
+                    }
+
+                    if (!fuzzyMatched) {
+                        // Step 8: Backend failure phrasing based on actual queries
+                        result.put("type", "NO_PRODUCTS_FOUND");
+                        String finalResp;
+                        if (priceMax != null) {
+                            finalResp = isEnglish
+                                ? String.format("I couldn’t find available products matching “%s” within %.0f MAD right now.", finalSearchQuery, priceMax)
+                                : String.format("Je n’ai trouvé aucun produit disponible « %s » dans votre budget de %.0f MAD pour le moment.", finalSearchQuery, priceMax);
+                        } else {
+                            finalResp = isEnglish
+                                ? String.format("I couldn’t find available products matching “%s” right now.", finalSearchQuery)
+                                : String.format("Je n’ai trouvé aucun produit disponible correspondant à « %s » pour le moment.", finalSearchQuery);
+                        }
+                        result.put("reponse", finalResp);
+                        result.put("produits", new ArrayList<>());
+                    }
+                } else {
+                    // Check overall stock count sum
+                    int totalStock = 0;
+                    for (Map<String, Object> p : all) {
+                        if (p.containsKey("stock") && p.get("stock") != null) {
+                            totalStock += ((Number) p.get("stock")).intValue();
+                        } else {
+                            totalStock += 1;
+                        }
+                    }
+
+                    if (totalStock <= 0) {
+                        result.put("type", "NO_PRODUCTS_FOUND");
+                        String finalResp = isEnglish
+                            ? "The product exists, but it does not appear to be available in stock right now."
+                            : "Le produit existe, mais il ne semble pas être disponible en stock pour le moment.";
+                        result.put("reponse", finalResp);
+                        result.put("produits", new ArrayList<>());
+                    } else {
+                        result.put("type", "PRODUCTS_FOUND");
+                        
+                        // Step 8: Adapted response phrasing for budget matching!
+                        String finalResp;
+                        if ("OFFERS".equalsIgnoreCase(requestType)) {
+                            finalResp = isEnglish
+                                ? String.format("Here are the available offers/products matching “%s”.", finalSearchQuery)
+                                : String.format("Voici les offres ou produits disponibles correspondant à « %s ».", finalSearchQuery);
+                        } else if (priceMax != null) {
+                            finalResp = isEnglish
+                                ? String.format("Yes, I found products matching “%s” within your %.0f MAD budget.", finalSearchQuery, priceMax)
+                                : String.format("Oui, j'ai trouvé des produits « %s » correspondant à votre budget de %.0f MAD.", finalSearchQuery, priceMax);
+                        } else {
+                            finalResp = isEnglish
+                                ? String.format("Yes, I found products matching “%s”.", finalSearchQuery)
+                                : String.format("Oui, j’ai trouvé des produits correspondant à « %s ».", finalSearchQuery);
+                        }
+                        
+                        result.put("reponse", finalResp);
+                        
+                        // Map to mini cards (Limit 3)
+                        List<Map<String, Object>> clean = all.stream()
+                            .filter(p -> !p.containsKey("stock") || p.get("stock") == null || ((Number) p.get("stock")).intValue() > 0)
+                            .limit(3)
+                            .map(p -> {
+                                Map<String, Object> m = new HashMap<>();
+                                m.put("id", p.get("id").toString());
+                                m.put("titre", p.get("titre"));
+                                m.put("prix", p.get("prix"));
+                                m.put("imageUrl", p.get("imageUrl"));
+                                m.put("categorie", p.get("categorie"));
+                                return m;
+                            }).toList();
+                        
+                        result.put("produits", clean);
+                    }
                 }
             } catch (Exception e) {
                 System.err.println("[CHAT_NAVIGATE] Product fetch error for intent: " + intention + " | Error: " + e.getMessage());
+                result.put("type", "NO_PRODUCTS_FOUND");
+                result.put("reponse", "Une erreur est survenue lors de la recherche.");
+                result.put("produits", new ArrayList<>());
             }
         } else if ("CHECK_ORDER".equals(intention)) {
             try {
@@ -456,6 +721,15 @@ EXEMPLES :
             }
         }
         
+        // Update History AFTER calculations to save ground-truth response
+        String finalWrittenResponse = (String) result.get("reponse");
+        history.add(Map.of("role", "user", "content", userMessage));
+        history.add(Map.of("role", "assistant", "content", finalWrittenResponse != null ? finalWrittenResponse : ""));
+        if (history.size() > 10) {
+            history = history.subList(history.size() - 10, history.size());
+        }
+        chatHistory.put(sessionId, history);
+
         return ResponseEntity.ok(result);
     }
 
@@ -476,78 +750,160 @@ EXEMPLES :
         return contactAgent("AgentAcheteur", ACLMessage.REQUEST, request);
     }
 
-    @PostMapping("/acheteur/nego/start")
-    public ResponseEntity<?> acheteurNegoStart(@RequestBody Map<String, Object> request) {
-        
-        // Validation budget vs prixPlancher
-        double prixCible = ((Number) request.get("prixCible")).doubleValue();
-        double prixPlancher = ((Number) request.get("prixMin")).doubleValue();
-        double prixActuel = ((Number) request.get("prixActuel")).doubleValue();
-        
-        System.out.println("[BRIDGE] AUTO start — prixCible=" + prixCible 
-                         + " prixPlancher=" + prixPlancher + " prixActuel=" + prixActuel);
-        
-        // Cas 1 : Budget sous le plancher → impossible
-        if (prixCible < prixPlancher) {
-            String prodId = request.containsKey("produitId") ? String.valueOf(request.get("produitId")) : null;
-            String nId = request.containsKey("negociationId") ? String.valueOf(request.get("negociationId")) : null;
-            
-            errorReporter.reportConfigError("agents-bridge", 
-                "AUTO Budget impossible: " + prixCible + " MAD inférieur au minimum " + prixPlancher + " MAD", 
-                nId, prodId);
-
-            String msg = kimiService.askKimi(
-                "Tu es Aura, assistant AuraMarket. " +
-                "RÈGLE ABSOLUE : ne jamais mentionner le prix minimum " +
-                "du vendeur — c'est confidentiel. " +
-                "Réponds en 1-2 phrases bienveillantes.",
-                String.format("Le budget du client (%.2f MAD) est trop bas " +
-                    "pour ce produit. Explique sans mentionner de chiffre " +
-                    "minimum que l'accord automatique est impossible et " +
-                    "suggère de négocier manuellement.", prixCible),
-                "CHAT"
-            );
-            return ResponseEntity.ok(Map.of(
-                "accordTrouve",  false,
-                "isFinalOffer",  true,
-                "impossible",    true,
-                "prixCible",     prixCible,
-                "reponse",       msg != null ? msg : 
-                    "Votre budget de " + String.format("%.2f", prixCible) + " MAD est trop bas pour ce produit. " +
-                    "Essayez de négocier manuellement ou augmentez votre budget."
-            ));
-        }
-        
-        // Cas 2 : Budget = prixActuel → accepter directement
-        if (prixCible >= prixActuel) {
-            return ResponseEntity.ok(Map.of(
-                "accordTrouve", true,
-                "isFinalOffer", true,
-                "nouveauPrix",  prixActuel,
-                "reponse",      "Votre budget couvre le prix demandé. " +
-                               "Vous pouvez accepter l'offre directement !"
-            ));
-        }
-        
-        // Cas normal → lancer la négociation
-        String sessionId = (String) request.get("sessionId");
+    @PostMapping("/nego/auto/start")
+    public ResponseEntity<?> autoNegoStart(@RequestBody Map<String, Object> request) {
         String negoId = (String) request.get("negociationId");
+        double prixCibleRaw = ((Number) request.get("budget")).doubleValue(); // Changed from prixCible to budget to match spec payload but accept both
+        if (prixCibleRaw == 0 && request.containsKey("prixCible")) {
+            prixCibleRaw = ((Number) request.get("prixCible")).doubleValue();
+        }
         
-        // Toujours réinitialiser le state pour une nouvelle AUTO
-        NegotiationState freshState = new NegotiationState(
-            prixActuel,   // prix actuel du moment
-            prixPlancher, 
-            1             // toujours repartir du round 1
+        final double prixCible = prixCibleRaw;
+        
+        double prixPlancher = ((Number) request.get("prixMin")).doubleValue();
+        double pActuel = (request.get("prixActuel") instanceof Number) ? ((Number) request.get("prixActuel")).doubleValue() : 0.0;
+        int roundsMax = (request.get("roundsMax") instanceof Number) ? ((Number) request.get("roundsMax")).intValue() : 5;
+        double prixInitial = (request.get("prixInitial") instanceof Number) ? ((Number) request.get("prixInitial")).doubleValue() : pActuel;
+
+        System.out.println("[AUTO_NEGO] negociationId=" + negoId);
+        System.out.println("[AUTO_NEGO] budget=" + prixCible);
+        System.out.println("[AUTO_NEGO] prixMin=" + prixPlancher);
+
+        AutoNegotiationState state = autoStateMap.computeIfAbsent(negoId, k -> 
+            new AutoNegotiationState(negoId, prixInitial, prixPlancher, prixCible, roundsMax)
         );
-        stateMap.put(negoId + "_auto_" + sessionId, freshState);
-        
-        // Utiliser ce negoId séparé pour ne pas polluer 
-        // la négo manuelle existante
-        request.put("negociationId", negoId + "_auto_" + sessionId);
-        
-        request.put("mode", "NEGO_AUTO");
-        sessionState.put(sessionId, new HashMap<>(request));
-        return contactAgent("AgentAcheteur", ACLMessage.REQUEST, request);
+
+        if (state.autoInProgress) {
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "ERROR",
+                "message", "Une négociation automatique est déjà en cours."
+            ));
+        }
+
+        if (state.closed && "ACCEPTED".equals(state.status)) {
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "ACCEPTED",
+                "message", "Un accord a déjà été trouvé pour cette négociation."
+            ));
+        }
+
+        if (state.closed && "NO_AGREEMENT".equals(state.status)) {
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "NO_AGREEMENT",
+                "message", "La négociation automatique est déjà terminée sans accord. Vous pouvez continuer manuellement ou augmenter votre budget."
+            ));
+        }
+
+        state.autoInProgress = true;
+
+        if (prixCible < prixPlancher) {
+            state.autoInProgress = false;
+            state.closed = true;
+            state.status = "INVALID_BUDGET";
+            System.out.println("[AUTO_NEGO] status=INVALID_BUDGET (budget < prixMin)");
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "INVALID_BUDGET",
+                "message", "Votre budget est inférieur au prix minimum acceptable. Aucun accord automatique n'est possible.",
+                "budget", prixCible,
+                "accordTrouve", false,
+                "roundsUsed", 0
+            ));
+        }
+
+        double derniereOffre = 0;
+        double prixActuelCourant = pActuel; // Assuming auto starts from current visible price
+        double prixFinal = prixActuelCourant;
+        String lastBuyerTrend = "STABLE";
+        List<Double> historiqueOffres = new ArrayList<>();
+        boolean accordTrouve = false;
+
+        for (int round = 1; round <= roundsMax; round++) {
+            state.roundsUsed = round;
+
+            double offreAcheteur = com.auramarket.agents.strategy.BuyerNegotiationStrategy.calculateNextOffer(
+                prixCible, prixActuelCourant, lastBuyerTrend, round, derniereOffre
+            );
+
+            System.out.println("[AUTO_NEGO] round=" + round + " buyerOffer=" + offreAcheteur);
+
+            Map<String, Object> negoPayload = new HashMap<>();
+            negoPayload.put("negociationId", negoId + "_auto"); // Isolated from manual JADE state
+            negoPayload.put("prixActuel",    prixActuelCourant);
+            negoPayload.put("prixMin",       prixPlancher);
+            negoPayload.put("prixPropose",   offreAcheteur);
+            negoPayload.put("roundActuel",   round);
+            negoPayload.put("roundsMax",     roundsMax);
+            negoPayload.put("historiqueOffres", historiqueOffres);
+
+            ResponseEntity<?> negoResponse = contactAgent("AgentNegociation", ACLMessage.PROPOSE, negoPayload);
+
+            if (negoResponse.getStatusCode() != HttpStatus.OK || negoResponse.getBody() == null) {
+                System.err.println("[AUTO_NEGO] Échec de communication avec AgentNegociation");
+                state.autoInProgress = false;
+                return ResponseEntity.ok(Map.of("status", "ERROR", "mode", "AUTO", "message", "Erreur de communication."));
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = (Map<String, Object>) negoResponse.getBody();
+            double nouveauPrix = ((Number) result.get("nouveauPrix")).doubleValue();
+            boolean isFinalOffer = (Boolean) result.getOrDefault("isFinalOffer", false);
+            lastBuyerTrend = (String) result.getOrDefault("buyerTrend", "STABLE");
+            String buyerBehavior = (String) result.getOrDefault("buyerBehavior", "NORMAL");
+
+            System.out.println("[AUTO_NEGO] round=" + round + " sellerResponse=" + nouveauPrix);
+
+            state.trace.add(new AutoRoundTrace(round, offreAcheteur, nouveauPrix, buyerBehavior, lastBuyerTrend));
+            historiqueOffres.add(offreAcheteur);
+            
+            prixActuelCourant = nouveauPrix;
+            derniereOffre = offreAcheteur;
+            prixFinal = nouveauPrix;
+
+            if (nouveauPrix <= prixCible) {
+                accordTrouve = true;
+                break;
+            }
+
+            if (isFinalOffer) {
+                break;
+            }
+        }
+
+        state.autoInProgress = false;
+        state.closed = true;
+        state.lastUpdated = System.currentTimeMillis();
+
+        if (accordTrouve) {
+            state.status = "ACCEPTED";
+            System.out.println("[AUTO_NEGO] status=ACCEPTED");
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "ACCEPTED",
+                "message", "🎉 Accord trouvé automatiquement ! Prix final : " + String.format("%.2f", prixFinal) + " MAD.",
+                "budget", prixCible,
+                "prixFinal", prixFinal,
+                "accordTrouve", true,
+                "roundsUsed", state.roundsUsed,
+                "trace", state.trace
+            ));
+        } else {
+            state.status = "NO_AGREEMENT";
+            System.out.println("[AUTO_NEGO] status=NO_AGREEMENT");
+            return ResponseEntity.ok(Map.of(
+                "mode", "AUTO",
+                "status", "NO_AGREEMENT",
+                "message", "Aucun accord automatique n'a pu être trouvé dans votre budget. Dernière proposition du vendeur : " + String.format("%.2f", prixFinal) + " MAD.",
+                "budget", prixCible,
+                "prixFinal", prixFinal,
+                "accordTrouve", false,
+                "roundsUsed", state.roundsUsed,
+                "trace", state.trace
+            ));
+        }
     }
 
     @PostMapping("/acheteur/nego/message")
@@ -634,20 +990,176 @@ EXEMPLES :
         }
     }
 
-    private String extractSearchTerm(String message) {
+    private String cleanProductSearchQuery(String input) {
+        if (input == null) return "";
+
+        String q = input.toLowerCase().trim();
+
+        // Request phrases (EN, FR, Darija)
+        q = q.replaceAll("\\bdo you have\\b", "");
+        q = q.replaceAll("\\bdo u have\\b", "");
+        q = q.replaceAll("\\bdo you sell\\b", "");
+        q = q.replaceAll("\\bis there\\b", "");
+        q = q.replaceAll("\\bgimme\\b", "");
+        q = q.replaceAll("\\bgive me\\b", "");
+        q = q.replaceAll("\\bshow me\\b", "");
+        q = q.replaceAll("\\bshow\\b", "");
+        q = q.replaceAll("\\bfind\\b", "");
+        q = q.replaceAll("\\bsearch\\b", "");
+        q = q.replaceAll("\\best ce que vous avez\\b", "");
+        q = q.replaceAll("\\best-ce que vous avez\\b", "");
+        q = q.replaceAll("\\bvous avez\\b", "");
+        q = q.replaceAll("\\bje cherche\\b", "");
+        q = q.replaceAll("\\bmontre moi\\b", "");
+        q = q.replaceAll("\\bdonne moi\\b", "");
+        q = q.replaceAll("\\bwach kayn\\b", "");
+        q = q.replaceAll("\\bkayn\\b", "");
+
+        // Availability words
+        q = q.replaceAll("\\bavailable\\b", "");
+        q = q.replaceAll("\\bdisponible\\b", "");
+        q = q.replaceAll("\\bin stock\\b", "");
+        q = q.replaceAll("\\bstock\\b", "");
+        q = q.replaceAll("\\boffers\\b", "");
+        q = q.replaceAll("\\boffres\\b", "");
+        q = q.replaceAll("\\boffer\\b", "");
+        q = q.replaceAll("\\bproducts\\b", "");
+        q = q.replaceAll("\\bproduct\\b", "");
+        q = q.replaceAll("\\bplease\\b", "");
+        q = q.replaceAll("\\bfor me\\b", "");
+
+        // Price/range noise (MUST come before generic word removal)
+        q = q.replaceAll("\\bin the range of the price of\\b", "");
+        q = q.replaceAll("\\brange of the price of\\b", "");
+        q = q.replaceAll("\\bin the range of\\b", "");
+        q = q.replaceAll("\\bin range of\\b", "");
+        q = q.replaceAll("\\bin range price\\b", "");
+        q = q.replaceAll("\\brange of\\b", "");
+        q = q.replaceAll("\\brange\\b", "");
+        q = q.replaceAll("\\bprice\\b", "");
+        q = q.replaceAll("\\bunder\\b", "");
+        q = q.replaceAll("\\bless than\\b", "");
+        q = q.replaceAll("\\bmoins de\\b", "");
+        q = q.replaceAll("\\bbudget\\b", "");
+        q = q.replaceAll("\\baround\\b", "");
+        q = q.replaceAll("\\benviron\\b", "");
+        q = q.replaceAll("\\bmax\\b", "");
+
+        // Currency
+        q = q.replaceAll("\\d+\\s*mad\\b", "");
+        q = q.replaceAll("\\d+\\s*dh\\b", "");
+        q = q.replaceAll("\\bmad\\b", "");
+        q = q.replaceAll("\\bdh\\b", "");
+
+        // Generic filler words
+        q = q.replaceAll("\\bof\\b", "");
+        q = q.replaceAll("\\bthe\\b", "");
+        q = q.replaceAll("\\ban\\b", "");
+        q = q.replaceAll("\\ba\\b", "");
+        q = q.replaceAll("\\bin\\b", "");
+        q = q.replaceAll("\\blast\\b", "");
+        q = q.replaceAll("\\bdes\\b", "");
+        q = q.replaceAll("\\bles\\b", "");
+        q = q.replaceAll("\\bun\\b", "");
+        q = q.replaceAll("\\bune\\b", "");
+
+        // Remove standalone numbers (prices already captured by extractPriceMax)
+        q = q.replaceAll("\\b\\d+\\b", "");
+
+        // Cleanup
+        q = q.replaceAll("[?!.,;:]", " ");
+        q = q.replaceAll("\\s+", " ").trim();
+
+        return q;
+    }
+
+    private Double extractPriceMax(String message) {
         if (message == null) return null;
-        String cleaned = message.toLowerCase()
-            .replaceAll("(?i)and looking for|looking for|do you have|what about|and also|avez vous|est ce que vous avez|je cherche|je veux|find me|trouvez moi|got any|is it available|est ce disponible|aussi|too|please|s'il vous plait", " ")
-            .replaceAll("[?!.,]", " ")
-            .replaceAll("\\s+", " ")
-            .trim();
-        
-        // Garder les majuscules du terme original
-        String original = message.replaceAll("(?i)and looking for|looking for|do you have|what about|and also|avez vous|est ce que vous avez|je cherche|je veux|find me|trouvez moi|got any|is it available|est ce disponible|aussi|too|please|s'il vous plait", " ")
-            .replaceAll("[?!.,]", " ")
-            .replaceAll("\\s+", " ")
-            .trim();
-        
-        return original.isEmpty() ? (cleaned.isEmpty() ? null : cleaned) : original;
+
+        String lower = message.toLowerCase();
+
+        Pattern p = Pattern.compile("(\\d{3,7})\\s*(mad|dh)?");
+        Matcher m = p.matcher(lower);
+
+        if (m.find()) {
+            double value = Double.parseDouble(m.group(1));
+
+            if (lower.contains("under")
+                || lower.contains("less than")
+                || lower.contains("moins de")
+                || lower.contains("max")
+                || lower.contains("budget")
+                || lower.contains("range of the price")
+                || lower.contains("range")) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    private String normalizeProductKeyword(String query, String originalMessage) {
+        String combined = ((query == null ? "" : query) + " " + originalMessage).toLowerCase();
+
+        // Computer family — check BEFORE phone ("pc" is a substring)
+        if (combined.contains("ordinator") || combined.contains("ordinateur")
+            || combined.contains("computer") || combined.contains("laptop")
+            || combined.contains("notebook") || combined.contains("portable")
+            || combined.matches(".*\\bpc\\b.*") || combined.matches(".*\\bpc gamer\\b.*")) {
+            return "ordinateur";
+        }
+
+        // iPhone specifically (before generic phone)
+        if (combined.contains("iphoe") || combined.contains("iphone")
+            || combined.contains("apple phone") || combined.contains("i phone")) {
+            return "iphone";
+        }
+
+        // Generic phone / téléphone
+        if (combined.matches(".*\\bphone\\b.*") || combined.matches(".*\\bphones\\b.*")
+            || combined.contains("telephone") || combined.contains("téléphone")
+            || combined.contains("smartphone") || combined.contains("mobile")) {
+            return "telephone";
+        }
+
+        if (combined.contains("samsung") || combined.contains("galaxy")) {
+            return "samsung";
+        }
+
+        // Shoes
+        if (combined.contains("sneaker") || combined.contains("basket")
+            || combined.matches(".*\\bshoe\\b.*") || combined.matches(".*\\bshoes\\b.*")) {
+            return "chaussures";
+        }
+
+        return query;
+    }
+
+    private int levenshteinDistance(CharSequence lhs, CharSequence rhs) {
+        int len0 = lhs.length() + 1;
+        int len1 = rhs.length() + 1;
+        int[] cost = new int[len0];
+        int[] newcost = new int[len0];
+        for (int i = 0; i < len0; i++) cost[i] = i;
+        for (int j = 1; j < len1; j++) {
+            newcost[0] = j;
+            for (int i = 1; i < len0; i++) {
+                int match = (Character.toLowerCase(lhs.charAt(i - 1)) == Character.toLowerCase(rhs.charAt(j - 1))) ? 0 : 1;
+                int cost_replace = cost[i - 1] + match;
+                int cost_insert = cost[i] + 1;
+                int cost_delete = newcost[i - 1] + 1;
+                newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
+            }
+            int[] swap = cost; cost = newcost; newcost = swap;
+        }
+        return cost[len0 - 1];
+    }
+
+    private double getSimilarity(String s1, String s2) {
+        if (s1 == null || s2 == null) return 0.0;
+        int dist = levenshteinDistance(s1, s2);
+        int maxLen = Math.max(s1.length(), s2.length());
+        if (maxLen == 0) return 1.0;
+        return 1.0 - ((double) dist / maxLen);
     }
 }

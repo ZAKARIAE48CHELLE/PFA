@@ -126,6 +126,7 @@ export class DetailProduit implements OnInit {
     this.negoService.createNegociation({
       produitId: this.produit.id,
       acheteurId: user.id,
+      vendeurId: this.produit.vendeurId,
       rounds: 0,
       prixInitial: this.produit.prix,
       prixFinal: this.produit.prix // Start with base price

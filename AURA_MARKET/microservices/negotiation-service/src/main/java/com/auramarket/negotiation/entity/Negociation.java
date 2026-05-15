@@ -16,10 +16,14 @@ public class Negociation {
     private Double prixFinal;
     
     private UUID acheteurId;
+    private UUID vendeurId;
     private UUID produitId;
+    
+    private String status = "OPEN"; // OPEN, ACCEPTED, REJECTED, CLOSED
 
     public Negociation() {
         this.rounds = 0;
+        this.status = "OPEN";
     }
 
     public UUID getId() { return id; }
@@ -32,6 +36,10 @@ public class Negociation {
     public void setPrixFinal(Double prixFinal) { this.prixFinal = prixFinal; }
     public UUID getAcheteurId() { return acheteurId; }
     public void setAcheteurId(UUID acheteurId) { this.acheteurId = acheteurId; }
+    public UUID getVendeurId() { return vendeurId; }
+    public void setVendeurId(UUID vendeurId) { this.vendeurId = vendeurId; }
     public UUID getProduitId() { return produitId; }
     public void setProduitId(UUID produitId) { this.produitId = produitId; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

@@ -27,16 +27,34 @@ public class NegociationService {
         return messageRepository.findByNegociationIdOrderByTimestampAsc(negociationId);
     }
 
+    public List<Negociation> getNegociationsByVendeurId(UUID vendeurId) {
+        return negociationRepository.findByVendeurId(vendeurId);
+    }
+
     public Negociation createNegociation(Negociation negociation) {
         Negociation saved = negociationRepository.save(negociation);
-        // Initial message from agent
         messageRepository.save(new MessageNegociation(
             saved.getId(), 
-            "AGENT", 
-            "Bonjour ! Je suis l'agent en charge de ce produit. Quel prix souhaiteriez-vous proposer ?", 
-            saved.getPrixFinal()
+            "SYSTEM", 
+            "La négociation a commencé.", 
+            saved.getPrixFinal() != null ? saved.getPrixFinal() : 0.0
         ));
         return saved;
+    }
+
+    public Negociation acceptNegociation(UUID id, double acceptedPrice) {
+        Negociation n = negociationRepository.findById(id).orElseThrow(() -> new RuntimeException("Negotiation not found"));
+        n.setStatus("ACCEPTED");
+        n.setPrixFinal(acceptedPrice);
+        negociationRepository.save(n);
+        
+        messageRepository.save(new MessageNegociation(
+            n.getId(), 
+            "SYSTEM", 
+            "🎉 Le vendeur a accepté l'offre de " + acceptedPrice + " MAD.", 
+            acceptedPrice
+        ));
+        return n;
     }
 
     public MessageNegociation saveMessage(MessageNegociation message) {

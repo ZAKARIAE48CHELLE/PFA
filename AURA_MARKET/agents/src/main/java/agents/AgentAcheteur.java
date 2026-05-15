@@ -154,9 +154,9 @@ public class AgentAcheteur extends Agent {
             // LLM call removed here to prevent massive latency.
             // In NEGO_AUTO, the user does not read individual round messages.
             // The numerical offer is calculated below using the mathematical strategy.
-            // Strictly calculate the next offer based on strategy
+            double derniereOffre = history.isEmpty() ? 0 : history.get(history.size() - 1);
             double nextOffer = com.auramarket.agents.strategy.BuyerNegotiationStrategy.calculateNextOffer(
-                prixCible, prixActuel, sellerTrend, roundActuel, history, roundsMax
+                prixCible, prixActuel, sellerTrend, roundActuel, derniereOffre
             );
             
             // Call AgentNegociation
@@ -181,23 +181,26 @@ public class AgentAcheteur extends Agent {
 
             if (prixActuel <= prixCible) {
                 accordTrouve = true;
-                prixAccord = prixActuel;
-                finalMessage = "Accord trouvé à " + prixAccord + " MAD !";
+                finalMessage = "🎉 Accord trouvé à " + prixActuel + " MAD !";
                 break;
             }
             if (isFinalOffer && prixActuel > prixCible) {
-                finalMessage = "Le vendeur reste ferme sur " + prixActuel + " MAD.";
+                finalMessage = "Aucun accord trouvé. Le vendeur n'a pas pu descendre dans votre budget. Essayez de négocier manuellement.";
                 break;
             }
+        }
+
+        if (!accordTrouve && (finalMessage == null || finalMessage.isEmpty())) {
+            finalMessage = "Aucun accord trouvé. Le vendeur n'a pas pu descendre dans votre budget. Essayez de négocier manuellement.";
         }
 
         Map<String, Object> res = new HashMap<>();
         res.put("sessionId", input.get("sessionId"));
         res.put("type", "NEGO_RESULT");
         res.put("reponse", finalMessage);
-        res.put("prixAccord", prixAccord);
-        res.put("prixFinal", prixActuel); // The latest seller offer
+        res.put("nouveauPrix", prixActuel);
         res.put("accordTrouve", accordTrouve);
+        res.put("isFinalOffer", true);
         res.put("roundActuel", roundActuel);
         return res;
     }
