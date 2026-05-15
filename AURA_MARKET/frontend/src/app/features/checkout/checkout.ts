@@ -54,8 +54,9 @@ export class CheckoutComponent {
     // 1. Create a validated Offer (Achat Direct)
     // 2. Pay the Offer to create Commande and Paiement entities in the backend
     const checkoutRequests = items.map(item => {
-      const price = item.produit.prixOffre || item.produit.prix;
+      const price = item.produit.prixNegocie || item.produit.prixOffre || item.produit.prix;
       const totalItemPrice = price * item.quantite;
+      const isNegotiated = !!item.produit.prixNegocie;
 
       const offrePayload = {
         produitId: item.produit.id,
@@ -63,15 +64,16 @@ export class CheckoutComponent {
         prixPropose: totalItemPrice,
         prixFinal: totalItemPrice,
         statut: 'VALIDEE',
-        titre: `Achat Direct: ${item.produit.titre}`,
-        description: `Achat direct de ${item.quantite}x via panier`
+        titre: isNegotiated ? `Prix Négocié: ${item.produit.titre}` : `Achat Direct: ${item.produit.titre}`,
+        description: isNegotiated ? `Négociation acceptée pour ${item.quantite}x` : `Achat direct de ${item.quantite}x via panier`
       };
 
       return this.productService.createOffre(offrePayload).pipe(
         switchMap((createdOffre: any) => {
           return this.productService.payerOffre(createdOffre.id, {
             montant: totalItemPrice,
-            methode: 'CARTE'
+            methode: 'CARTE',
+            quantite: item.quantite
           });
         })
       );

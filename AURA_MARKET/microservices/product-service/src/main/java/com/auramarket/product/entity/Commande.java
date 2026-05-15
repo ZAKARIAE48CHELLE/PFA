@@ -27,6 +27,9 @@ public class Commande {
     private LocalDateTime dateCommande;
     private LocalDateTime dateExpiration;
     private UUID paiementId;
+    
+    @Column(nullable = false)
+    private int quantite = 1;
 
     public enum StatutCommande {
         EN_ATTENTE_PAIEMENT, PAYEE, EXPIREE, ANNULEE
@@ -70,4 +73,7 @@ public class Commande {
 
     public UUID getPaiementId() { return paiementId; }
     public void setPaiementId(UUID paiementId) { this.paiementId = paiementId; }
+
+    public int getQuantite() { return quantite; }
+    public void setQuantite(int quantite) { this.quantite = quantite; }
 }

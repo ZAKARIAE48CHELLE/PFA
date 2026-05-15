@@ -33,11 +33,22 @@
                   </div>
                 </td>
                 <td>
-                  <div *ngIf="item.produit.prixOffre" class="text-success fw-bold">
-                    {{ item.produit.prixOffre }} MAD 
-                    <span class="badge bg-success-subtle text-success ms-1 small" style="font-size: 10px">Négocié</span>
+                  <!-- Case 1: Negotiated via JADE agents -->
+                  <div *ngIf="item.produit.prixNegocie" class="fw-bold" style="color: #6366f1;">
+                    {{ item.produit.prixNegocie }} MAD 
+                    <span class="badge text-white ms-1 small" style="font-size: 10px; background: linear-gradient(135deg, #4f46e5, #8b5cf6);">
+                      <i class="bi bi-robot"></i> Négocié
+                    </span>
                   </div>
-                  <div *ngIf="!item.produit.prixOffre">
+                  <!-- Case 2: Active general seller offers -->
+                  <div *ngIf="!item.produit.prixNegocie && item.produit.prixOffre" class="fw-bold" style="color: #f97316;">
+                    {{ item.produit.prixOffre }} MAD 
+                    <span class="badge ms-1 small" style="font-size: 10px; background-color: #fff7ed; border: 1px solid #fdba74; color: #ea580c;">
+                      <i class="bi bi-tag-fill"></i> Offre Spéciale
+                    </span>
+                  </div>
+                  <!-- Case 3: Standard shelf price -->
+                  <div *ngIf="!item.produit.prixNegocie && !item.produit.prixOffre" class="text-dark fw-semibold">
                     {{ item.produit.prix }} MAD
                   </div>
                 </td>
@@ -49,7 +60,7 @@
                   </div>
                 </td>
                 <td class="fw-bold">
-                  {{ (item.produit.prixOffre || item.produit.prix) * item.quantite }} MAD
+                  {{ (item.produit.prixNegocie || item.produit.prixOffre || item.produit.prix) * item.quantite }} MAD
                 </td>
                 <td>
                   <button (click)="removeItem(item.produit.id)" class="btn btn-link text-danger p-0">

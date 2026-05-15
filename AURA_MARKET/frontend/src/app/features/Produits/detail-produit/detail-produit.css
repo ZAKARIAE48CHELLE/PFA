@@ -75,13 +75,13 @@
   padding: 5px 10px;
   border-radius: 4px;
   font-weight: 700;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .product-title {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   color: var(--am-text);
   margin-bottom: 1rem;
   line-height: 1.2;
@@ -166,8 +166,13 @@
   font-size: 0.95rem;
 }
 
-.in-stock { color: #10b981; }
-.out-of-stock { color: var(--am-danger); }
+.in-stock {
+  color: #10b981;
+}
+
+.out-of-stock {
+  color: var(--am-danger);
+}
 
 .product-description {
   padding: 1.5rem;
@@ -250,7 +255,8 @@
 }
 
 /* Loader & Error */
-.loader-wrapper, .error-wrapper {
+.loader-wrapper,
+.error-wrapper {
   text-align: center;
   padding: 5rem 2rem;
 }
@@ -267,8 +273,13 @@
 }
 
 @keyframes rotation {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-wrapper i {

@@ -329,7 +329,7 @@ export class DashboardAcheteurComponent implements OnInit, AfterViewChecked {
 
     const negotiatedProduct = { 
       ...p, 
-      prixOffre: this.selectedNego.prixFinal 
+      prixNegocie: this.selectedNego.prixFinal 
     };
 
     this.cartService.addToCart(negotiatedProduct);

@@ -120,8 +120,8 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center py-4 fw-bold text-dark">1</td>
-                        <td class="text-end py-4 fw-semibold text-dark">{{ commande.prixFinal | number:'1.2-2' }} MAD</td>
+                        <td class="text-center py-4 fw-bold text-dark">{{ commande.quantite || 1 }}</td>
+                        <td class="text-end py-4 fw-semibold text-dark">{{ (commande.prixFinal / (commande.quantite || 1)) | number:'1.2-2' }} MAD</td>
                         <td class="text-end pe-3 py-4 fw-bold text-primary fs-6">{{ commande.prixFinal | number:'1.2-2' }} MAD</td>
                     </tr>
                 </tbody>

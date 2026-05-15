@@ -1,23 +1,28 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuditService, Audit } from '../../core/services/audit.service';
 import { ProductService } from '../../core/services/product.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ErrorDashboardService } from '../../core/services/error-dashboard.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { RouterLink } from '@angular/router';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-supervisor-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, BaseChartDirective, NgxPaginationModule, RouterLink],
   templateUrl: './supervisor-dashboard.html',
   styleUrl: './supervisor-dashboard.css'
 })
 export class SupervisorDashboardComponent implements OnInit {
   audits: Audit[] = [];
   criticalCount = 0;
+  systemErrorsCount = 0;
 
   // Chart configs
   public severityChartData: ChartConfiguration<'doughnut'>['data'] = {
@@ -58,11 +63,33 @@ export class SupervisorDashboardComponent implements OnInit {
 
   private auditService = inject(AuditService);
   private productService = inject(ProductService);
+  private authService = inject(AuthService);
+  private errorService = inject(ErrorDashboardService);
 
   totalSales: number = 0;
   commandes: any[] = [];
-  activeTab: 'overview' | 'audit' = 'overview';
+  activeTab: 'overview' | 'audit' | 'accounts' = 'overview';
   p: number = 1;
+  pAccounts: number = 1;
+
+  // Account CRUD properties
+  accounts: any[] = [];
+  filteredAccounts: any[] = [];
+  selectedRoleFilter: string = 'ALL';
+  
+  showModal: boolean = false;
+  modalMode: 'add' | 'edit' = 'add';
+  editingAccountId: string | null = null;
+  
+  accountForm = {
+    email: '',
+    password: '',
+    role: 'ACHETEUR',
+    scoreReputation: 5.0
+  };
+  
+  formError: string | null = null;
+  formSuccess: string | null = null;
 
   ngOnInit() {
     this.refreshData();
@@ -84,6 +111,13 @@ export class SupervisorDashboardComponent implements OnInit {
         this.updateBusinessMetrics();
       },
       error: err => console.error(err)
+    });
+    
+    this.loadAccounts();
+    
+    this.errorService.getStats().subscribe({
+      next: s => this.systemErrorsCount = (s.criticalUnresolved || 0) + (s.highUnresolved || 0),
+      error: err => console.warn('Error loading system stats badge:', err)
     });
   }
 
@@ -132,5 +166,112 @@ export class SupervisorDashboardComponent implements OnInit {
 
   getCountBySeverity(severity: string): number {
     return this.audits.filter(a => a.severite === severity).length;
+  }
+
+  // --- Account Operations ---
+  
+  loadAccounts() {
+    this.authService.getAccounts().subscribe({
+      next: data => {
+        this.accounts = data;
+        this.applyAccountFilter();
+      },
+      error: err => console.error('Error loading accounts:', err)
+    });
+  }
+
+  applyAccountFilter(role?: string) {
+    if (role) {
+      this.selectedRoleFilter = role;
+    }
+    
+    if (this.selectedRoleFilter === 'ALL') {
+      this.filteredAccounts = this.accounts;
+    } else {
+      this.filteredAccounts = this.accounts.filter(acc => acc.role === this.selectedRoleFilter);
+    }
+    this.pAccounts = 1;
+  }
+
+  getBuyerCommandeCount(buyerId: string): number {
+    if (!this.commandes) return 0;
+    return this.commandes.filter(c => c.acheteurId === buyerId).length;
+  }
+
+  openAddModal() {
+    this.modalMode = 'add';
+    this.editingAccountId = null;
+    this.accountForm = { email: '', password: '', role: 'ACHETEUR', scoreReputation: 5.0 };
+    this.formError = null;
+    this.formSuccess = null;
+    this.showModal = true;
+  }
+
+  openEditModal(account: any) {
+    this.modalMode = 'edit';
+    this.editingAccountId = account.id;
+    this.accountForm = {
+      email: account.email,
+      password: '', // clear password for edit unless they type a new one
+      role: account.role,
+      scoreReputation: account.scoreReputation || 5.0
+    };
+    this.formError = null;
+    this.formSuccess = null;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.formError = null;
+  }
+
+  saveAccount() {
+    this.formError = null;
+    this.formSuccess = null;
+
+    const payload = { ...this.accountForm };
+    
+    if (this.modalMode === 'add') {
+      this.authService.createAccount(payload).subscribe({
+        next: () => {
+          this.formSuccess = "Compte créé avec succès !";
+          this.loadAccounts();
+          setTimeout(() => this.closeModal(), 1500);
+        },
+        error: err => {
+          this.formError = err.error?.error || "Erreur lors de la création du compte.";
+        }
+      });
+    } else {
+      // Clear password from payload if not explicitly changed on update
+      if (!payload.password.trim()) {
+        delete (payload as any).password;
+      }
+      
+      this.authService.updateAccount(this.editingAccountId!, payload).subscribe({
+        next: () => {
+          this.formSuccess = "Compte mis à jour avec succès !";
+          this.loadAccounts();
+          setTimeout(() => this.closeModal(), 1500);
+        },
+        error: err => {
+          this.formError = err.error?.error || "Erreur lors de la modification.";
+        }
+      });
+    }
+  }
+
+  deleteAccount(id: string) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible.")) {
+      this.authService.deleteAccount(id).subscribe({
+        next: () => {
+          this.loadAccounts();
+        },
+        error: err => {
+          alert("Erreur lors de la suppression du compte.");
+        }
+      });
+    }
   }
 }

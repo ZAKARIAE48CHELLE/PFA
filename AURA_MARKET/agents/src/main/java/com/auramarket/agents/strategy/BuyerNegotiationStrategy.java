@@ -8,7 +8,13 @@ public class BuyerNegotiationStrategy {
         double nextOffer;
 
         if (round <= 1 || history.isEmpty()) {
-            nextOffer = currentSellerPrice * 0.72;
+            double offre72 = currentSellerPrice * 0.72;
+            if (offre72 >= prixCible) {
+                // Budget serré -> commencer à 90% du budget
+                nextOffer = prixCible * 0.90;
+            } else {
+                nextOffer = offre72;
+            }
         } else {
             double lastBuyerOffer = history.get(history.size() - 1);
             

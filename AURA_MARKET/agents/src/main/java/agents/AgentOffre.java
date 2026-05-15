@@ -22,6 +22,20 @@ public class AgentOffre extends Agent {
     private String mlApiUrl = "http://localhost:5000";
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private void reportError(String type, String msg, String severity) {
+        try {
+            java.util.Map<String, Object> dto = new java.util.HashMap<>();
+            dto.put("service", "AgentOffre");
+            dto.put("errorType", type);
+            dto.put("message", msg);
+            dto.put("severity", severity != null ? severity : "HIGH");
+            
+            HttpHeaders h = new HttpHeaders();
+            h.setContentType(MediaType.APPLICATION_JSON);
+            restTemplate.postForEntity("http://audit-service:8084/audits/errors", new HttpEntity<>(dto, h), java.util.Map.class);
+        } catch (Exception ignored) {}
+    }
+
     @Override
     protected void setup() {
         Object[] args = getArguments();
@@ -78,6 +92,7 @@ public class AgentOffre extends Agent {
                         reply.setContent("{\"error\": \"" + e.getMessage().replace("\"", "'") + "\"}");
                         send(reply);
                         System.err.println("[AgentOffre] Erreur : " + e.getMessage());
+                        reportError("ML_ERROR", "Generative offering crash: " + e.getMessage(), "CRITICAL");
                     }
                 } else {
                     block();
@@ -101,6 +116,7 @@ public class AgentOffre extends Agent {
                 }
             } catch (Exception e) {
                 System.err.println("[AgentOffre] Classification catégorie indisponible: " + e.getMessage());
+                reportError("ML_ERROR", "Heuristic classification fallback: " + e.getMessage(), "LOW");
             }
         }
         return "autre";

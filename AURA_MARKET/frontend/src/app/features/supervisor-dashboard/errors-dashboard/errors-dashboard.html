@@ -1,0 +1,192 @@
+<!-- Real-Time Overlay Alert Popups -->
+<div class="alert-toast-container" *ngIf="activeAlerts.length > 0">
+  <div *ngFor="let alert of activeAlerts" class="alert-toast" [style.border-left-color]="getSeverityColor(alert.severity)">
+    <div class="toast-header">
+      <span class="badge-pulse" [style.background-color]="getSeverityColor(alert.severity)"></span>
+      <span class="toast-title">{{ alert.severity }} ERROR</span>
+      <span class="toast-service">{{ alert.service }}</span>
+      <button class="toast-close" (click)="removeAlertById(alert.id)">×</button>
+    </div>
+    <div class="toast-body">{{ alert.message }}</div>
+  </div>
+</div>
+
+<div class="dashboard-container">
+  
+  <!-- Navigation Back Action -->
+  <a class="btn-back-dashboard" routerLink="/superviseur">
+    <i class="bi bi-arrow-left"></i> Retour au Dashboard
+  </a>
+
+  <!-- Dashboard Headers -->
+  <div class="dash-header">
+    <div>
+      <h1 class="title">Journal des Erreurs Centralisé</h1>
+      <p class="subtitle">Supervision télémétrique en temps réel du cluster de microservices AuraMarket</p>
+    </div>
+    <div class="live-indicator animate-pulse">
+      <span class="pulse-dot"></span>
+      DIRECT STOMP ACTIF
+    </div>
+  </div>
+
+  <!-- Metrics Summary Ribbon -->
+  <div class="metrics-grid">
+    <div class="metric-card total">
+      <div class="card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="card-info">
+        <h3>Non Résolues</h3>
+        <div class="value">{{ stats.totalUnresolved }}</div>
+      </div>
+    </div>
+
+    <div class="metric-card critical" [class.has-errors]="stats.criticalUnresolved > 0">
+      <div class="card-icon"><i class="bi bi-shield-fill-exclamation"></i></div>
+      <div class="card-info">
+        <h3>CRITICAL</h3>
+        <div class="value">{{ stats.criticalUnresolved }}</div>
+      </div>
+    </div>
+
+    <div class="metric-card high" [class.has-errors]="stats.highUnresolved > 0">
+      <div class="card-icon"><i class="bi bi-lightning-fill"></i></div>
+      <div class="card-info">
+        <h3>HIGH</h3>
+        <div class="value">{{ stats.highUnresolved }}</div>
+      </div>
+    </div>
+
+    <div class="metric-card medium">
+      <div class="card-icon"><i class="bi bi-info-circle-fill"></i></div>
+      <div class="card-info">
+        <h3>MEDIUM</h3>
+        <div class="value">{{ stats.mediumUnresolved }}</div>
+      </div>
+    </div>
+
+    <div class="metric-card low">
+      <div class="card-icon"><i class="bi bi-bug-fill"></i></div>
+      <div class="card-info">
+        <h3>LOW / FRONTEND</h3>
+        <div class="value">{{ stats.lowUnresolved }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interaction & Filters Bar -->
+  <div class="filter-toolbar">
+    <div class="filters-group">
+      <div class="select-wrapper">
+        <label>Sévérité</label>
+        <select [(ngModel)]="selectedSeverityFilter" (change)="applyFilters()">
+          <option value="ALL">Toutes les sévérités</option>
+          <option value="CRITICAL">CRITICAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+      </div>
+
+      <div class="select-wrapper">
+        <label>Composant Source</label>
+        <select [(ngModel)]="selectedServiceFilter" (change)="applyFilters()">
+          <option value="ALL">Tous les modules</option>
+          <option value="agents-bridge">agents-bridge</option>
+          <option value="KimiService">KimiService (LLM)</option>
+          <option value="JADE-AgentNegociation">JADE-AgentNegociation</option>
+          <option value="AgentAcheteur">JADE-AgentAcheteur</option>
+          <option value="AgentOffre">JADE-AgentOffre (ML)</option>
+          <option value="angular-frontend">angular-frontend</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions-group">
+      <label class="toggle-switch">
+        <input type="checkbox" [(ngModel)]="showResolved" (change)="toggleShowResolved()">
+        <span class="slider"></span>
+        <span class="toggle-label">Afficher l'historique résolu</span>
+      </label>
+
+      <button class="btn-refresh" (click)="loadAllData()">
+        <i class="bi bi-arrow-clockwise"></i> Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- The Primary Failure Queue Table -->
+  <div class="table-container shadow-premium">
+    <table class="error-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Statut</th>
+          <th>Composant</th>
+          <th>Type</th>
+          <th>Détails / Message</th>
+          <th>Régler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="filteredErrors.length === 0">
+          <td colspan="6" class="empty-state">
+            <i class="bi bi-check-circle-fill success-icon"></i>
+            <p>Aucune erreur ne correspond à ces filtres. Excellent travail !</p>
+          </td>
+        </tr>
+        
+        <ng-container *ngFor="let error of filteredErrors | paginate: { itemsPerPage: 8, currentPage: p }">
+          <tr class="error-row" [class.resolved-row]="error.resolved">
+            <td class="cell-date">
+              <span class="date">{{ error.createdAt | date:'dd/MM HH:mm:ss' }}</span>
+            </td>
+            <td class="cell-severity">
+              <span class="severity-badge" [style.background-color]="getSeverityColor(error.severity)">
+                {{ error.severity }}
+              </span>
+            </td>
+            <td class="cell-service">
+              <strong class="service-name">{{ error.service }}</strong>
+            </td>
+            <td class="cell-type">
+              <code>{{ error.errorType }}</code>
+            </td>
+            <td class="cell-message">
+              <div class="message-wrapper">
+                <span class="main-msg">{{ error.message }}</span>
+                <div class="context-meta" *ngIf="error.negociationId || error.produitId || error.endpoint">
+                  <span *ngIf="error.negociationId" class="meta-item">NegoID: <code>{{ error.negociationId }}</code></span>
+                  <span *ngIf="error.produitId" class="meta-item">ProduitID: <code>{{ error.produitId }}</code></span>
+                  <span *ngIf="error.endpoint" class="meta-item">Path: <code>{{ error.endpoint }}</code></span>
+                </div>
+              </div>
+            </td>
+            <td class="cell-action">
+              <button *ngIf="!error.resolved" class="btn-resolve" (click)="resolveError(error.id)">
+                <i class="bi bi-check-lg"></i> Résoudre
+              </button>
+              <span *ngIf="error.resolved" class="badge-resolved">
+                <i class="bi bi-check-circle-fill"></i> OK
+              </span>
+            </td>
+          </tr>
+
+          <!-- Stack trace drop down row -->
+          <tr *ngIf="error.stackTrace" class="stacktrace-row" [class.resolved-row]="error.resolved">
+            <td colspan="6">
+              <details class="trace-details">
+                <summary>Voir la trace d'exception (Stacktrace Java/JS)</summary>
+                <pre class="trace-block"><code>{{ error.stackTrace }}</code></pre>
+              </details>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-wrapper">
+      <pagination-controls (pageChange)="p = $event" previousLabel="Précédent" nextLabel="Suivant"></pagination-controls>
+    </div>
+  </div>
+</div>

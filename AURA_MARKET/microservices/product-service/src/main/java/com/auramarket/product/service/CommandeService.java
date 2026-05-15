@@ -76,10 +76,13 @@ public class CommandeService {
         Produit produit = produitRepository.findById(offre.getProduitId())
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
 
-        if (produit.getStock() <= 0) {
-            produit.setStatut(StatutProduit.VENDU);
-            produitRepository.save(produit);
-            throw new IllegalStateException("Désolé, ce produit est en rupture de stock.");
+        int qty = request.getQuantite() > 0 ? request.getQuantite() : 1;
+        if (produit.getStock() < qty) {
+            if (produit.getStock() <= 0) {
+                produit.setStatut(StatutProduit.VENDU);
+                produitRepository.save(produit);
+            }
+            throw new IllegalStateException("Désolé, le stock disponible est insuffisant (" + produit.getStock() + " restants).");
         }
 
         Paiement paiement = new Paiement();
@@ -99,12 +102,13 @@ public class CommandeService {
         commande.setReference(generateReference("CMD"));
         commande.setStatut(StatutCommande.PAYEE);
         commande.setPaiementId(paiement.getId());
+        commande.setQuantite(qty);
         commande = commandeRepository.save(commande);
 
         paiement.setCommandeId(commande.getId());
         paiementRepository.save(paiement);
 
-        produit.setStock(produit.getStock() - 1);
+        produit.setStock(produit.getStock() - qty);
         if (produit.getStock() <= 0) {
             produit.setStatut(StatutProduit.VENDU);
         }
@@ -156,6 +160,7 @@ public class CommandeService {
         dto.setDateCommande(c.getDateCommande());
         dto.setDateExpiration(c.getDateExpiration());
         dto.setPaiementId(c.getPaiementId());
+        dto.setQuantite(c.getQuantite());
         return dto;
     }
 

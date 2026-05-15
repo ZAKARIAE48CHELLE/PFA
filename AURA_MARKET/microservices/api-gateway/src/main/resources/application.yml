@@ -40,6 +40,10 @@ spring:
           uri: http://audit-service:8084
           predicates:
             - Path=/audits/**
+        - id: audit-websocket
+          uri: http://audit-service:8084
+          predicates:
+            - Path=/ws/**
         - id: agent-service
           uri: http://agents-bridge:8085
           predicates:

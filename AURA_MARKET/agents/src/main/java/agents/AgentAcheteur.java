@@ -10,6 +10,10 @@ import com.auramarket.agents.service.KimiService;
 import com.auramarket.agents.strategy.BuyerNegotiationStrategy;
 
 import java.util.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * AgentAcheteur: IA side for the buyer.
@@ -19,6 +23,21 @@ public class AgentAcheteur extends Agent {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private KimiService kimiService;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private void reportError(String type, String msg, String severity) {
+        try {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("service", "AgentAcheteur");
+            dto.put("errorType", type);
+            dto.put("message", msg);
+            dto.put("severity", severity != null ? severity : "HIGH");
+            
+            HttpHeaders h = new HttpHeaders();
+            h.setContentType(MediaType.APPLICATION_JSON);
+            restTemplate.postForEntity("http://audit-service:8084/audits/errors", new HttpEntity<>(dto, h), Map.class);
+        } catch (Exception ignored) {}
+    }
 
     @Override
     protected void setup() {
@@ -54,6 +73,7 @@ public class AgentAcheteur extends Agent {
 
                     } catch (Exception e) {
                         System.err.println("[AgentAcheteur] Erreur : " + e.getMessage());
+                        reportError("JADE_ERROR", "Internal buyer agent processing exception: " + e.getMessage(), "HIGH");
                         e.printStackTrace();
                     }
                 } else {

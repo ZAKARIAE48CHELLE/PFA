@@ -17,6 +17,7 @@ export interface Produit {
   datePublication: string;
   vendeurId: string;
   prixOffre?: number;
+  prixNegocie?: number;
 }
 
 export interface Offre {

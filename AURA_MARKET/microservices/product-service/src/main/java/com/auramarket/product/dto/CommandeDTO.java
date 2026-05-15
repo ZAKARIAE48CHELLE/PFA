@@ -16,6 +16,7 @@ public class CommandeDTO {
     private LocalDateTime dateCommande;
     private LocalDateTime dateExpiration;
     private UUID paiementId;
+    private int quantite;
 
     public CommandeDTO() {}
 
@@ -41,4 +42,7 @@ public class CommandeDTO {
     public void setDateExpiration(LocalDateTime dateExpiration) { this.dateExpiration = dateExpiration; }
     public UUID getPaiementId() { return paiementId; }
     public void setPaiementId(UUID paiementId) { this.paiementId = paiementId; }
+
+    public int getQuantite() { return quantite; }
+    public void setQuantite(int quantite) { this.quantite = quantite; }
 }

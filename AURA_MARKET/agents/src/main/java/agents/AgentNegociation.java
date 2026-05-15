@@ -10,6 +10,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * AgentNegociation — Version FINALE + Renforcement
@@ -23,6 +27,21 @@ public class AgentNegociation extends Agent {
     private final ObjectMapper mapper = new ObjectMapper();
     private FIS fis;
     private com.auramarket.agents.service.KimiService kimi;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private void reportError(String type, String msg, String severity) {
+        try {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("service", "JADE-AgentNegociation");
+            dto.put("errorType", type);
+            dto.put("message", msg);
+            dto.put("severity", severity != null ? severity : "HIGH");
+            
+            HttpHeaders h = new HttpHeaders();
+            h.setContentType(MediaType.APPLICATION_JSON);
+            restTemplate.postForEntity("http://audit-service:8084/audits/errors", new HttpEntity<>(dto, h), Map.class);
+        } catch (Exception ignored) {}
+    }
 
     @Override
     protected void setup() {
@@ -51,6 +70,7 @@ public class AgentNegociation extends Agent {
 
                     } catch (Exception e) {
                         System.err.println("[AgentNegociation] Erreur : " + e.getMessage());
+                        reportError("NEGO_ERROR", "Negociation process crashed: " + e.getMessage(), "HIGH");
                         e.printStackTrace();
                         try {
                             ACLMessage reply = msg.createReply();
@@ -177,16 +197,24 @@ public class AgentNegociation extends Agent {
         concessionRate = concessionRate + reinforcementBonus + stagnationBonus;
 
         // FIX: Minimum 12% de concession
-        concessionRate = Math.max(0.12, concessionRate);
-        
-        // Bonus si acheteur serieux
-        if ("IMPROVING".equalsIgnoreCase(buyerTrend)) {
-            concessionRate += 0.08;
-        }
+        // Sur grande marge → concéder moins en % pour garder une négociation progressive
+        double margeAbsolue = prixActuel - prixPlancher;
+        double minRate;
+        if      (margeAbsolue > 2000) minRate = 0.04;  // grande marge
+        else if (margeAbsolue > 1000) minRate = 0.06;  // marge moyenne
+        else if (margeAbsolue > 500)  minRate = 0.08;  // petite marge
+        else                          minRate = 0.12;  // très petite marge
 
-        // Limiter la concession maximum par round (ex: 25% de la marge pour ne pas descendre trop vite d'un coup)
-        double maxConcessionParRound = 0.25;
-        concessionRate = Math.max(0.12, Math.min(maxConcessionParRound, concessionRate));
+        concessionRate = Math.max(minRate, concessionRate);
+
+        // Max aussi adaptatif
+        double maxRate;
+        if      (margeAbsolue > 2000) maxRate = 0.08;
+        else if (margeAbsolue > 1000) maxRate = 0.12;
+        else if (margeAbsolue > 500)  maxRate = 0.18;
+        else                          maxRate = 0.25;
+
+        concessionRate = Math.min(maxRate, concessionRate);
 
         // ── ÉTAPE 5 : Calcul concession ───────────────────────────────────────
         double marge      = prixActuel - prixPlancher;
@@ -194,8 +222,17 @@ public class AgentNegociation extends Agent {
         double candidat   = prixActuel - concession;
         
         // Si c'est l'avant dernier ou dernier round, on s'approche agressivement du min
+        // Convergence progressive
         if (roundActuel >= roundsMax - 1) {
-            candidat = prixPlancher + (marge * 0.1); // Propose presque le min (10% de la marge au-dessus)
+            // Dernier round : proposer mi-chemin entre prixActuel et prixPlancher au lieu du plancher direct
+            double targetFinal = prixPlancher + (marge * 0.25);
+            candidat = Math.min(candidat, targetFinal);
+            System.out.println("[FINAL ROUND] convergence vers " + round2(targetFinal));
+        }
+
+        // Uniquement au tout dernier round → prixPlancher
+        if (roundActuel >= roundsMax) {
+            candidat = prixPlancher;
         }
 
         // ── ÉTAPE 6 : Protection vendeur (Stubbornness) ───────────────────────

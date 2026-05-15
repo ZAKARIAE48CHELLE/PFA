@@ -76,6 +76,9 @@ public class AgentRestBridge {
     @Autowired
     private KimiService kimiService;
 
+    @Autowired
+    private ErrorReporter errorReporter;
+
     // AgentAcheteur Session State (Negotiation)
     private final Map<String, Map<String, Object>> sessionState = new ConcurrentHashMap<>();
 
@@ -143,7 +146,12 @@ public class AgentRestBridge {
         System.out.println("[Bridge] Nego " + negoId + " | prixPlancher source: " + prixPlancher);
         
         if (prixPlancher <= 0 || (pActuel > 0 && prixPlancher >= pActuel)) {
-            System.err.println("[Bridge ERROR] prixPlancher invalide (" + prixPlancher + ") pour prixActuel (" + pActuel + ")");
+            String errDetail = "[Bridge ERROR] prixPlancher invalide (" + prixPlancher + ") pour prixActuel (" + pActuel + ")";
+            System.err.println(errDetail);
+            
+            String prodId = request.containsKey("produitId") ? String.valueOf(request.get("produitId")) : null;
+            errorReporter.reportConfigError("agents-bridge", errDetail, negoId, prodId);
+
             return ResponseEntity.badRequest().body(Map.of(
                 "error", "Prix cible invalide",
                 "prixActuel", pActuel
@@ -252,6 +260,14 @@ Tu dois TOUJOURS répondre en JSON valide, rien d'autre.
 Langue de réponse : même langue que l'utilisateur 
 (français si français, anglais si anglais, darija si darija).
 
+RÈGLE CRITIQUE : Si l'utilisateur mentionne un mot que
+tu ne reconnais pas comme un objet commun, traite-le 
+TOUJOURS comme un nom de produit à rechercher.
+Ne jamais interpréter les noms propres ou mots inconnus 
+comme du vocabulaire général.
+En cas de doute → intention SEARCH_PRODUCT avec 
+recherche = le mot inconnu.
+
 FORMAT OBLIGATOIRE :
 {
   "intention": "SEARCH_PRODUCT" | "VIEW_CATEGORY" | "CHECK_ORDER" | "GENERAL",
@@ -268,24 +284,13 @@ RÈGLES DE CLASSIFICATION :
 - reponse doit toujours être utile et naturelle, jamais vide
 
 EXEMPLES :
-User: "i want to buy an iphone 15"
-→ {"intention":"SEARCH_PRODUCT","categorie":"Téléphones",
-   "recherche":"iPhone 15","prixMax":null,
-   "reponse":"Let me find iPhone 15 options for you!"}
-
-User: "hey"
-→ {"intention":"GENERAL","categorie":null,
-   "recherche":null,"prixMax":null,
-   "reponse":"Bonjour ! Comment puis-je vous aider aujourd'hui ?"}
-
-User: "where is my order"
-→ {"intention":"CHECK_ORDER","categorie":null,
-   "recherche":null,"prixMax":null,
-   "reponse":"Let me check the status of your orders."}
+- "do you have sworn" -> {"intention":"SEARCH_PRODUCT","recherche":"sworn","reponse":"Checking for sworn availability!"}
+- "je veux un zartek" -> {"intention":"SEARCH_PRODUCT","recherche":"zartek","reponse":"Je cherche 'zartek' dans notre catalogue."}
+- User: "hey" -> {"intention":"GENERAL","recherche":null,"reponse":"Bonjour !"}
 """;
         
         String llmIntent = kimiService.askKimi(intentPrompt, userMessage, history, "NAV");
-        Map<String, Object> intent;
+        Map<String, Object> intent = null;
         try {
             int start = llmIntent.indexOf("{");
             int end = llmIntent.lastIndexOf("}");
@@ -296,47 +301,64 @@ User: "where is my order"
             }
         } catch (Exception e) {
             System.err.println("[CHAT_NAVIGATE] Intent parse error: " + e.getMessage());
-            System.err.println("[CHAT_NAVIGATE] LLM raw response: " + llmIntent);
             
-            if (llmIntent != null && llmIntent.trim().length() > 10 
-                && !llmIntent.contains("Exception")) {
-                String cleaned = llmIntent
-                    .replaceAll("(?si)<think>.*?(</think>|$)", "")
-                    .trim();
-                
-                // Si la réponse ressemble à un JSON coupé, on force le fallback par mot-clé
-                if (!cleaned.startsWith("{")) {
-                    return ResponseEntity.ok(Map.of(
-                        "type", "GENERAL", 
-                        "reponse", cleaned
-                    ));
+            // Fix heuristic fallback
+            String lower = userMessage.toLowerCase();
+            boolean isSearchIntent =
+                lower.contains("have")        || lower.contains("avez") ||
+                lower.contains("disponible")  || lower.contains("available") ||
+                lower.contains("veux")        || lower.contains("cherche") ||
+                lower.contains("want")        || lower.contains("trouve") ||
+                lower.contains("looking for") || lower.contains("find") ||
+                lower.contains("got any")     || lower.contains("what about") ||
+                lower.contains("and also")    || lower.contains("aussi") ||
+                lower.contains("too")         || lower.contains("show me") ||
+                lower.contains("offres");
+            
+            if (isSearchIntent) {
+                String searchTerm = extractSearchTerm(userMessage);
+                if (searchTerm != null) {
+                    intent = new HashMap<>();
+                    intent.put("intention", "SEARCH_PRODUCT");
+                    intent.put("recherche", searchTerm);
+                    intent.put("categorie", null);
+                    intent.put("reponse", "Je recherche '" + searchTerm + "' pour vous !");
                 }
             }
             
-            String lower = userMessage.toLowerCase();
-            String fallbackReponse;
-            String fallbackType;
-            
-            if (lower.contains("iphone") || lower.contains("laptop") || 
-                lower.contains("téléphone") || lower.contains("phone") ||
-                lower.contains("produit") || lower.contains("cherche") ||
-                lower.contains("disponible") || lower.contains("available")) {
-                fallbackReponse = "Je recherche ça pour vous...";
-                fallbackType = "SEARCH_PRODUCT";
-            } else if (lower.contains("commande") || lower.contains("order") ||
-                       lower.contains("livraison") || lower.contains("statut")) {
-                fallbackReponse = "Je vérifie vos commandes...";
-                fallbackType = "CHECK_ORDER";
-            } else {
-                fallbackReponse = "Bonjour ! Je peux vous aider à trouver " +
-                                  "des produits ou suivre vos commandes.";
-                fallbackType = "GENERAL";
+            // If not handled by heuristic, perform generic fallbacks
+            if (intent == null) {
+                if (llmIntent != null && llmIntent.trim().length() > 10 
+                    && !llmIntent.contains("Exception")) {
+                    String cleaned = llmIntent
+                        .replaceAll("(?si)<think>.*?(</think>|$)", "")
+                        .trim();
+                    
+                    if (!cleaned.startsWith("{")) {
+                        return ResponseEntity.ok(Map.of("type", "GENERAL", "reponse", cleaned));
+                    }
+                }
+                
+                String fallbackReponse;
+                String fallbackType;
+                
+                if (lower.contains("iphone") || lower.contains("laptop") || 
+                    lower.contains("téléphone") || lower.contains("phone") ||
+                    lower.contains("produit") || lower.contains("cherche") ||
+                    lower.contains("disponible") || lower.contains("available")) {
+                    fallbackReponse = "Je recherche ça pour vous...";
+                    fallbackType = "SEARCH_PRODUCT";
+                } else if (lower.contains("commande") || lower.contains("order") ||
+                           lower.contains("livraison") || lower.contains("statut")) {
+                    fallbackReponse = "Je vérifie vos commandes...";
+                    fallbackType = "CHECK_ORDER";
+                } else {
+                    fallbackReponse = "Bonjour ! Je peux vous aider à trouver des produits.";
+                    fallbackType = "GENERAL";
+                }
+                
+                return ResponseEntity.ok(Map.of("type", fallbackType, "reponse", fallbackReponse));
             }
-            
-            return ResponseEntity.ok(Map.of(
-                "type", fallbackType, 
-                "reponse", fallbackReponse
-            ));
         }
 
         String intention = (String) intent.get("intention");
@@ -467,6 +489,13 @@ User: "where is my order"
         
         // Cas 1 : Budget sous le plancher → impossible
         if (prixCible < prixPlancher) {
+            String prodId = request.containsKey("produitId") ? String.valueOf(request.get("produitId")) : null;
+            String nId = request.containsKey("negociationId") ? String.valueOf(request.get("negociationId")) : null;
+            
+            errorReporter.reportConfigError("agents-bridge", 
+                "AUTO Budget impossible: " + prixCible + " MAD inférieur au minimum " + prixPlancher + " MAD", 
+                nId, prodId);
+
             String msg = kimiService.askKimi(
                 "Tu es Aura, assistant AuraMarket. " +
                 "RÈGLE ABSOLUE : ne jamais mentionner le prix minimum " +
@@ -476,7 +505,7 @@ User: "where is my order"
                     "pour ce produit. Explique sans mentionner de chiffre " +
                     "minimum que l'accord automatique est impossible et " +
                     "suggère de négocier manuellement.", prixCible),
-                "AUTO"
+                "CHAT"
             );
             return ResponseEntity.ok(Map.of(
                 "accordTrouve",  false,
@@ -591,6 +620,7 @@ User: "where is my order"
             });
 
             if (agentReply[0] == null) {
+                errorReporter.reportTimeout("agents-bridge", agentName, 300000);
                 return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
                         .body(Map.of("error", "Agent " + agentName + " timed out"));
             }
@@ -598,8 +628,26 @@ User: "where is my order"
             return ResponseEntity.ok(mapper.readValue(agentReply[0], Map.class));
 
         } catch (Exception e) {
+            errorReporter.reportJadeError("agents-bridge", "Bridge Communication Crash: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Bridge Communication Error: " + e.getMessage()));
         }
+    }
+
+    private String extractSearchTerm(String message) {
+        if (message == null) return null;
+        String cleaned = message.toLowerCase()
+            .replaceAll("(?i)and looking for|looking for|do you have|what about|and also|avez vous|est ce que vous avez|je cherche|je veux|find me|trouvez moi|got any|is it available|est ce disponible|aussi|too|please|s'il vous plait", " ")
+            .replaceAll("[?!.,]", " ")
+            .replaceAll("\\s+", " ")
+            .trim();
+        
+        // Garder les majuscules du terme original
+        String original = message.replaceAll("(?i)and looking for|looking for|do you have|what about|and also|avez vous|est ce que vous avez|je cherche|je veux|find me|trouvez moi|got any|is it available|est ce disponible|aussi|too|please|s'il vous plait", " ")
+            .replaceAll("[?!.,]", " ")
+            .replaceAll("\\s+", " ")
+            .trim();
+        
+        return original.isEmpty() ? (cleaned.isEmpty() ? null : cleaned) : original;
     }
 }

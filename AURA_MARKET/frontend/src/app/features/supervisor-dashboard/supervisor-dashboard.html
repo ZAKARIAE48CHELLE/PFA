@@ -29,6 +29,17 @@
         <i class="bi bi-list-check"></i> Journal d'Audit
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'accounts'" (click)="activeTab = 'accounts'" style="cursor: pointer;">
+        <i class="bi bi-people-fill"></i> Gestion des Comptes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link link-danger-hover" routerLink="/superviseur/errors" style="cursor: pointer; color: #dc2626; font-weight: 600;">
+        <i class="bi bi-bug-fill"></i> Erreurs Système
+        <span class="badge rounded-pill bg-danger ms-1 animate-pulse-slow" *ngIf="systemErrorsCount > 0" style="box-shadow: 0 0 8px rgba(220, 38, 38, 0.6);">{{ systemErrorsCount }}</span>
+      </a>
+    </li>
   </ul>
 
   <!-- TAB: OVERVIEW -->
@@ -187,5 +198,177 @@
   </div>
   </div> <!-- END TAB AUDIT -->
 
+  <!-- TAB: ACCOUNTS -->
+  <div *ngIf="activeTab === 'accounts'" class="animate-fade-in-up">
+    <div class="am-card accounts-card">
+      <div class="accounts-card-header">
+        <div class="header-left">
+          <h4><i class="bi bi-people-fill"></i> Liste des Utilisateurs</h4>
+          <p class="text-muted small m-0">Gérer les vendeurs, acheteurs et superviseurs de la plateforme.</p>
+        </div>
+        <div class="header-actions">
+          <div class="role-pills">
+            <button class="pill-btn" [class.active]="selectedRoleFilter === 'ALL'" (click)="applyAccountFilter('ALL')">
+              Tous
+            </button>
+            <button class="pill-btn" [class.active]="selectedRoleFilter === 'ACHETEUR'" (click)="applyAccountFilter('ACHETEUR')">
+              Acheteurs
+            </button>
+            <button class="pill-btn" [class.active]="selectedRoleFilter === 'VENDEUR'" (click)="applyAccountFilter('VENDEUR')">
+              Vendeurs
+            </button>
+            <button class="pill-btn" [class.active]="selectedRoleFilter === 'SUPERVISEUR'" (click)="applyAccountFilter('SUPERVISEUR')">
+              Superviseurs
+            </button>
+          </div>
+          <button class="btn btn-gradient-primary" (click)="openAddModal()">
+            <i class="bi bi-person-plus-fill"></i> Ajouter un Compte
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="am-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Rôle</th>
+              <th>Détails Additionnels</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let acc of filteredAccounts | paginate: { id: 'supervisor-accounts-pag', itemsPerPage: 8, currentPage: pAccounts }">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar" [ngClass]="acc.role.toLowerCase()">
+                    {{ acc.email.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="user-info">
+                    <span class="user-email">{{ acc.email }}</span>
+                    <span class="user-id">ID: {{ acc.id.substring(0, 8) }}...</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="am-badge"
+                  [class.am-badge-primary]="acc.role === 'SUPERVISEUR'"
+                  [class.am-badge-success]="acc.role === 'VENDEUR'"
+                  [class.am-badge-info]="acc.role === 'ACHETEUR'">
+                  {{ acc.role }}
+                </span>
+              </td>
+              <td>
+                <div *ngIf="acc.role === 'VENDEUR'" class="detail-cell">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <span>Réputation : <strong>{{ (acc.scoreReputation !== null && acc.scoreReputation !== undefined ? acc.scoreReputation : 5.0) | number:'1.1-1' }}/5</strong></span>
+                </div>
+                <div *ngIf="acc.role === 'ACHETEUR'" class="detail-cell">
+                  <i class="bi bi-clock-history text-muted"></i>
+                  <span><strong>{{ getBuyerCommandeCount(acc.id) }}</strong> Achat(s) enregistré(s)</span>
+                </div>
+                <div *ngIf="acc.role === 'SUPERVISEUR'" class="detail-cell text-muted italic">
+                  Accès total au système
+                </div>
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <button class="btn btn-icon btn-light text-primary" title="Modifier" (click)="openEditModal(acc)">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn btn-icon btn-light text-danger" title="Supprimer" (click)="deleteAccount(acc.id)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredAccounts.length === 0">
+              <td colspan="4">
+                <div class="table-empty">
+                  <i class="bi bi-people"></i>
+                  <p>Aucun utilisateur trouvé avec ces critères.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3" *ngIf="filteredAccounts.length > 8">
+        <pagination-controls id="supervisor-accounts-pag" (pageChange)="pAccounts = $event" previousLabel="Préc." nextLabel="Suiv."></pagination-controls>
+      </div>
+    </div>
+  </div> <!-- END TAB ACCOUNTS -->
+
   </div>
 </div>
+
+<!-- MODAL OVERLAY: ADD / EDIT ACCOUNT -->
+<div class="am-modal-backdrop animate-fade-in" *ngIf="showModal" (click)="closeModal()">
+  <div class="am-modal-container animate-scale-in" (click)="$event.stopPropagation()">
+    <div class="am-modal-header">
+      <h5>
+        <i class="bi" [class.bi-person-plus-fill]="modalMode === 'add'" [class.bi-pencil-square]="modalMode === 'edit'"></i>
+        {{ modalMode === 'add' ? 'Créer un Nouveau Compte' : 'Modifier le Compte' }}
+      </h5>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <form (ngSubmit)="saveAccount()" #accForm="ngForm">
+      <div class="am-modal-body">
+        <!-- Feedback banners -->
+        <div class="alert alert-danger border-0 py-2 mb-3" *ngIf="formError">
+          <i class="bi bi-exclamation-circle-fill"></i> {{ formError }}
+        </div>
+        <div class="alert alert-success border-0 py-2 mb-3" *ngIf="formSuccess">
+          <i class="bi bi-check-circle-fill"></i> {{ formSuccess }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Adresse Email</label>
+          <div class="input-group am-input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" class="form-control" [(ngModel)]="accountForm.email" name="email" required placeholder="nom@exemple.com" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold">
+            Mot de passe 
+            <span *ngIf="modalMode === 'edit'" class="text-muted italic fw-normal">(Laissez vide pour ne pas modifier)</span>
+          </label>
+          <div class="input-group am-input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" class="form-control" [(ngModel)]="accountForm.password" name="password" [required]="modalMode === 'add'" placeholder="••••••••" autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="modalMode === 'add'">
+          <label class="form-label small fw-bold">Rôle Utilisateur</label>
+          <select class="form-select am-select" [(ngModel)]="accountForm.role" name="role">
+            <option value="ACHETEUR">Acheteur</option>
+            <option value="VENDEUR">Vendeur</option>
+            <option value="SUPERVISEUR">Superviseur</option>
+          </select>
+        </div>
+
+        <!-- Dynamic inputs based on Role -->
+        <div class="mb-3" *ngIf="accountForm.role === 'VENDEUR'">
+          <label class="form-label small fw-bold">Score de Réputation (0 - 5)</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="range" class="form-range flex-grow-1" min="0" max="5" step="0.1" [(ngModel)]="accountForm.scoreReputation" name="score">
+            <span class="badge bg-secondary font-monospace px-2 py-1">{{ accountForm.scoreReputation | number:'1.1-1' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="am-modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-gradient-primary" [disabled]="!accForm.form.valid || formSuccess">
+          {{ modalMode === 'add' ? 'Enregistrer le Compte' : 'Enregistrer les Modifications' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

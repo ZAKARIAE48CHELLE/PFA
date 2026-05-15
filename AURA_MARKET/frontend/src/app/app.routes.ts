@@ -36,6 +36,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/supervisor-dashboard/supervisor-dashboard').then(m => m.SupervisorDashboardComponent)
   },
   {
+    path: 'superviseur/errors',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/supervisor-dashboard/errors-dashboard/errors-dashboard').then(m => m.ErrorsDashboardComponent)
+  },
+  {
     path: 'produits/:id',
     loadComponent: () => import('./features/Produits/detail-produit/detail-produit').then(m => m.DetailProduit)
   },

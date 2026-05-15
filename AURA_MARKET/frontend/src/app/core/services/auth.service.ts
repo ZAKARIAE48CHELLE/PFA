@@ -56,4 +56,21 @@ export class AuthService {
   getToken(): string | null {
     return this.currentUserValue?.token || null;
   }
+
+  // Supervisor Account CRUD methods
+  getAccounts(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/accounts`);
+  }
+
+  createAccount(account: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/accounts`, account);
+  }
+
+  updateAccount(id: string, account: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/accounts/${id}`, account);
+  }
+
+  deleteAccount(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/accounts/${id}`);
+  }
 }

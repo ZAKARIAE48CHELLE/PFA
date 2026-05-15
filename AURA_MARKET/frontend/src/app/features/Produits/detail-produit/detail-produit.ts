@@ -78,6 +78,9 @@ export class DetailProduit implements OnInit {
                             .sort((a, b) => new Date(b.dateCreation).getTime() - new Date(a.dateCreation).getTime());
         if (valid.length > 0) {
           this.activeOffer = valid[0];
+          if (this.produit && !this.produit.prixOffre) {
+            this.produit.prixOffre = this.activeOffer.prixPropose;
+          }
         }
       }
     });
